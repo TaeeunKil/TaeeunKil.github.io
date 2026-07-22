@@ -64,3 +64,28 @@ window.addEventListener("popstate", () => {
 selectTab(location.hash.slice(1), { updateHistory: false });
 window.scrollTo(0, 0);
 window.addEventListener("load", () => window.scrollTo(0, 0), { once: true });
+
+const mindMap = document.querySelector(".mind-map");
+const mindNodes = [...document.querySelectorAll(".mind-node")];
+const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+mindMap?.addEventListener("pointermove", (event) => {
+  if (reduceMotion.matches) return;
+
+  const bounds = mindMap.getBoundingClientRect();
+  const x = (event.clientX - bounds.left) / bounds.width - 0.5;
+  const y = (event.clientY - bounds.top) / bounds.height - 0.5;
+
+  mindNodes.forEach((node) => {
+    const depth = Number(node.dataset.depth ?? 1);
+    node.style.setProperty("--shift-x", `${x * depth * 18}px`);
+    node.style.setProperty("--shift-y", `${y * depth * 14}px`);
+  });
+});
+
+mindMap?.addEventListener("pointerleave", () => {
+  mindNodes.forEach((node) => {
+    node.style.setProperty("--shift-x", "0px");
+    node.style.setProperty("--shift-y", "0px");
+  });
+});
