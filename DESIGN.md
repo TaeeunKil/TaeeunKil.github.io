@@ -34,11 +34,17 @@
 
 ## 4. Typography
 
-제목과 본문 모두 동일한 시스템 산세리프를 사용한다.
+제목과 본문 모두 저장소에 포함한 Pretendard Variable을 사용한다. 외부 CDN을 호출하지 않으며, 폰트를 불러오지 못한 경우에만 시스템 산세리프로 대체한다.
 
 ```css
---font: system-ui, -apple-system, "Segoe UI", "Apple SD Gothic Neo",
-  "Noto Sans KR", "Malgun Gothic", sans-serif;
+@font-face {
+  font-family: "Pretendard";
+  src: url("assets/fonts/PretendardVariable.woff2") format("woff2");
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+--font: "Pretendard", system-ui, -apple-system, "Segoe UI", sans-serif;
 ```
 
 - 사이트 이름: `clamp(4.5rem, 16vw, 13rem)`, 700, 줄 높이 0.82.
@@ -47,6 +53,7 @@
 - 메타데이터: `0.72rem`, 600, 대문자와 넓은 자간.
 - 글자 굵기는 400, 600, 700 세 단계만 사용한다.
 - 제목과 본문을 다른 글꼴로 꾸미지 않는다.
+- 폰트 원본과 `OFL.txt` 라이선스는 `assets/fonts/`에 함께 보관한다.
 
 ## 5. App Shell
 

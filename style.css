@@ -1,3 +1,11 @@
+@font-face {
+  font-family: "Pretendard";
+  src: url("assets/fonts/PretendardVariable.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+}
+
 :root {
   --background: #f2f1ed;
   --text: #171716;
@@ -5,7 +13,7 @@
   --line: #d6d4ce;
   --accent: #e74b2b;
   --focus: #171716;
-  --font: system-ui, -apple-system, "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif;
+  --font: "Pretendard", system-ui, -apple-system, "Segoe UI", sans-serif;
   --gutter: clamp(1.25rem, 4vw, 4rem);
   --header-height: 5rem;
   --footer-height: 2.75rem;
