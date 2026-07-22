@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="TaeeunKil의 개발, 배움, 생각을 기록하는 개인 웹사이트입니다.">
+  <meta name="description" content="TaeeunKil의 개발, 배움, 생각을 기록하는 개인 웹사이트입니다." data-i18n-content="meta.description">
   <meta name="theme-color" content="#f2f1ed">
   <title>TaeeunKil</title>
   <link rel="preload" href="assets/fonts/PretendardVariable.woff2" as="font" type="font/woff2" crossorigin>
@@ -11,42 +11,49 @@
   <script src="app.js" defer></script>
 </head>
 <body>
-  <a class="skip-link" href="#content">본문으로 건너뛰기</a>
+  <a class="skip-link" href="#content" data-i18n="skip">본문으로 건너뛰기</a>
 
   <div class="shell">
     <header class="site-header">
-      <a class="logo" href="#home" data-tab-link="home" aria-label="홈으로 이동">
+      <a class="logo" href="#home" data-tab-link="home" aria-label="홈으로 이동" data-i18n-aria="logoLabel">
         TK<span aria-hidden="true">.</span>
       </a>
 
-      <nav class="tabs" aria-label="주요 메뉴">
-        <a href="#home" data-tab-link="home">홈</a>
-        <a href="#writing" data-tab-link="writing">글</a>
-        <a href="#about" data-tab-link="about">소개</a>
+      <nav class="tabs" aria-label="주요 메뉴" data-i18n-aria="navLabel">
+        <a href="#home" data-tab-link="home" data-i18n="nav.home">홈</a>
+        <a href="#writing" data-tab-link="writing" data-i18n="nav.writing">글</a>
+        <a href="#about" data-tab-link="about" data-i18n="nav.about">소개</a>
       </nav>
 
-      <a class="github-link" href="https://github.com/TaeeunKil">GitHub ↗</a>
+      <div class="header-actions">
+        <div class="language-switch" role="group" aria-label="언어 선택" data-i18n-aria="languageLabel">
+          <button type="button" data-language="ko" aria-pressed="true">KR</button>
+          <span aria-hidden="true">/</span>
+          <button type="button" data-language="en" aria-pressed="false">EN</button>
+        </div>
+        <a class="github-link" href="https://github.com/TaeeunKil">GitHub ↗</a>
+      </div>
     </header>
 
     <main class="viewport" id="content">
       <div class="panel-track">
         <section class="panel home-panel" id="home" data-panel="home" aria-labelledby="home-title">
           <div class="home-meta">
-            <span>Personal website</span>
-            <span>Seoul · 2026</span>
+            <span data-i18n="home.meta">Personal website</span>
+            <span data-i18n="home.place">Daejeon · 2026</span>
           </div>
 
           <h1 id="home-title">
             <span>Taeeun</span><span>Kil<i aria-hidden="true">.</i></span>
           </h1>
 
-          <p class="home-intro">개발하며 배우고, 오래 남기고 싶은 것을 씁니다.</p>
+          <p class="home-intro" data-i18n="home.intro">개발하며 배우고, 오래 남기고 싶은 것을 씁니다.</p>
         </section>
 
         <section class="panel writing-panel" id="writing" data-panel="writing" aria-labelledby="writing-title">
           <header class="panel-heading">
             <p>01 / Writing</p>
-            <h2 id="writing-title">글</h2>
+            <h2 id="writing-title" data-i18n="writing.title">글</h2>
           </header>
 
           <div class="post-list" aria-live="polite">
@@ -54,8 +61,8 @@
               <span class="post-number">001</span>
               <time datetime="2026-07-22">2026.07.22</time>
               <div>
-                <h3>첫 글을 준비하고 있습니다.</h3>
-                <p>완성된 생각보다 배우는 과정을 남기겠습니다.</p>
+                <h3 data-i18n="writing.emptyTitle">첫 글을 준비하고 있습니다.</h3>
+                <p data-i18n="writing.emptyBody">완성된 생각보다 배우는 과정을 남기겠습니다.</p>
               </div>
               <span class="post-arrow" aria-hidden="true">→</span>
             </div>
@@ -65,10 +72,10 @@
         <section class="panel about-panel" id="about" data-panel="about" aria-labelledby="about-title">
           <header class="panel-heading">
             <p>02 / About</p>
-            <h2 id="about-title">소개</h2>
+            <h2 id="about-title" data-i18n="about.title">소개</h2>
           </header>
 
-          <div class="mind-map" aria-label="TaeeunKil을 소개하는 마인드맵">
+          <div class="mind-map" aria-label="TaeeunKil을 소개하는 마인드맵" data-i18n-aria="about.mapLabel">
             <svg class="mind-map-lines" viewBox="0 0 1000 520" aria-hidden="true" preserveAspectRatio="none">
               <path d="M500 260 C370 240 300 115 190 105" />
               <path d="M500 260 C650 225 720 90 830 110" />
@@ -78,16 +85,16 @@
             </svg>
 
             <div class="mind-node mind-center" data-depth="0.4">
-              <span>WHO AM I</span>
+              <span data-i18n="about.who">나는 누구인가</span>
               <strong>TaeeunKil<i>.</i></strong>
             </div>
-            <div class="mind-node node-ssafy" data-depth="1"><span>01 / EDUCATION</span><strong>SSAFY 13기</strong></div>
-            <div class="mind-node node-daejeon" data-depth="0.7"><span>02 / BASE</span><strong>대전</strong></div>
-            <div class="mind-node node-physics" data-depth="0.85"><span>03 / MAJOR</span><strong>물리학과</strong></div>
-            <div class="mind-node node-cnu" data-depth="1.05"><span>04 / CAMPUS</span><strong>충남대학교</strong></div>
-            <a class="mind-node node-power" data-depth="0.9" href="https://github.com/TaeeunKil">
-              <span>05 / GITHUB ↗</span><strong>power21</strong>
-            </a>
+            <div class="mind-node node-ssafy" data-depth="1"><span data-i18n="about.education">01 / 교육</span><strong data-i18n="about.ssafy">SSAFY 13기</strong></div>
+            <div class="mind-node node-daejeon" data-depth="0.7"><span data-i18n="about.base">02 / 기반</span><strong data-i18n="about.daejeon">대전</strong></div>
+            <div class="mind-node node-physics" data-depth="0.85"><span data-i18n="about.major">03 / 전공</span><strong data-i18n="about.physics">물리학과</strong></div>
+            <div class="mind-node node-cnu" data-depth="1.05"><span data-i18n="about.campus">04 / 학교</span><strong data-i18n="about.cnu">충남대학교</strong></div>
+            <div class="mind-node node-power" data-depth="0.9">
+              <span data-i18n="about.company">05 / 회사</span><strong>power21</strong>
+            </div>
           </div>
         </section>
       </div>

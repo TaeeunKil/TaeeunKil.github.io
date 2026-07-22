@@ -99,7 +99,8 @@ a:focus-visible {
 }
 
 .tabs a,
-.github-link {
+.github-link,
+.language-switch button {
   position: relative;
   display: grid;
   place-items: center;
@@ -107,6 +108,36 @@ a:focus-visible {
   font-size: 0.82rem;
   font-weight: 600;
   text-decoration: none;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  justify-self: end;
+  gap: clamp(1rem, 2.5vw, 2rem);
+}
+
+.language-switch {
+  display: flex;
+  align-items: center;
+  gap: 0.32rem;
+  color: var(--muted);
+  font-size: 0.68rem;
+  font-weight: 650;
+}
+
+.language-switch button {
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.language-switch button[aria-pressed="true"] {
+  color: var(--accent);
 }
 
 .tabs a::before {
@@ -481,13 +512,13 @@ a:focus-visible {
   }
 
   .site-header {
-    grid-template-columns: auto 1fr;
-    gap: 1.25rem;
+    grid-template-columns: auto 1fr auto;
+    gap: 0.75rem;
   }
 
   .tabs {
-    justify-self: end;
-    gap: clamp(1.1rem, 6vw, 2rem);
+    justify-self: center;
+    gap: clamp(0.8rem, 4vw, 1.5rem);
   }
 
   .github-link {
@@ -551,6 +582,14 @@ a:focus-visible {
 
   .mind-node strong {
     font-size: clamp(1rem, 5vw, 1.45rem);
+  }
+
+  html[lang="en"] .node-cnu strong {
+    max-width: 9rem;
+    font-size: 0.95rem;
+    line-height: 1.05;
+    text-align: center;
+    white-space: normal;
   }
 
   .mind-center {
