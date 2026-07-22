@@ -66,6 +66,7 @@ const translations = {
 };
 
 let currentLanguage = "ko";
+let postsCache = [];
 
 function setLanguage(language, { persist = true } = {}) {
   currentLanguage = translations[language] ? language : "ko";
@@ -91,6 +92,35 @@ function setLanguage(language, { persist = true } = {}) {
   if (persist) {
     try { localStorage.setItem("language", currentLanguage); } catch {}
   }
+  renderPostList();
+}
+
+function renderPostList() {
+  const list = document.querySelector("[data-post-list]");
+  if (!list || postsCache.length === 0) return;
+
+  list.innerHTML = postsCache.map((post, index) => {
+    const title = post.title[currentLanguage] ?? post.title.ko;
+    const summary = post.summary[currentLanguage] ?? post.summary.ko;
+    const number = String(index + 1).padStart(3, "0");
+    const displayDate = post.date.replaceAll("-", ".");
+    return `<a class="post-row" href="post.html?id=${encodeURIComponent(post.id)}">
+      <span class="post-number">${number}</span>
+      <time datetime="${post.date}">${displayDate}</time>
+      <div><h3>${title}</h3><p>${summary}</p></div>
+      <span class="post-arrow" aria-hidden="true">→</span>
+    </a>`;
+  }).join("");
+}
+
+async function loadPosts() {
+  try {
+    const response = await fetch("data/posts.json");
+    if (!response.ok) return;
+    postsCache = await response.json();
+    postsCache.sort((a, b) => b.date.localeCompare(a.date));
+    renderPostList();
+  } catch {}
 }
 
 function selectTab(name, { updateHistory = true } = {}) {
@@ -153,6 +183,7 @@ try { savedLanguage = localStorage.getItem("language"); } catch {}
 const initialLanguage = savedLanguage ?? (navigator.language.toLowerCase().startsWith("ko") ? "ko" : "en");
 setLanguage(initialLanguage, { persist: false });
 selectTab(location.hash.slice(1), { updateHistory: false });
+loadPosts();
 window.scrollTo(0, 0);
 window.addEventListener("load", () => window.scrollTo(0, 0), { once: true });
 

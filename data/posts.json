@@ -1,0 +1,19 @@
+[
+  {
+    "id": "ssafy-13-first-semester",
+    "date": "2025-07-08",
+    "title": {
+      "ko": "SSAFY 1학기를 마치면서",
+      "en": "Looking Back on My First Semester at SSAFY"
+    },
+    "summary": {
+      "ko": "방황의 끝에서 만난 SSAFY 13기, 그리고 단단한 토대를 만든 1학기.",
+      "en": "How the first semester of SSAFY 13 helped me build a solid foundation."
+    },
+    "content": {
+      "ko": "posts/2025/ssafy-13-first-semester.ko.html",
+      "en": "posts/2025/ssafy-13-first-semester.en.html"
+    },
+    "tags": ["SSAFY", "SSAFY 13기", "회고"]
+  }
+]
