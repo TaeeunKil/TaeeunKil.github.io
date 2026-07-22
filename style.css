@@ -245,30 +245,41 @@ a:focus-visible {
   line-height: 1;
 }
 
-.about-copy {
+.about-keywords {
   max-width: 58rem;
   margin-left: 33.333%;
+  border-top: 1px solid var(--text);
 }
 
-.about-copy p {
-  margin: 0 0 2rem;
-  font-size: clamp(1.4rem, 3.8vw, 3.5rem);
-  font-weight: 600;
-  letter-spacing: -0.055em;
-  line-height: 1.18;
+.about-keywords p {
+  display: grid;
+  grid-template-columns: clamp(2.5rem, 6vw, 5rem) 1fr;
+  align-items: baseline;
+  margin: 0;
+  padding: clamp(0.55rem, 1.2vh, 0.9rem) 0;
+  border-bottom: 1px solid var(--line);
+  font-size: clamp(1.65rem, 4.2vw, 3.9rem);
+  font-weight: 700;
+  letter-spacing: -0.06em;
+  line-height: 1;
 }
 
-.about-copy p + p {
-  max-width: 22ch;
+.about-keywords span {
   color: var(--muted);
-  font-size: clamp(1.1rem, 2.2vw, 1.75rem);
-  font-weight: 500;
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
 }
 
-.about-copy a {
-  display: inline-block;
-  min-height: 44px;
+.about-keywords p:last-child {
   color: var(--accent);
+}
+
+.about-link {
+  display: inline-block;
+  margin-top: clamp(1.25rem, 3vh, 2.5rem);
+  margin-left: 33.333%;
+  min-height: 44px;
   font-size: 0.9rem;
   font-weight: 600;
   text-underline-offset: 0.25rem;
@@ -402,7 +413,8 @@ a:focus-visible {
     grid-row: 1;
   }
 
-  .about-copy {
+  .about-keywords,
+  .about-link {
     margin-left: 0;
   }
 
