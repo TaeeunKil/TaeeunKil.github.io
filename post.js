@@ -8,6 +8,7 @@ const postCopy = {
     writing: "글",
     about: "소개",
     back: "← 글 목록",
+    comments: "댓글",
     loading: "글을 불러오고 있습니다.",
     notFound: "글을 찾을 수 없습니다.",
     unavailable: "이 글은 아직 영어 본문을 제공하지 않습니다. 한국어 원문을 표시합니다.",
@@ -21,6 +22,7 @@ const postCopy = {
     writing: "Writing",
     about: "About",
     back: "← All writing",
+    comments: "Comments",
     loading: "Loading the post.",
     notFound: "Post not found.",
     unavailable: "An English version is not available yet. Showing the original Korean post.",
@@ -55,6 +57,37 @@ function setPostLanguage(nextLanguage, { persist = true } = {}) {
     try { localStorage.setItem("language", language); } catch {}
   }
   if (activePost) renderPost(activePost);
+  updateGiscusLanguage();
+}
+
+function updateGiscusLanguage() {
+  const iframe = document.querySelector("iframe.giscus-frame");
+  if (!iframe) return;
+  iframe.contentWindow.postMessage({ giscus: { setConfig: { lang: language } } }, "https://giscus.app");
+}
+
+function loadGiscus() {
+  if (!postId || document.querySelector("script[data-giscus-loader]")) return;
+
+  const script = document.createElement("script");
+  script.src = "https://giscus.app/client.js";
+  script.async = true;
+  script.crossOrigin = "anonymous";
+  script.dataset.giscusLoader = "true";
+  script.dataset.repo = "TaeeunKil/TaeeunKil.github.io";
+  script.dataset.repoId = "R_kgDOTf33Wg";
+  script.dataset.category = "General";
+  script.dataset.categoryId = "DIC_kwDOTf33Ws4DBxUy";
+  script.dataset.mapping = "specific";
+  script.dataset.term = postId;
+  script.dataset.strict = "1";
+  script.dataset.reactionsEnabled = "1";
+  script.dataset.emitMetadata = "0";
+  script.dataset.inputPosition = "top";
+  script.dataset.theme = "light";
+  script.dataset.lang = language;
+  script.dataset.loading = "lazy";
+  document.querySelector("#giscus-comments").append(script);
 }
 
 async function renderPost(post) {
@@ -85,6 +118,7 @@ async function loadPost() {
     activePost = posts.find((post) => post.id === postId);
     if (!activePost) throw new Error("Post not found");
     await renderPost(activePost);
+    loadGiscus();
   } catch {
     document.querySelector("#post-title").textContent = postCopy[language].notFound;
     document.querySelector("#post-body").innerHTML = "";

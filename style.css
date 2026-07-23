@@ -442,6 +442,44 @@ a:focus-visible {
   border-top: 1px solid var(--text);
 }
 
+.comments-shell {
+  width: min(100%, 47rem);
+  margin: clamp(5rem, 10vw, 9rem) auto 0;
+  padding-top: clamp(1.5rem, 3vw, 2.5rem);
+  border-top: 1px solid var(--text);
+}
+
+.comments-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: clamp(2rem, 4vw, 3.5rem);
+}
+
+.comments-heading p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.62rem;
+  font-weight: 650;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.comments-heading h2 {
+  margin: 0;
+  font-size: clamp(1.75rem, 3vw, 2.75rem);
+  letter-spacing: -0.055em;
+  line-height: 1;
+}
+
+#giscus-comments {
+  min-height: 10rem;
+}
+
+.giscus-frame {
+  color-scheme: light;
+}
+
 .post-status {
   border-top: 1px solid var(--line);
 }
