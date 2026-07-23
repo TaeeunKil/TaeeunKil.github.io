@@ -292,15 +292,18 @@ a:focus-visible {
   min-height: 100svh;
 }
 
-.post-page .tabs a[aria-current="page"]::before {
-  opacity: 1;
-  transform: translateY(-50%) scale(1);
-}
-
 .post-shell {
   width: min(100%, 82rem);
   margin: 0 auto;
-  padding: clamp(1.5rem, 3vw, 3rem) var(--gutter) clamp(5rem, 10vw, 9rem);
+  padding: 0 var(--gutter) clamp(5rem, 10vw, 9rem);
+}
+
+.post-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: clamp(4rem, 7vw, 5.5rem);
+  border-bottom: 1px solid var(--line);
 }
 
 .post-back,
@@ -321,14 +324,14 @@ a:focus-visible {
 }
 
 .post-article {
-  margin-top: clamp(1.75rem, 4vw, 3.75rem);
+  margin-top: clamp(1.5rem, 3vw, 2.75rem);
 }
 
 .post-header {
   display: grid;
   grid-template-columns: minmax(6rem, 0.75fr) minmax(0, 4fr);
   border-bottom: 1px solid var(--text);
-  padding-bottom: clamp(2rem, 4vw, 3.75rem);
+  padding-bottom: clamp(1.75rem, 3vw, 3rem);
 }
 
 .post-kicker {
@@ -344,7 +347,7 @@ a:focus-visible {
   grid-column: 2;
   margin: -0.12em 0 clamp(1.75rem, 3vw, 3rem);
   max-width: 15ch;
-  font-size: clamp(3rem, 6vw, 5.75rem);
+  font-size: clamp(3rem, 5.5vw, 5.25rem);
   font-weight: 700;
   letter-spacing: -0.075em;
   line-height: 0.95;
@@ -375,7 +378,7 @@ a:focus-visible {
 
 .post-body {
   width: min(100%, 47rem);
-  margin: clamp(3.5rem, 6vw, 5.5rem) auto 0;
+  margin: clamp(2.5rem, 4vw, 4rem) auto 0;
   font-size: clamp(1.03rem, 1.5vw, 1.17rem);
   line-height: 1.95;
 }
@@ -386,8 +389,8 @@ a:focus-visible {
 }
 
 .post-body .post-lead {
-  margin-bottom: clamp(3.5rem, 6vw, 5.5rem);
-  font-size: clamp(1.55rem, 3vw, 2.5rem);
+  margin-bottom: clamp(3rem, 5vw, 4.5rem);
+  font-size: clamp(1.5rem, 2.6vw, 2.25rem);
   font-weight: 650;
   letter-spacing: -0.045em;
   line-height: 1.38;
@@ -745,8 +748,12 @@ a:focus-visible {
     line-height: 0.98;
   }
 
+  .post-toolbar {
+    min-height: 4rem;
+  }
+
   .post-body {
-    margin-top: 3.25rem;
+    margin-top: 2.5rem;
     line-height: 1.85;
   }
 
