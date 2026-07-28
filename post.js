@@ -99,6 +99,7 @@ async function renderPost(post) {
   document.title = `${title} — TaeeunKil`;
   document.querySelector('meta[name="description"]').content = summary;
   document.querySelector("#post-title").textContent = title;
+  document.querySelector("#post-number").textContent = String(post.number ?? 1).padStart(3, "0");
   document.querySelector("#post-date").textContent = post.date.replaceAll("-", ".");
   document.querySelector("#post-date").dateTime = post.date;
   document.querySelector("#post-tags").textContent = post.tags.join(" · ");

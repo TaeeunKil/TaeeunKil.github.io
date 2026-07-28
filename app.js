@@ -102,7 +102,7 @@ function renderPostList() {
   list.innerHTML = postsCache.map((post, index) => {
     const title = post.title[currentLanguage] ?? post.title.ko;
     const summary = post.summary[currentLanguage] ?? post.summary.ko;
-    const number = String(index + 1).padStart(3, "0");
+    const number = String(post.number ?? index + 1).padStart(3, "0");
     const displayDate = post.date.replaceAll("-", ".");
     return `<a class="post-row" href="post.html?id=${encodeURIComponent(post.id)}">
       <span class="post-number">${number}</span>

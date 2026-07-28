@@ -1,6 +1,7 @@
 [
   {
     "id": "ssafy-13-first-semester",
+    "number": 1,
     "date": "2025-07-08",
     "title": {
       "ko": "SSAFY 1학기를 마치면서",
@@ -15,5 +16,23 @@
       "en": "posts/2025/ssafy-13-first-semester.en.html"
     },
     "tags": ["SSAFY", "SSAFY 13기", "회고"]
+  },
+  {
+    "id": "naeil-baeum-card-success-story",
+    "number": 2,
+    "date": "2026-07-28",
+    "title": {
+      "ko": "대학원 불합격 뒤 멈춘 청년, 전력 플랫폼 개발자가 되다",
+      "en": "After a Graduate School Rejection Brought Me to a Halt, I Became an Electric Power Platform Developer"
+    },
+    "summary": {
+      "ko": "그래도 이제는 실패하거나 모른다는 이유로 삶 전체를 멈추지 않는다.",
+      "en": "I no longer put my entire life on hold just because I fail or do not know something."
+    },
+    "content": {
+      "ko": "posts/2026/naeil-baeum-card-success-story.ko.html",
+      "en": "posts/2026/naeil-baeum-card-success-story.en.html"
+    },
+    "tags": ["국민내일배움카드", "K-디지털 트레이닝", "취업성공기"]
   }
 ]
