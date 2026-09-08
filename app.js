@@ -4,6 +4,7 @@ history.scrollRestoration = "manual";
 const tabs = [...document.querySelectorAll("[data-tab-link]")];
 const panels = [...document.querySelectorAll("[data-panel]")];
 const tabNames = panels.map((panel) => panel.dataset.panel);
+const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 const translations = {
   ko: {
     "meta.description": "TaeeunKil의 개발, 배움, 생각을 기록하는 개인 웹사이트입니다.",
@@ -67,6 +68,8 @@ const translations = {
 
 let currentLanguage = "ko";
 let postsCache = [];
+let tabTransitionTimer;
+const TAB_FADE_OUT_MS = 280;
 
 function setLanguage(language, { persist = true } = {}) {
   currentLanguage = translations[language] ? language : "ko";
@@ -127,6 +130,8 @@ function selectTab(name, { updateHistory = true } = {}) {
   const index = tabNames.indexOf(name);
   const safeIndex = index === -1 ? 0 : index;
   const activeName = tabNames[safeIndex];
+  const activePanel = panels[safeIndex];
+  const currentPanel = panels.find((panel) => panel.classList.contains("is-active"));
 
   document.documentElement.style.setProperty("--panel-index", safeIndex);
   document.querySelector("#current-label").textContent = translations[currentLanguage].status[activeName];
@@ -137,12 +142,42 @@ function selectTab(name, { updateHistory = true } = {}) {
     tab.setAttribute("tabindex", active ? "0" : "-1");
   });
 
-  panels.forEach((panel) => {
-    const active = panel.dataset.panel === activeName;
-    panel.setAttribute("aria-hidden", String(!active));
-    panel.inert = !active;
-    if (active) panel.scrollTop = 0;
-  });
+  if (tabTransitionTimer) {
+    window.clearTimeout(tabTransitionTimer);
+    tabTransitionTimer = undefined;
+  }
+
+  if (!currentPanel || currentPanel === activePanel) {
+    panels.forEach((panel) => {
+      const active = panel === activePanel;
+      panel.classList.toggle("is-active", active);
+      panel.classList.remove("is-exiting");
+      panel.setAttribute("aria-hidden", String(!active));
+      panel.inert = !active;
+      if (active) panel.scrollTop = 0;
+    });
+  } else {
+    currentPanel.classList.remove("is-active");
+    currentPanel.classList.add("is-exiting");
+    currentPanel.setAttribute("aria-hidden", "true");
+    currentPanel.inert = true;
+
+    activePanel.classList.remove("is-active", "is-exiting");
+    activePanel.setAttribute("aria-hidden", "true");
+    activePanel.inert = true;
+
+    tabTransitionTimer = window.setTimeout(() => {
+      panels.forEach((panel) => {
+        const active = panel === activePanel;
+        panel.classList.toggle("is-active", active);
+        panel.classList.remove("is-exiting");
+        panel.setAttribute("aria-hidden", String(!active));
+        panel.inert = !active;
+        if (active) panel.scrollTop = 0;
+      });
+      tabTransitionTimer = undefined;
+    }, reduceMotion.matches ? 0 : TAB_FADE_OUT_MS);
+  }
 
   if (updateHistory && location.hash !== `#${activeName}`) {
     history.pushState(null, "", `#${activeName}`);
@@ -189,7 +224,6 @@ window.addEventListener("load", () => window.scrollTo(0, 0), { once: true });
 
 const mindMap = document.querySelector(".mind-map");
 const mindNodes = [...document.querySelectorAll(".mind-node")];
-const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 
 mindMap?.addEventListener("pointermove", (event) => {
   if (reduceMotion.matches) return;
