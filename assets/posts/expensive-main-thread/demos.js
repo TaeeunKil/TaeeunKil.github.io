@@ -8,6 +8,9 @@
     ? {
         blockingStart: (duration) => `Blocking the main thread for ${formatMs(duration)}…`,
         blockingDone: (duration) => `Done · The CSS dot kept moving during ${formatMs(duration)} of blocking.`,
+        blockingReady: "Ready",
+        blockingJsPaused: "Paused → recovered",
+        blockingCssRunning: "Kept running",
         chunkSync: "Running one long task… Try typing now.",
         chunked: "Running in 5ms slices… Try typing now.",
         chunkDone: (mode, duration) => `Done · ${mode} finished in ${formatMs(duration)}.`,
@@ -23,6 +26,9 @@
     : {
         blockingStart: (duration) => `메인 스레드를 ${formatMs(duration)} 동안 막는 중…`,
         blockingDone: (duration) => `완료 · ${formatMs(duration)} 동안 막아도 CSS 점은 계속 움직였습니다.`,
+        blockingReady: "실행 준비",
+        blockingJsPaused: "멈췄다가 재개",
+        blockingCssRunning: "계속 실행",
         chunkSync: "한 번에 긴 작업을 실행 중… 지금 입력해보세요.",
         chunked: "5ms씩 나눠 실행 중… 지금 입력해보세요.",
         chunkDone: (mode, duration) => `완료 · ${mode} 작업이 ${formatMs(duration)}에 끝났습니다.`,
@@ -46,10 +52,20 @@
     const copy = getDemoCopy();
     const jsRunner = root.querySelector(".demo-runner-js");
     const status = root.querySelector("[data-demo-status]");
+    const jsState = root.querySelector('[data-demo-state="js"]');
+    const cssState = root.querySelector('[data-demo-state="css"]');
     const buttons = [...root.querySelectorAll('[data-demo-action="block"]')];
     let animationFrame = 0;
+    let startFrame = 0;
     let timeoutId = 0;
     let startedAt = performance.now();
+
+    const setObservation = (isBlocking) => {
+      jsState.textContent = isBlocking ? copy.blockingJsPaused : copy.blockingReady;
+      cssState.textContent = isBlocking ? copy.blockingCssRunning : copy.blockingReady;
+    };
+
+    setObservation(false);
 
     const animate = (now) => {
       const progress = ((now - startedAt) % 2400) / 2400;
@@ -61,15 +77,18 @@
       const duration = Number(event.currentTarget.dataset.duration);
       setButtonsDisabled(root, true);
       status.textContent = copy.blockingStart(duration);
+      setObservation(true);
 
-      timeoutId = window.setTimeout(() => {
-        const blockStartedAt = performance.now();
-        while (performance.now() - blockStartedAt < duration) {
-          // Intentional busy work for the experiment.
-        }
-        status.textContent = copy.blockingDone(duration);
-        setButtonsDisabled(root, false);
-      }, 0);
+      startFrame = requestAnimationFrame(() => {
+        timeoutId = window.setTimeout(() => {
+          const blockStartedAt = performance.now();
+          while (performance.now() - blockStartedAt < duration) {
+            // Intentional busy work for the experiment.
+          }
+          status.textContent = copy.blockingDone(duration);
+          setButtonsDisabled(root, false);
+        }, 0);
+      });
     };
 
     buttons.forEach((button) => button.addEventListener("click", blockMainThread));
@@ -78,6 +97,7 @@
     return () => {
       buttons.forEach((button) => button.removeEventListener("click", blockMainThread));
       cancelAnimationFrame(animationFrame);
+      cancelAnimationFrame(startFrame);
       window.clearTimeout(timeoutId);
     };
   }

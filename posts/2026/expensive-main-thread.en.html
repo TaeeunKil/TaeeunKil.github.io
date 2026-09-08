@@ -1,10 +1,15 @@
+<aside class="post-context-note" aria-label="About this study note">
+  <p class="post-context-kicker">Study note / Personal rewrite</p>
+  <p><strong>This is a personal study note I wrote after reading <a href="https://kciter.so/posts/the-expensive-main-thread/" target="_blank" rel="noreferrer">kciter.so's original article</a>.</strong> It is not a reproduction of the original; I reorganized the concepts and examples in the order that made sense to me.</p>
+</aside>
+
 <p class="post-lead">While studying frontend performance, I kept coming back to one question.<br>Does this work really need to happen on the main thread right now?</p>
 
 <p>When a website feels slow, network requests and bundle size are usually the first things we investigate. We compress images, add caching, and split JavaScript files. Those are important, but complex interfaces reveal another bottleneck: the browser's main thread, where code runs and the screen gets prepared.</p>
 
 <p>Scrolling that stutters, buttons that respond late, and search fields that display a character a beat after it was typed can all happen when the main thread is busy with something else. The problem is not always that one function is inherently slow. More often, the function is holding the shared path between the user and the screen for too long.</p>
 
-<p>After reading <a href="https://kciter.so/posts/the-expensive-main-thread/" target="_blank" rel="noreferrer">“The Browser Main Thread Is Expensive”</a> on kciter.so, I reorganized what I learned about reducing and scheduling main-thread work. The key is not only to make a task faster. It is also to control its size and timing, move it to another thread when possible, and remove it when it is not necessary in the first place.</p>
+<p>The key is not only to make a task faster. It is also to control its size and timing, move it to another thread when possible, and remove it when it is not necessary in the first place.</p>
 
 <section class="post-demo" data-main-thread-demo="blocking" aria-labelledby="blocking-demo-title-en">
   <div class="post-demo-heading">
@@ -15,6 +20,10 @@
   <div class="demo-stage demo-block-stage">
     <div class="demo-lane"><span>JavaScript · rAF</span><div class="demo-line"><span class="demo-runner demo-runner-js"></span></div></div>
     <div class="demo-lane"><span>CSS · transform</span><div class="demo-line"><span class="demo-runner demo-runner-css"></span></div></div>
+  </div>
+  <div class="demo-observation" aria-live="polite">
+    <p><span>JavaScript · rAF</span><strong data-demo-state="js">Ready to run</strong></p>
+    <p><span>CSS · transform</span><strong data-demo-state="css">Ready to run</strong></p>
   </div>
   <div class="post-demo-controls">
     <button type="button" data-demo-action="block" data-duration="500">Block for 0.5s</button>
@@ -273,4 +282,4 @@ worker.addEventListener('message', (event) =&gt; {
 
 <p>No technique is always correct. Yielding has overhead, workers have communication costs, and compositor-friendly animation requires an understanding of layout and paint. Performance is less about memorizing one trick and more about choosing the right trade-off for the situation.</p>
 
-<p>This post is a study note based on <a href="https://kciter.so/posts/the-expensive-main-thread/" target="_blank" rel="noreferrer">kciter.so's original article</a>. Next, I want to choose a real page and use Chrome DevTools' Performance panel to measure long tasks and layout costs directly.</p>
+<p>Next, I want to choose a real page and use Chrome DevTools' Performance panel to measure long tasks and layout costs directly.</p>

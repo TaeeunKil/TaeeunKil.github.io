@@ -449,6 +449,34 @@ a:focus-visible {
   color: var(--muted);
 }
 
+.post-context-note {
+  margin: 0 0 clamp(2.75rem, 5vw, 4.5rem);
+  padding: 1rem 0 1.1rem;
+  border-top: 2px solid var(--accent);
+  border-bottom: 1px solid var(--line);
+}
+
+.post-context-note p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.75;
+}
+
+.post-context-note .post-context-kicker {
+  margin-bottom: 0.55rem;
+  color: var(--accent);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.post-context-note strong {
+  color: var(--text);
+  font-weight: 700;
+}
+
 .post-demo {
   margin: clamp(3rem, 6vw, 5rem) 0 clamp(3rem, 6vw, 5rem);
   padding: 1.25rem 0 1.5rem;
@@ -539,6 +567,34 @@ a:focus-visible {
 .demo-runner-css {
   background: var(--text);
   animation: demo-runner-slide 2.4s linear infinite;
+}
+
+.demo-observation {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  margin: 0 0 1.2rem;
+  padding: 0 1.25rem 1rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.demo-observation p {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.72rem;
+  line-height: 1.4;
+  text-transform: uppercase;
+}
+
+.demo-observation strong {
+  color: var(--text);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
 }
 
 @keyframes demo-runner-slide {
@@ -1039,6 +1095,13 @@ a:focus-visible {
 
   .demo-stage {
     padding: 1rem;
+  }
+
+  .demo-observation {
+    grid-template-columns: 1fr;
+    gap: 0.55rem;
+    padding-right: 1rem;
+    padding-left: 1rem;
   }
 
   .demo-lane {
