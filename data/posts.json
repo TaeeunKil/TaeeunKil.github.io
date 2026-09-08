@@ -1,5 +1,23 @@
 [
   {
+    "id": "expensive-main-thread",
+    "number": 3,
+    "date": "2026-09-08",
+    "title": {
+      "ko": "브라우저의 메인 스레드를 아끼는 법",
+      "en": "How to Be Careful with the Browser's Main Thread"
+    },
+    "summary": {
+      "ko": "메인 스레드가 병목이 되는 이유와 작업을 나누고, 모으고, 미루고, 밖으로 보내는 방법을 정리했다.",
+      "en": "Why the main thread becomes a bottleneck, and how to split, batch, defer, move, or remove work."
+    },
+    "content": {
+      "ko": "posts/2026/expensive-main-thread.ko.html",
+      "en": "posts/2026/expensive-main-thread.en.html"
+    },
+    "tags": ["Frontend", "Browser", "Performance", "Main Thread"]
+  },
+  {
     "id": "ssafy-13-first-semester",
     "number": 1,
     "date": "2025-07-08",

@@ -1,0 +1,276 @@
+<p class="post-lead">While studying frontend performance, I kept coming back to one question.<br>Does this work really need to happen on the main thread right now?</p>
+
+<p>When a website feels slow, network requests and bundle size are usually the first things we investigate. We compress images, add caching, and split JavaScript files. Those are important, but complex interfaces reveal another bottleneck: the browser's main thread, where code runs and the screen gets prepared.</p>
+
+<p>Scrolling that stutters, buttons that respond late, and search fields that display a character a beat after it was typed can all happen when the main thread is busy with something else. The problem is not always that one function is inherently slow. More often, the function is holding the shared path between the user and the screen for too long.</p>
+
+<p>After reading <a href="https://kciter.so/posts/the-expensive-main-thread/" target="_blank" rel="noreferrer">“The Browser Main Thread Is Expensive”</a> on kciter.so, I reorganized what I learned about reducing and scheduling main-thread work. The key is not only to make a task faster. It is also to control its size and timing, move it to another thread when possible, and remove it when it is not necessary in the first place.</p>
+
+<section class="post-demo" data-main-thread-demo="blocking" aria-labelledby="blocking-demo-title-en">
+  <div class="post-demo-heading">
+    <p class="post-demo-kicker">Experiment / 01</p>
+    <h3 id="blocking-demo-title-en">Block the main thread for a moment</h3>
+    <p>Start both animations, then block the main thread. The JavaScript-driven dot stops, while the CSS <code>transform</code> animation keeps moving.</p>
+  </div>
+  <div class="demo-stage demo-block-stage">
+    <div class="demo-lane"><span>JavaScript · rAF</span><div class="demo-line"><span class="demo-runner demo-runner-js"></span></div></div>
+    <div class="demo-lane"><span>CSS · transform</span><div class="demo-line"><span class="demo-runner demo-runner-css"></span></div></div>
+  </div>
+  <div class="post-demo-controls">
+    <button type="button" data-demo-action="block" data-duration="500">Block for 0.5s</button>
+    <button type="button" data-demo-action="block" data-duration="2000">Block for 2s</button>
+    <span class="post-demo-status" data-demo-status aria-live="polite">Ready · Compare the two moving dots.</span>
+  </div>
+</section>
+
+<h1>What does the main thread do?</h1>
+
+<p>Browsers have multiple threads, but most JavaScript written by web developers runs on the main thread. Event handlers, timers, network callbacks, and framework internals are all processed there.</p>
+
+<p>Preparing a new frame is also largely the main thread's job. When the DOM or styles change, the browser roughly follows this sequence:</p>
+
+<ul>
+  <li>Run <code>requestAnimationFrame</code> callbacks</li>
+  <li>Calculate styles</li>
+  <li>Calculate layout</li>
+  <li>Create paint commands</li>
+</ul>
+
+<p>The compositor thread can take over the final step of combining already-prepared layers, but most of the work before that belongs to the main thread. JavaScript execution and visual updates end up waiting in the same line.</p>
+
+<p>A 60Hz display needs 60 frames per second, which gives each frame about 16.6ms. After the browser's own work, an application often has only around 10ms available. If a task runs much longer than that, clicks, input, and rendering all have to wait. That is why a task that holds the main thread for more than roughly 50ms is commonly called a long task.</p>
+
+<h1>Share time on the main thread</h1>
+
+<p>When work must happen on the main thread, the first question is how to avoid monopolizing it. There are four useful perspectives: split the work, batch repeated requests, prioritize urgent work, and defer work that does not need to happen yet.</p>
+
+<h2>1. Split long tasks</h2>
+
+<p>Imagine hundreds of messages arriving in a live chat. If every message is added to the DOM in one uninterrupted task, the browser cannot do anything else until the batch is finished. Splitting the work does not make rendering itself faster, but giving the main thread short breaks creates room for input and visual updates.</p>
+
+<section class="post-demo" data-main-thread-demo="chunking" aria-labelledby="chunking-demo-title-en">
+  <div class="post-demo-heading">
+    <p class="post-demo-kicker">Experiment / 02</p>
+    <h3 id="chunking-demo-title-en">Process everything at once or in slices?</h3>
+    <p>Run the same amount of computation in one task or use only 5ms per frame. Try typing in the field while the work is running.</p>
+  </div>
+  <div class="demo-stage demo-work-stage">
+    <div class="demo-progress-track" aria-hidden="true"><span data-demo-progress></span></div>
+    <p class="demo-readout" data-demo-readout>0 / 500,000 units</p>
+    <label class="demo-input-label">Type while it runs<input type="text" placeholder="Type here"></label>
+  </div>
+  <div class="post-demo-controls">
+    <button type="button" data-demo-action="process" data-mode="sync">Process at once</button>
+    <button type="button" data-demo-action="process" data-mode="chunked">5ms per frame</button>
+    <span class="post-demo-status" data-demo-status aria-live="polite">Ready · Choose a processing mode.</span>
+  </div>
+</section>
+
+<p>The simplest way to yield is to schedule the next piece as a new task.</p>
+
+<pre><code>const yieldToBrowser = () =&gt;
+  new Promise((resolve) =&gt; setTimeout(resolve, 0));
+
+async function renderMessages(messages) {
+  for (let i = 0; i &lt; messages.length; i += 20) {
+    const batch = messages.slice(i, i + 20);
+    appendMessageNodes(batch);
+    await yieldToBrowser();
+  }
+}</code></pre>
+
+<p><code>await</code> pauses the function and <code>setTimeout</code> schedules the continuation as a new task. Once the current task ends, the browser can process waiting input and rendering work. The important detail is that yielding does not reduce the total amount of work. Scheduling overhead can even make the total time longer. It simply prevents the screen from becoming completely unresponsive.</p>
+
+<p>Sometimes work should be split by time rather than by item count. If each item takes a different amount of time, or if an animation is already running, it is safer to reserve a small budget for background work and continue on the next frame.</p>
+
+<pre><code>async function processInFrameBudget(items) {
+  let index = 0;
+
+  while (index &lt; items.length) {
+    const frameStart = await new Promise(requestAnimationFrame);
+
+    while (
+      index &lt; items.length &amp;&amp;
+      performance.now() - frameStart &lt; 5
+    ) {
+      doWork(items[index]);
+      index += 1;
+    }
+  }
+}</code></pre>
+
+<p>The 5ms value is a heuristic, not a law. It leaves time for animation and style calculation instead of giving the entire frame to background work. Splitting too aggressively can make the yielding overhead larger than the useful work, and repeated <code>setTimeout</code> calls can be affected by minimum delays. Depending on the browser and the task, <code>MessageChannel</code> or <code>scheduler.yield()</code> may also be worth considering.</p>
+
+<h2>2. Batch work that happens too often</h2>
+
+<p>Splitting reduces the size of one task; batching reduces how many times a task runs. Scroll, resize, and input events can fire dozens or hundreds of times in a short period. If every event triggers an expensive handler, requests keep accumulating even when each individual task is small.</p>
+
+<p>Debouncing works well for a search request that only needs to run after typing pauses. Throttling is useful when the latest scroll position should be reflected at a controlled interval. For visual updates, <code>requestAnimationFrame</code> can limit rendering to once per frame.</p>
+
+<pre><code>let renderScheduled = false;
+
+function requestBoardRender() {
+  if (renderScheduled) return;
+  renderScheduled = true;
+
+  requestAnimationFrame(() =&gt; {
+    renderBoard();
+    renderScheduled = false;
+  });
+}
+
+socket.addEventListener('tick', (event) =&gt; {
+  storeTick(event.detail); // Keep the data
+  requestBoardRender();    // Paint once per frame
+});</code></pre>
+
+<p>This is different from dropping data. The incoming data is stored; only the number of visual updates is reduced. Appending many DOM nodes in one operation or replacing several style changes with a single class change follows the same principle: pay a repeated fixed cost once instead of many times.</p>
+
+<h2>3. Process urgent work first</h2>
+
+<p>On the main thread, task order directly affects perceived responsiveness. The result of a button the user just clicked should appear quickly, while a statistic outside the viewport can wait. Not every task deserves the same priority.</p>
+
+<p>A simple queue can express this idea. Ordinary work goes to the back, while work triggered directly by the user goes to the front.</p>
+
+<pre><code>const jobs = [];
+const channel = new MessageChannel();
+
+channel.port1.onmessage = () =&gt; {
+  const job = jobs.shift();
+  if (!job) return;
+
+  job.run();
+  if (jobs.length &gt; 0) channel.port2.postMessage(null);
+};
+
+function enqueue(job, urgent = false) {
+  urgent ? jobs.unshift(job) : jobs.push(job);
+  if (jobs.length === 1) channel.port2.postMessage(null);
+}</code></pre>
+
+<p>For example, generating previews for several photos can happen in order. But if the user clicks a preview that is not ready yet, moving only that job to the front makes the interface feel much faster. The total amount of work stays the same; the important result simply arrives first. Preparing work during idle time and raising its priority when it becomes necessary is often called <em>idle-until-urgent</em>.</p>
+
+<h2>4. Defer work that is not urgent</h2>
+
+<p>The most reliable optimization is postponing work that does not need to happen yet. Code that is not needed for the initial screen can be split and loaded later. Content outside the viewport can be filled only when it gets close to being visible.</p>
+
+<pre><code>const observer = new IntersectionObserver(
+  (entries) =&gt; {
+    for (const entry of entries) {
+      if (entry.isIntersecting) {
+        hydrate(entry.target);
+      } else {
+        releaseHeavyContent(entry.target);
+      }
+    }
+  },
+  { rootMargin: '400px' }
+);
+
+document.querySelectorAll('.feed-item').forEach((item) =&gt; {
+  observer.observe(item);
+});</code></pre>
+
+<p>This postpones not only rendering but also the cost of creating and maintaining off-screen DOM. Charts and animations that keep running while hidden should also be paused. <code>content-visibility: auto</code> can provide a similar effect, but browser differences still make it important to test the actual target environments.</p>
+
+<h1>Move work off the main thread</h1>
+
+<p>Some tasks are still too heavy even after being split and batched. In those cases, the next question is whether the work can happen somewhere else. We cannot directly control every browser thread, but two paths are especially useful.</p>
+
+<ul>
+  <li>Main thread: JavaScript, DOM, styles, layout, and events</li>
+  <li>Compositor thread: combining already-painted layers</li>
+  <li>Raster threads: converting paint commands into pixels</li>
+  <li>Worker threads: separate JavaScript execution spaces we create</li>
+</ul>
+
+<h2>Animations the compositor can handle</h2>
+
+<p><code>transform</code> and <code>opacity</code> move or fade an already-painted layer. When the conditions are right, the compositor can animate them without recalculating layout and paint on every frame.</p>
+
+<p>Animating <code>top</code>, <code>left</code>, <code>width</code>, or <code>height</code> can trigger layout every frame. The visual goal may be the same, but the CSS property changes which part of the browser has to do the work. That is why <code>transform: translate</code> is usually preferred for movement and <code>transform: scale</code> for resizing.</p>
+
+<p>When an actual layout change is needed, such as reordering a list, the FLIP technique can help. Measure the old position (First), change the layout and measure the new position (Last), apply an inverse <code>transform</code> so the element appears to remain in its old position (Invert), and then animate that transform away (Play).</p>
+
+<pre><code>const before = item.getBoundingClientRect();
+
+list.prepend(item);
+
+const after = item.getBoundingClientRect();
+const x = before.left - after.left;
+const y = before.top - after.top;
+
+item.animate(
+  [
+    { transform: `translate(${x}px, ${y}px)` },
+    { transform: 'none' },
+  ],
+  { duration: 300, easing: 'ease-in-out' }
+);</code></pre>
+
+<p>To the eye, the element slides from its old position to its new one. In reality, the layout change is already finished and only the transform is animated. <code>will-change</code> can help the browser prepare a layer, but using it everywhere can increase layer and memory usage.</p>
+
+<p>Mixing layout reads and writes can create another problem. Reading <code>offsetWidth</code> or <code>getBoundingClientRect()</code> immediately after changing a style may force the browser to calculate the latest layout right away. Repeating that pattern in a loop creates layout thrashing. Group reads together, then group writes.</p>
+
+<h2>Send calculations to a Web Worker</h2>
+
+<p>Large data parsing, image processing, and complex numerical calculations are good candidates for a Web Worker when they do not need direct DOM access. The worker can calculate while the main thread keeps handling input and the screen.</p>
+
+<section class="post-demo" data-main-thread-demo="worker" aria-labelledby="worker-demo-title-en">
+  <div class="post-demo-heading">
+    <p class="post-demo-kicker">Experiment / 03</p>
+    <h3 id="worker-demo-title-en">Send a heavy calculation elsewhere</h3>
+    <p>Run the same numerical calculation on the main thread and in a Web Worker. See whether the input field remains responsive.</p>
+  </div>
+  <div class="demo-stage demo-work-stage">
+    <div class="demo-progress-track" aria-hidden="true"><span data-worker-progress></span></div>
+    <p class="demo-readout" data-worker-readout>0 / 8,000,000 iterations</p>
+    <label class="demo-input-label">Type while it runs<input type="text" placeholder="Type here"></label>
+  </div>
+  <div class="post-demo-controls">
+    <button type="button" data-demo-action="worker" data-mode="main">Run on main thread</button>
+    <button type="button" data-demo-action="worker" data-mode="worker">Run in a Worker</button>
+    <span class="post-demo-status" data-demo-status aria-live="polite">Ready · Choose where to calculate.</span>
+  </div>
+</section>
+
+<pre><code>const worker = new Worker('calculator.js');
+
+worker.postMessage(rawData);
+worker.addEventListener('message', (event) =&gt; {
+  renderResult(event.data);
+});</code></pre>
+
+<p>A worker cannot access the DOM and communicates with the main thread through <code>postMessage</code>. Messages are normally copied, so a small calculation or a very large payload can make the worker slower overall. Workers are most useful when the calculation is genuinely heavy and independent of the DOM.</p>
+
+<p>If a large <code>ArrayBuffer</code> would be copied repeatedly, a transferable object can move ownership of the buffer instead. The sender loses access to that buffer, but the copy cost is avoided.</p>
+
+<pre><code>worker.postMessage(
+  { buffer: pixels.buffer, width, height },
+  [pixels.buffer]
+);</code></pre>
+
+<h1>The fastest optimization is removing work</h1>
+
+<p>Even after splitting, batching, prioritizing, and moving work to another thread, the system can still receive more work than the screen can consume. Real-time data arriving faster than the rendering throughput is a typical example. At that point, processing every update to completion is the wrong goal.</p>
+
+<p>The first option is to drop work. If a stream of logs only needs to show what is current, old entries can be removed when the queue grows. The second is to merge work. If only the latest value of a ranking or price matters, intermediate updates can be combined and only the latest state rendered. The third is to skip repeated work. If the same input always produces the same result, memoization lets us reuse a previous calculation.</p>
+
+<p>Debouncing skips executions while the user is still typing, and avoiding off-screen rendering skips work that cannot be seen. A large part of performance optimization is therefore not just processing work efficiently, but recognizing which work does not need to happen at all.</p>
+
+<h1>Closing thoughts</h1>
+
+<p>Studying the main thread changed how I think about performance. I used to start by searching for slow code and replacing it with a faster algorithm. Now I want to ask a few questions first: does this work share a thread with user input, does it need to finish inside one frame, and is it needed right now?</p>
+
+<p>The choices can be reduced to four questions:</p>
+
+<ul>
+  <li>Can the task be split into smaller pieces?</li>
+  <li>Can repeated executions be combined into one?</li>
+  <li>Can the work most important to the user run first?</li>
+  <li>Can the work be delayed, moved to another thread, or removed entirely?</li>
+</ul>
+
+<p>No technique is always correct. Yielding has overhead, workers have communication costs, and compositor-friendly animation requires an understanding of layout and paint. Performance is less about memorizing one trick and more about choosing the right trade-off for the situation.</p>
+
+<p>This post is a study note based on <a href="https://kciter.so/posts/the-expensive-main-thread/" target="_blank" rel="noreferrer">kciter.so's original article</a>. Next, I want to choose a real page and use Chrome DevTools' Performance panel to measure long tasks and layout costs directly.</p>
