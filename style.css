@@ -241,6 +241,21 @@ a:focus-visible {
   border-top: 1px solid var(--text);
 }
 
+.post-list-status {
+  margin: 0;
+  padding: 1.75rem 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.post-list:not(.is-loading) .post-list-status {
+  display: none;
+}
+
+.js .post-list.is-loading .post-row {
+  visibility: hidden;
+}
+
 .post-row {
   display: grid;
   grid-template-columns: 0.45fr 0.8fr 3fr auto;
@@ -385,6 +400,9 @@ a:focus-visible {
 
 .post-body > p {
   margin: 0 0 clamp(2.25rem, 4vw, 3.75rem);
+}
+
+.post-body .post-lead {
   animation: body-in 500ms 120ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
@@ -634,6 +652,10 @@ a:focus-visible {
 .demo-runner-css {
   background: var(--text);
   animation: demo-runner-slide 2.4s linear infinite alternate;
+}
+
+.post-demo:not(.is-visible) .demo-runner-css {
+  animation-play-state: paused;
 }
 
 .demo-observation {

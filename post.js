@@ -33,6 +33,9 @@ const query = new URLSearchParams(location.search);
 const postId = query.get("id");
 let language = "ko";
 let activePost;
+let postRenderToken = 0;
+let demoScriptPromise;
+let commentsPending = false;
 
 function storedLanguage() {
   try { return localStorage.getItem("language"); } catch { return null; }
@@ -66,6 +69,30 @@ function updateGiscusLanguage() {
   iframe.contentWindow.postMessage({ giscus: { setConfig: { lang: language } } }, "https://giscus.app");
 }
 
+function scheduleIdle(callback) {
+  if ("requestIdleCallback" in window) {
+    window.requestIdleCallback(callback, { timeout: 1200 });
+    return;
+  }
+  window.setTimeout(callback, 0);
+}
+
+function loadDemoScript() {
+  if (window.initMainThreadDemos) return Promise.resolve();
+  if (demoScriptPromise) return demoScriptPromise;
+
+  demoScriptPromise = new Promise((resolve, reject) => {
+    const script = document.createElement("script");
+    script.src = "assets/posts/expensive-main-thread/demos.js";
+    script.async = true;
+    script.addEventListener("load", resolve, { once: true });
+    script.addEventListener("error", reject, { once: true });
+    document.head.append(script);
+  });
+
+  return demoScriptPromise;
+}
+
 function loadGiscus() {
   if (!postId || document.querySelector("script[data-giscus-loader]")) return;
 
@@ -90,11 +117,14 @@ function loadGiscus() {
   document.querySelector("#giscus-comments").append(script);
 }
 
-async function renderPost(post) {
+async function renderPost(post, { loadComments = false } = {}) {
+  const renderToken = ++postRenderToken;
   const title = post.title[language] ?? post.title.ko;
   const summary = post.summary[language] ?? post.summary.ko;
   const contentPath = post.content[language] ?? post.content.ko;
   const usesFallback = language !== "ko" && !post.content[language];
+
+  if (loadComments) commentsPending = true;
 
   document.title = `${title} — TaeeunKil`;
   document.querySelector('meta[name="description"]').content = summary;
@@ -108,9 +138,29 @@ async function renderPost(post) {
   const response = await fetch(contentPath);
   if (!response.ok) throw new Error("Post content could not be loaded");
   const body = document.querySelector("#post-body");
-  body.innerHTML = `${usesFallback ? `<p class="translation-note">${postCopy[language].unavailable}</p>` : ""}${await response.text()}`;
-  window.Prism?.highlightAllUnder(body);
-  window.initMainThreadDemos?.();
+  const markup = await response.text();
+  if (renderToken !== postRenderToken) return;
+
+  body.innerHTML = `${usesFallback ? `<p class="translation-note">${postCopy[language].unavailable}</p>` : ""}${markup}`;
+
+  scheduleIdle(async () => {
+    if (renderToken !== postRenderToken) return;
+
+    window.Prism?.highlightAllUnder(body);
+
+    if (body.querySelector("[data-main-thread-demo]")) {
+      try {
+        await loadDemoScript();
+      } catch {}
+      if (renderToken !== postRenderToken) return;
+      window.initMainThreadDemos?.();
+    }
+
+    if (renderToken === postRenderToken && commentsPending) {
+      commentsPending = false;
+      loadGiscus();
+    }
+  });
 }
 
 async function loadPost() {
@@ -120,8 +170,7 @@ async function loadPost() {
     const posts = await response.json();
     activePost = posts.find((post) => post.id === postId);
     if (!activePost) throw new Error("Post not found");
-    await renderPost(activePost);
-    loadGiscus();
+    await renderPost(activePost, { loadComments: true });
   } catch {
     document.querySelector("#post-title").textContent = postCopy[language].notFound;
     document.querySelector("#post-body").innerHTML = "";

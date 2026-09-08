@@ -19,6 +19,7 @@ const translations = {
     "home.place": "대전 · 2026",
     "home.intro": "개발하며 배우고, 오래 남기고 싶은 것을 씁니다.",
     "writing.title": "글",
+    "writing.loading": "글을 불러오고 있습니다.",
     "writing.emptyTitle": "첫 글을 준비하고 있습니다.",
     "writing.emptyBody": "완성된 생각보다 배우는 과정을 남기겠습니다.",
     "about.title": "소개",
@@ -48,6 +49,7 @@ const translations = {
     "home.place": "Daejeon · 2026",
     "home.intro": "I build, learn, and write down what I want to keep.",
     "writing.title": "Writing",
+    "writing.loading": "Loading writing.",
     "writing.emptyTitle": "The first post is on its way.",
     "writing.emptyBody": "I'll document the process of learning, not only finished thoughts.",
     "about.title": "About",
@@ -114,16 +116,23 @@ function renderPostList() {
       <span class="post-arrow" aria-hidden="true">→</span>
     </a>`;
   }).join("");
+  list.classList.remove("is-loading");
+  list.setAttribute("aria-busy", "false");
 }
 
 async function loadPosts() {
+  const list = document.querySelector("[data-post-list]");
+
   try {
     const response = await fetch("data/posts.json");
-    if (!response.ok) return;
+    if (!response.ok) throw new Error("Post index could not be loaded");
     postsCache = await response.json();
     postsCache.sort((a, b) => b.date.localeCompare(a.date));
     renderPostList();
-  } catch {}
+  } catch {
+    list?.classList.remove("is-loading");
+    list?.setAttribute("aria-busy", "false");
+  }
 }
 
 function selectTab(name, { updateHistory = true } = {}) {

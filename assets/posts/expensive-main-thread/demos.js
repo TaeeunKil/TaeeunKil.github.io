@@ -181,6 +181,8 @@
     let timeoutId = 0;
     let startedAt = performance.now();
     let jsTravel = 0;
+    let isVisible = false;
+    let visibilityObserver;
 
     const updateRunnerTravel = () => {
       root.querySelectorAll(".demo-line").forEach((line) => {
@@ -201,10 +203,33 @@
     setObservation(false);
 
     const animate = (now) => {
+      if (!isVisible) {
+        animationFrame = 0;
+        return;
+      }
+
       const cycle = ((now - startedAt) % 4800) / 4800;
       const progress = cycle <= 0.5 ? cycle * 2 : 2 - cycle * 2;
       jsRunner.style.transform = `translate(${progress * jsTravel}px, -50%)`;
       animationFrame = requestAnimationFrame(animate);
+    };
+
+    const startAnimation = () => {
+      if (!isVisible || animationFrame) return;
+      startedAt = performance.now();
+      animationFrame = requestAnimationFrame(animate);
+    };
+
+    const stopAnimation = () => {
+      cancelAnimationFrame(animationFrame);
+      animationFrame = 0;
+    };
+
+    const setVisibility = (visible) => {
+      isVisible = visible;
+      root.classList.toggle("is-visible", visible);
+      if (visible) startAnimation();
+      else stopAnimation();
     };
 
     const blockMainThread = (event) => {
@@ -228,12 +253,22 @@
     updateRunnerTravel();
     window.addEventListener("resize", updateRunnerTravel);
     buttons.forEach((button) => button.addEventListener("click", blockMainThread));
-    animationFrame = requestAnimationFrame(animate);
+
+    if ("IntersectionObserver" in window) {
+      visibilityObserver = new IntersectionObserver(([entry]) => {
+        setVisibility(entry.isIntersecting);
+      }, { rootMargin: "160px" });
+      visibilityObserver.observe(root);
+    } else {
+      setVisibility(true);
+    }
 
     return () => {
       buttons.forEach((button) => button.removeEventListener("click", blockMainThread));
       window.removeEventListener("resize", updateRunnerTravel);
-      cancelAnimationFrame(animationFrame);
+      visibilityObserver?.disconnect();
+      stopAnimation();
+      root.classList.remove("is-visible");
       cancelAnimationFrame(startFrame);
       window.clearTimeout(timeoutId);
     };
