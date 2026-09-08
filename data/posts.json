@@ -1,5 +1,22 @@
 [
   {
+    "id": "toss-fe-ai-verification",
+    "number": 4,
+    "date": "2026-09-08",
+    "title": {
+      "ko": "AI가 코드를 쓰는 시대, 프론트엔드 검증은 누가 하는가",
+      "en": "Who Verifies Frontend Code in the Age of AI?"
+    },
+    "summary": {
+      "ko": "토스의 발표에서 본 실기기 기반 E2E, 에이전트 기기 제어, Replay 중심의 프론트엔드 검증 시스템.",
+      "en": "A visual study of Toss's device-based E2E workflow, agent device controls, and replay-driven test repair."
+    },
+    "content": {
+      "ko": "posts/2026/toss-fe-ai-verification.ko.html"
+    },
+    "tags": ["Frontend", "E2E", "AI", "Testing", "Toss"]
+  },
+  {
     "id": "expensive-main-thread",
     "number": 3,
     "date": "2026-09-08",
