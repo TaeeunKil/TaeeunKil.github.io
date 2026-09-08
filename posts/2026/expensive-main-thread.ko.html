@@ -61,18 +61,26 @@
   <div class="post-demo-heading">
     <p class="post-demo-kicker">Experiment / 02</p>
     <h3 id="chunking-demo-title">작업을 한 번에 처리할까, 나눠 처리할까</h3>
-    <p>같은 계산량을 한 번에 처리하는 방식과 프레임마다 5ms만 사용하는 방식을 비교한다. 비교 시작을 누르면 입력창에 포커스를 맞춘 채 두 방식을 차례로 실행한다.</p>
+    <p>같은 계산량을 한 번에 처리하는 방식과 프레임마다 5ms만 사용하는 방식을 비교한다. 비교 시작을 누르면 두 방식을 차례로 실행하며 <code>requestAnimationFrame</code> 사이의 간격을 자동으로 기록한다.</p>
   </div>
   <div class="demo-stage demo-work-stage">
     <div class="demo-progress-track" aria-hidden="true"><span data-demo-progress></span></div>
     <p class="demo-readout" data-demo-readout>0 / 500,000 units</p>
-    <div class="demo-input-test">
-      <div class="demo-input-heading">
-        <span class="demo-input-kicker">Live input</span>
-        <p>비교 시작을 누르면 입력창에 자동으로 포커스를 맞춥니다. 실행 중에도 계속 타이핑해보세요.</p>
+    <div class="demo-frame-monitor">
+      <div class="demo-frame-heading">
+        <span class="demo-frame-kicker">Frame monitor</span>
+        <p><code>requestAnimationFrame</code> 사이 간격을 기록합니다. 50ms를 넘긴 프레임은 지연된 프레임으로 셉니다.</p>
       </div>
-      <label class="demo-input-label"><span>입력 반응</span><input type="text" data-demo-input placeholder="여기에 타이핑" autocomplete="off"></label>
-      <p class="demo-input-readout" data-demo-input-readout aria-live="polite">입력 이벤트 0회 · 최대 공백 —</p>
+      <div class="demo-frame-results" aria-live="polite">
+        <div class="demo-frame-result">
+          <span class="demo-frame-result-label">한 번에 처리</span>
+          <strong data-demo-frame-result="sync">측정 전</strong>
+        </div>
+        <div class="demo-frame-result">
+          <span class="demo-frame-result-label">프레임당 5ms씩</span>
+          <strong data-demo-frame-result="chunked">측정 전</strong>
+        </div>
+      </div>
     </div>
   </div>
   <div class="post-demo-controls">
@@ -237,18 +245,26 @@ item.animate(
   <div class="post-demo-heading">
     <p class="post-demo-kicker">Experiment / 03</p>
     <h3 id="worker-demo-title">무거운 계산을 다른 스레드로 보내기</h3>
-    <p>같은 수치 계산을 메인 스레드와 Web Worker에서 실행한다. 비교 시작을 누르면 입력창에 포커스를 맞춘 채 두 방식을 차례로 실행한다.</p>
+    <p>같은 수치 계산을 메인 스레드와 Web Worker에서 실행한다. 비교 시작을 누르면 두 방식을 차례로 실행하며 <code>requestAnimationFrame</code> 사이의 간격을 자동으로 기록한다.</p>
   </div>
   <div class="demo-stage demo-work-stage">
     <div class="demo-progress-track" aria-hidden="true"><span data-worker-progress></span></div>
     <p class="demo-readout" data-worker-readout>0 / 8,000,000 iterations</p>
-    <div class="demo-input-test">
-      <div class="demo-input-heading">
-        <span class="demo-input-kicker">Live input</span>
-        <p>비교 시작을 누르면 입력창에 자동으로 포커스를 맞춥니다. 계산 중에도 계속 타이핑해보세요.</p>
+    <div class="demo-frame-monitor">
+      <div class="demo-frame-heading">
+        <span class="demo-frame-kicker">Frame monitor</span>
+        <p><code>requestAnimationFrame</code> 사이 간격을 기록합니다. 50ms를 넘긴 프레임은 지연된 프레임으로 셉니다.</p>
       </div>
-      <label class="demo-input-label"><span>입력 반응</span><input type="text" data-demo-input placeholder="여기에 타이핑" autocomplete="off"></label>
-      <p class="demo-input-readout" data-demo-input-readout aria-live="polite">입력 이벤트 0회 · 최대 공백 —</p>
+      <div class="demo-frame-results" aria-live="polite">
+        <div class="demo-frame-result">
+          <span class="demo-frame-result-label">메인 스레드</span>
+          <strong data-demo-frame-result="main">측정 전</strong>
+        </div>
+        <div class="demo-frame-result">
+          <span class="demo-frame-result-label">Worker</span>
+          <strong data-demo-frame-result="worker">측정 전</strong>
+        </div>
+      </div>
     </div>
   </div>
   <div class="post-demo-controls">

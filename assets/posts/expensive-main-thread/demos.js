@@ -11,22 +11,23 @@
         blockingReady: "Ready",
         blockingJsPaused: "Paused → recovered",
         blockingCssRunning: "Kept running",
-        inputPreparing: "Input focused · Starting in a moment. Keep typing.",
-        inputReadout: (events, maxGap) => `${events} input events · max gap ${maxGap ? formatMs(maxGap) : "—"}`,
-        chunkSync: "Running one long task… Keep typing.",
-        chunked: "Running in 5ms slices… Keep typing.",
-        chunkCompareSync: "1/2 · Running one long task… Keep typing.",
-        chunkCompareChunked: "2/2 · Running in 5ms slices… Keep typing.",
-        chunkCompareDone: (sync, chunked, input) => `Comparison done · One task ${formatMs(sync)} / Frame slices ${formatMs(chunked)} · ${input}`,
-        chunkDone: (mode, duration, input) => `Done · ${mode} finished in ${formatMs(duration)} · ${input}`,
+        framePending: "Not measured yet",
+        frameMeasuring: (frames, maxGap, delayed) => `Measuring · ${frames} frames · max gap ${maxGap ? formatMs(maxGap) : "—"} · ${delayed} delayed`,
+        frameResult: (frames, maxGap, delayed) => `${frames} frames · max gap ${maxGap ? formatMs(maxGap) : "—"} · ${delayed} delayed`,
+        chunkSync: "1/2 · Running one long task… Watching frame gaps.",
+        chunked: "Running in 5ms slices… Watching frame gaps.",
+        chunkCompareSync: "1/2 · Running one long task… Watching frame gaps.",
+        chunkCompareChunked: "2/2 · Running in 5ms slices… Watching frame gaps.",
+        chunkCompareDone: (sync, chunked) => `Comparison done · One task ${formatMs(sync)} / Frame slices ${formatMs(chunked)}. Read the frame monitor above.`,
+        chunkDone: (mode, duration) => `Done · ${mode} finished in ${formatMs(duration)}. Read the frame monitor above.`,
         oneTask: "One task",
         frameSlices: "Frame slices",
-        workerMain: "Calculating on the main thread… Keep typing.",
-        worker: "Calculating in a Worker… Keep typing.",
-        workerCompareMain: "1/2 · Calculating on the main thread… Keep typing.",
-        workerCompareWorker: "2/2 · Calculating in a Worker… Keep typing.",
-        workerCompareDone: (main, worker, input) => `Comparison done · Main thread ${formatMs(main)} / Worker ${formatMs(worker)} · ${input}`,
-        workerDone: (mode, duration, input) => `Done · ${mode} finished in ${formatMs(duration)} · ${input}`,
+        workerMain: "Calculating on the main thread… Watching frame gaps.",
+        worker: "Calculating in a Worker… Watching frame gaps.",
+        workerCompareMain: "1/2 · Calculating on the main thread… Watching frame gaps.",
+        workerCompareWorker: "2/2 · Calculating in a Worker… Watching frame gaps.",
+        workerCompareDone: (main, worker) => `Comparison done · Main thread ${formatMs(main)} / Worker ${formatMs(worker)}. Read the frame monitor above.`,
+        workerDone: (mode, duration) => `Done · ${mode} finished in ${formatMs(duration)}. Read the frame monitor above.`,
         mainThread: "Main thread",
         workerThread: "Worker",
         workerError: "The Worker could not start in this context. Try the published site or a local server.",
@@ -37,22 +38,23 @@
         blockingReady: "실행 준비",
         blockingJsPaused: "멈췄다가 재개",
         blockingCssRunning: "계속 실행",
-        inputPreparing: "입력창에 포커스를 맞췄습니다 · 잠시 후 시작하니 계속 입력해보세요.",
-        inputReadout: (events, maxGap) => `입력 이벤트 ${events}회 · 최대 공백 ${maxGap ? formatMs(maxGap) : "—"}`,
-        chunkSync: "한 번에 긴 작업을 실행 중… 계속 입력해보세요.",
-        chunked: "5ms씩 나눠 실행 중… 계속 입력해보세요.",
-        chunkCompareSync: "1/2 · 한 번에 처리 중… 계속 입력해보세요.",
-        chunkCompareChunked: "2/2 · 프레임당 5ms씩 처리 중… 계속 입력해보세요.",
-        chunkCompareDone: (sync, chunked, input) => `비교 완료 · 한 번에 처리 ${formatMs(sync)} / 프레임 분할 ${formatMs(chunked)} · ${input}`,
-        chunkDone: (mode, duration, input) => `완료 · ${mode} 작업이 ${formatMs(duration)}에 끝났습니다 · ${input}`,
+        framePending: "측정 전",
+        frameMeasuring: (frames, maxGap, delayed) => `측정 중 · ${frames}프레임 · 최대 간격 ${maxGap ? formatMs(maxGap) : "—"} · 지연 ${delayed}개`,
+        frameResult: (frames, maxGap, delayed) => `${frames}프레임 · 최대 간격 ${maxGap ? formatMs(maxGap) : "—"} · 지연 ${delayed}개`,
+        chunkSync: "1/2 · 한 번에 처리 중… 프레임 간격을 측정하고 있습니다.",
+        chunked: "5ms씩 나눠 실행 중… 프레임 간격을 측정하고 있습니다.",
+        chunkCompareSync: "1/2 · 한 번에 처리 중… 프레임 간격을 측정하고 있습니다.",
+        chunkCompareChunked: "2/2 · 프레임당 5ms씩 처리 중… 프레임 간격을 측정하고 있습니다.",
+        chunkCompareDone: (sync, chunked) => `비교 완료 · 한 번에 처리 ${formatMs(sync)} / 프레임 분할 ${formatMs(chunked)} · 위 프레임 모니터에서 지연을 확인해보세요.`,
+        chunkDone: (mode, duration) => `완료 · ${mode} 작업이 ${formatMs(duration)}에 끝났습니다 · 위 프레임 모니터에서 지연을 확인해보세요.`,
         oneTask: "한 번에 처리",
         frameSlices: "프레임 분할",
-        workerMain: "메인 스레드에서 계산 중… 계속 입력해보세요.",
-        worker: "Worker에서 계산 중… 계속 입력해보세요.",
-        workerCompareMain: "1/2 · 메인 스레드에서 계산 중… 계속 입력해보세요.",
-        workerCompareWorker: "2/2 · Worker에서 계산 중… 계속 입력해보세요.",
-        workerCompareDone: (main, worker, input) => `비교 완료 · 메인 스레드 ${formatMs(main)} / Worker ${formatMs(worker)} · ${input}`,
-        workerDone: (mode, duration, input) => `완료 · ${mode} 계산이 ${formatMs(duration)}에 끝났습니다 · ${input}`,
+        workerMain: "메인 스레드에서 계산 중… 프레임 간격을 측정하고 있습니다.",
+        worker: "Worker에서 계산 중… 프레임 간격을 측정하고 있습니다.",
+        workerCompareMain: "1/2 · 메인 스레드에서 계산 중… 프레임 간격을 측정하고 있습니다.",
+        workerCompareWorker: "2/2 · Worker에서 계산 중… 프레임 간격을 측정하고 있습니다.",
+        workerCompareDone: (main, worker) => `비교 완료 · 메인 스레드 ${formatMs(main)} / Worker ${formatMs(worker)} · 위 프레임 모니터에서 지연을 확인해보세요.`,
+        workerDone: (mode, duration) => `완료 · ${mode} 계산이 ${formatMs(duration)}에 끝났습니다 · 위 프레임 모니터에서 지연을 확인해보세요.`,
         mainThread: "메인 스레드",
         workerThread: "Worker",
         workerError: "이 환경에서는 Worker를 시작할 수 없습니다. 배포된 사이트나 로컬 서버에서 다시 시도하세요.",
@@ -64,51 +66,105 @@
     });
   }
 
-  function focusDemoInput(root) {
-    const input = root.querySelector("[data-demo-input]");
-    if (!input) return;
-
-    input.focus({ preventScroll: true });
-    const end = input.value.length;
-    input.setSelectionRange?.(end, end);
-  }
-
-  function createInputTelemetry(root, copy) {
-    const input = root.querySelector("[data-demo-input]");
-    const readout = root.querySelector("[data-demo-input-readout]");
-    if (!input || !readout) return null;
-
-    let inputEvents = 0;
+  function createFrameTelemetry(root, copy) {
+    const resultNodes = new Map(
+      [...root.querySelectorAll("[data-demo-frame-result]")].map((node) => [node.dataset.demoFrameResult, node]),
+    );
+    let animationFrame = 0;
+    let activeKey = "";
+    let running = false;
+    let stopRequested = false;
+    let lastFrameAt = 0;
+    let frames = 0;
     let maxGap = 0;
-    let lastInputAt = 0;
+    let delayedFrames = 0;
+    let startResolver;
+    let stopResolver;
 
-    const render = () => {
-      readout.textContent = copy.inputReadout(inputEvents, maxGap);
+    const snapshot = () => ({ frames, maxGap, delayedFrames });
+
+    const render = (state) => {
+      const node = resultNodes.get(activeKey);
+      if (!node) return;
+
+      const result = snapshot();
+      node.textContent = state === "measuring"
+        ? copy.frameMeasuring(result.frames, result.maxGap, result.delayedFrames)
+        : copy.frameResult(result.frames, result.maxGap, result.delayedFrames);
     };
 
-    const handleInput = () => {
-      const now = performance.now();
-      inputEvents += 1;
-      if (lastInputAt > 0) maxGap = Math.max(maxGap, now - lastInputAt);
-      lastInputAt = now;
-      render();
-    };
+    const tick = () => {
+      if (!running) return;
 
-    input.addEventListener("input", handleInput);
-    render();
+      const observedAt = performance.now();
+      if (lastFrameAt > 0) {
+        const gap = observedAt - lastFrameAt;
+        frames += 1;
+        maxGap = Math.max(maxGap, gap);
+        if (gap > 50) delayedFrames += 1;
+      }
+      lastFrameAt = observedAt;
+      render("measuring");
+
+      if (startResolver) {
+        const resolveStart = startResolver;
+        startResolver = undefined;
+        resolveStart();
+      }
+
+      if (stopRequested) {
+        running = false;
+        animationFrame = 0;
+        render("done");
+        const resolveStop = stopResolver;
+        stopResolver = undefined;
+        resolveStop?.(snapshot());
+        return;
+      }
+
+      animationFrame = requestAnimationFrame(tick);
+    };
 
     return {
       reset() {
-        inputEvents = 0;
-        maxGap = 0;
-        lastInputAt = 0;
-        render();
+        resultNodes.forEach((node) => {
+          node.textContent = copy.framePending;
+        });
       },
-      summary() {
-        return copy.inputReadout(inputEvents, maxGap);
+      start(key) {
+        activeKey = key;
+        running = true;
+        stopRequested = false;
+        lastFrameAt = 0;
+        frames = 0;
+        maxGap = 0;
+        delayedFrames = 0;
+        render("measuring");
+
+        return new Promise((resolve) => {
+          startResolver = resolve;
+          animationFrame = requestAnimationFrame(tick);
+        });
+      },
+      stop() {
+        if (!running) return Promise.resolve(snapshot());
+
+        stopRequested = true;
+        return new Promise((resolve) => {
+          stopResolver = resolve;
+        });
+      },
+      summary(result) {
+        return copy.frameResult(result.frames, result.maxGap, result.delayedFrames);
       },
       destroy() {
-        input.removeEventListener("input", handleInput);
+        running = false;
+        cancelAnimationFrame(animationFrame);
+        animationFrame = 0;
+        startResolver?.();
+        startResolver = undefined;
+        stopResolver?.(snapshot());
+        stopResolver = undefined;
       },
     };
   }
@@ -199,7 +255,7 @@
     const status = root.querySelector("[data-demo-status]");
     const buttons = [...root.querySelectorAll('[data-demo-action="process"]')];
     const compareButton = root.querySelector('[data-demo-action="compare"]');
-    const telemetry = createInputTelemetry(root, copy);
+    const frameMonitor = createFrameTelemetry(root, copy);
     let animationFrame = 0;
     let preparationTimeout = 0;
     let runToken = 0;
@@ -209,8 +265,7 @@
       readout.textContent = `${formatNumber(done)} / ${formatNumber(total)} units`;
     };
 
-    const waitForInput = (token, message, delay = 900) => new Promise((resolve) => {
-      focusDemoInput(root);
+    const prepareRun = (token, message, delay = 120) => new Promise((resolve) => {
       status.textContent = message;
       preparationTimeout = window.setTimeout(() => {
         preparationTimeout = 0;
@@ -225,10 +280,13 @@
       }, delay);
     });
 
-    const runMode = (mode, token) => new Promise((resolve) => {
+    const runMode = async (mode, token) => {
+      if (token !== runToken) return null;
+
+      await frameMonitor.start(mode === "sync" ? "sync" : "chunked");
       if (token !== runToken) {
-        resolve(null);
-        return;
+        await frameMonitor.stop();
+        return null;
       }
 
       const startedAt = performance.now();
@@ -236,56 +294,66 @@
       let index = 0;
       updateProgress(0);
 
+      let workResult = true;
       if (mode === "sync") {
         for (index = 0; index < total; index += 1) {
           checksum ^= doChunkWork(index);
         }
         void checksum;
         updateProgress(total);
-        resolve(performance.now() - startedAt);
-        return;
+      } else {
+        workResult = await new Promise((resolve) => {
+          const processFrame = () => {
+            if (token !== runToken) {
+              resolve(false);
+              return;
+            }
+
+            const deadline = performance.now() + 5;
+            while (index < total && performance.now() < deadline) {
+              checksum ^= doChunkWork(index);
+              index += 1;
+            }
+            void checksum;
+            updateProgress(index);
+
+            if (index < total) {
+              animationFrame = requestAnimationFrame(processFrame);
+            } else {
+              resolve(true);
+            }
+          };
+
+          animationFrame = requestAnimationFrame(processFrame);
+        });
       }
 
-      const processFrame = () => {
-        if (token !== runToken) {
-          resolve(null);
-          return;
-        }
+      if (!workResult || token !== runToken) {
+        await frameMonitor.stop();
+        return null;
+      }
 
-        const deadline = performance.now() + 5;
-        while (index < total && performance.now() < deadline) {
-          checksum ^= doChunkWork(index);
-          index += 1;
-        }
-        void checksum;
-        updateProgress(index);
-
-        if (index < total) {
-          animationFrame = requestAnimationFrame(processFrame);
-        } else {
-          resolve(performance.now() - startedAt);
-        }
+      const frameMetrics = await frameMonitor.stop();
+      return {
+        duration: performance.now() - startedAt,
+        frameMetrics,
       };
-
-      animationFrame = requestAnimationFrame(processFrame);
-    });
+    };
 
     const run = async (mode) => {
       const token = ++runToken;
       setButtonsDisabled(root, true);
-      telemetry?.reset();
+      frameMonitor.reset();
 
-      const ready = await waitForInput(token, copy.inputPreparing);
+      const ready = await prepareRun(token, mode === "sync" ? copy.chunkSync : copy.chunked);
       if (!ready || token !== runToken) return;
 
-      status.textContent = mode === "sync" ? copy.chunkSync : copy.chunked;
-      const duration = await runMode(mode, token);
-      if (duration === null || token !== runToken) return;
+      const result = await runMode(mode, token);
+      if (result === null || token !== runToken) return;
 
       status.textContent = copy.chunkDone(
         mode === "sync" ? copy.oneTask : copy.frameSlices,
-        duration,
-        telemetry?.summary() ?? "",
+        result.duration,
       );
       setButtonsDisabled(root, false);
     };
@@ -293,26 +361,24 @@
     const compare = async () => {
       const token = ++runToken;
       setButtonsDisabled(root, true);
-      telemetry?.reset();
+      frameMonitor.reset();
 
-      const ready = await waitForInput(token, copy.inputPreparing);
+      const ready = await prepareRun(token, copy.chunkCompareSync);
       if (!ready || token !== runToken) return;
 
-      status.textContent = copy.chunkCompareSync;
-      const syncDuration = await runMode("sync", token);
-      if (syncDuration === null || token !== runToken) return;
+      const syncResult = await runMode("sync", token);
+      if (syncResult === null || token !== runToken) return;
 
       const canContinue = await pauseBetweenRuns(token);
       if (!canContinue || token !== runToken) return;
 
       status.textContent = copy.chunkCompareChunked;
-      const chunkedDuration = await runMode("chunked", token);
-      if (chunkedDuration === null || token !== runToken) return;
+      const chunkedResult = await runMode("chunked", token);
+      if (chunkedResult === null || token !== runToken) return;
 
       status.textContent = copy.chunkCompareDone(
-        syncDuration,
-        chunkedDuration,
-        telemetry?.summary() ?? "",
+        syncResult.duration,
+        chunkedResult.duration,
       );
       setButtonsDisabled(root, false);
     };
@@ -331,7 +397,7 @@
       compareButton?.removeEventListener("click", compare);
       cancelAnimationFrame(animationFrame);
       window.clearTimeout(preparationTimeout);
-      telemetry?.destroy();
+      frameMonitor.destroy();
     };
   }
 
@@ -351,7 +417,7 @@
     const status = root.querySelector("[data-demo-status]");
     const buttons = [...root.querySelectorAll('[data-demo-action="worker"]')];
     const compareButton = root.querySelector('[data-demo-action="compare"]');
-    const telemetry = createInputTelemetry(root, copy);
+    const frameMonitor = createFrameTelemetry(root, copy);
     let preparationTimeout = 0;
     let worker;
     let runToken = 0;
@@ -361,8 +427,7 @@
       readout.textContent = `${formatNumber(done)} / ${formatNumber(iterations)} iterations`;
     };
 
-    const waitForInput = (token, message, delay = 900) => new Promise((resolve) => {
-      focusDemoInput(root);
+    const prepareRun = (token, message, delay = 120) => new Promise((resolve) => {
       status.textContent = message;
       preparationTimeout = window.setTimeout(() => {
         preparationTimeout = 0;
@@ -377,85 +442,98 @@
       }, delay);
     });
 
-    const runMode = (mode, token) => new Promise((resolve) => {
+    const runMode = async (mode, token) => {
+      if (token !== runToken) return null;
+
+      await frameMonitor.start(mode === "main" ? "main" : "worker");
       if (token !== runToken) {
-        resolve(null);
-        return;
+        await frameMonitor.stop();
+        return null;
       }
 
       const startedAt = performance.now();
       updateProgress(0);
 
+      let workResult = true;
       if (mode === "main") {
-        window.setTimeout(() => {
-          if (token !== runToken) {
-            resolve(null);
-            return;
-          }
+        workResult = await new Promise((resolve) => {
+          window.setTimeout(() => {
+            if (token !== runToken) {
+              resolve(false);
+              return;
+            }
 
-          void calculateIterations(iterations);
-          updateProgress(iterations);
-          resolve(performance.now() - startedAt);
-        }, 0);
-        return;
+            void calculateIterations(iterations);
+            updateProgress(iterations);
+            resolve(true);
+          }, 0);
+        });
+      } else {
+        workResult = await new Promise((resolve) => {
+          let settled = false;
+          worker?.terminate();
+          worker = new Worker("assets/posts/expensive-main-thread/worker.js");
+
+          const finish = (success) => {
+            if (settled) return;
+            settled = true;
+            worker?.terminate();
+            worker = undefined;
+            if (success) updateProgress(iterations);
+            resolve(success);
+          };
+
+          worker.addEventListener("message", (messageEvent) => {
+            if (token !== runToken) {
+              finish(false);
+              return;
+            }
+
+            const message = messageEvent.data;
+            if (message.type === "progress") {
+              updateProgress(message.done);
+            } else if (message.type === "done") {
+              finish(true);
+            }
+          });
+          worker.addEventListener("error", () => {
+            if (settled) return;
+            status.textContent = copy.workerError;
+            finish(false);
+          }, { once: true });
+          worker.postMessage({ iterations });
+        });
       }
 
-      let settled = false;
-      worker?.terminate();
-      worker = new Worker("assets/posts/expensive-main-thread/worker.js");
+      if (!workResult || token !== runToken) {
+        await frameMonitor.stop();
+        return null;
+      }
 
-      const finish = (duration) => {
-        if (settled) return;
-        settled = true;
-        worker?.terminate();
-        worker = undefined;
-        updateProgress(iterations);
-        resolve(duration);
+      const frameMetrics = await frameMonitor.stop();
+      return {
+        duration: performance.now() - startedAt,
+        frameMetrics,
       };
-
-      worker.addEventListener("message", (messageEvent) => {
-        if (token !== runToken) {
-          finish(null);
-          return;
-        }
-
-        const message = messageEvent.data;
-        if (message.type === "progress") {
-          updateProgress(message.done);
-        } else if (message.type === "done") {
-          finish(performance.now() - startedAt);
-        }
-      });
-      worker.addEventListener("error", () => {
-        if (settled) return;
-        settled = true;
-        worker?.terminate();
-        worker = undefined;
-        status.textContent = copy.workerError;
-        resolve(null);
-      }, { once: true });
-      worker.postMessage({ iterations });
-    });
+    };
 
     const run = async (mode) => {
       const token = ++runToken;
       setButtonsDisabled(root, true);
-      telemetry?.reset();
+      frameMonitor.reset();
 
-      const ready = await waitForInput(token, copy.inputPreparing);
+      const ready = await prepareRun(token, mode === "main" ? copy.workerMain : copy.worker);
       if (!ready || token !== runToken) return;
 
-      status.textContent = mode === "main" ? copy.workerMain : copy.worker;
-      const duration = await runMode(mode, token);
-      if (duration === null || token !== runToken) {
+      const result = await runMode(mode, token);
+      if (result === null || token !== runToken) {
         if (token === runToken) setButtonsDisabled(root, false);
         return;
       }
 
       status.textContent = copy.workerDone(
         mode === "main" ? copy.mainThread : copy.workerThread,
-        duration,
-        telemetry?.summary() ?? "",
+        result.duration,
       );
       setButtonsDisabled(root, false);
     };
@@ -463,26 +541,24 @@
     const compare = async () => {
       const token = ++runToken;
       setButtonsDisabled(root, true);
-      telemetry?.reset();
+      frameMonitor.reset();
 
-      const ready = await waitForInput(token, copy.inputPreparing);
+      const ready = await prepareRun(token, copy.workerCompareMain);
       if (!ready || token !== runToken) return;
 
-      status.textContent = copy.workerCompareMain;
-      const mainDuration = await runMode("main", token);
-      if (mainDuration === null || token !== runToken) return;
+      const mainResult = await runMode("main", token);
+      if (mainResult === null || token !== runToken) return;
 
       const canContinue = await pauseBetweenRuns(token);
       if (!canContinue || token !== runToken) return;
 
       status.textContent = copy.workerCompareWorker;
-      const workerDuration = await runMode("worker", token);
-      if (workerDuration === null || token !== runToken) return;
+      const workerResult = await runMode("worker", token);
+      if (workerResult === null || token !== runToken) return;
 
       status.textContent = copy.workerCompareDone(
-        mainDuration,
-        workerDuration,
-        telemetry?.summary() ?? "",
+        mainResult.duration,
+        workerResult.duration,
       );
       setButtonsDisabled(root, false);
     };
@@ -501,7 +577,7 @@
       workerHandlers.forEach((handler, button) => button.removeEventListener("click", handler));
       compareButton?.removeEventListener("click", compare);
       window.clearTimeout(preparationTimeout);
-      telemetry?.destroy();
+      frameMonitor.destroy();
     };
   }
 

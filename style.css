@@ -695,7 +695,7 @@ a:focus-visible {
   font-size: 0.78rem;
 }
 
-.demo-input-test {
+.demo-frame-monitor {
   display: grid;
   gap: 0.85rem;
   margin-top: 0.45rem;
@@ -703,20 +703,20 @@ a:focus-visible {
   border-top: 1px solid var(--line);
 }
 
-.demo-input-heading {
+.demo-frame-heading {
   display: flex;
   align-items: baseline;
   gap: 1rem;
 }
 
-.demo-input-heading p {
+.demo-frame-heading p {
   margin: 0;
   color: var(--muted);
   font-size: 0.82rem;
   line-height: 1.55;
 }
 
-.demo-input-kicker {
+.demo-frame-kicker {
   flex: 0 0 auto;
   color: var(--accent);
   font-size: 0.66rem;
@@ -725,43 +725,36 @@ a:focus-visible {
   text-transform: uppercase;
 }
 
-.demo-input-label {
+.demo-frame-results {
   display: grid;
-  gap: 0.45rem;
-  color: var(--muted);
-  font-size: 0.76rem;
-  font-weight: 650;
-  letter-spacing: 0.03em;
+  gap: 0.65rem;
 }
 
-.demo-input-label > span {
+.demo-frame-result {
+  display: grid;
+  grid-template-columns: minmax(8rem, 0.35fr) 1fr;
+  align-items: baseline;
+  gap: 1rem;
+  padding-top: 0.65rem;
+  border-top: 1px solid var(--line);
+}
+
+.demo-frame-result:first-child {
+  padding-top: 0;
+  border-top: 0;
+}
+
+.demo-frame-result-label {
   color: var(--muted);
   font-size: 0.72rem;
   text-transform: uppercase;
 }
 
-.demo-input-label input {
-  min-height: 2.6rem;
-  padding: 0 0.75rem;
-  border: 1px solid var(--line);
-  border-radius: 0;
-  background: var(--background);
+.demo-frame-result strong {
   color: var(--text);
-  font: inherit;
-}
-
-.demo-input-label input:focus {
-  outline: 2px solid var(--focus);
-  outline-offset: 2px;
-}
-
-.demo-input-readout {
-  display: flex;
-  justify-content: flex-end;
-  margin: 0;
-  color: var(--muted);
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   font-size: 0.72rem;
+  font-weight: 500;
 }
 
 .post-demo-controls {
@@ -1221,13 +1214,18 @@ a:focus-visible {
     padding: 1rem;
   }
 
-  .demo-input-heading {
+  .demo-frame-heading {
     display: block;
   }
 
-  .demo-input-kicker {
+  .demo-frame-kicker {
     display: block;
     margin-bottom: 0.5rem;
+  }
+
+  .demo-frame-result {
+    grid-template-columns: 1fr;
+    gap: 0.25rem;
   }
 
   .demo-observation {

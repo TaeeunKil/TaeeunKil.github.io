@@ -61,18 +61,26 @@
   <div class="post-demo-heading">
     <p class="post-demo-kicker">Experiment / 02</p>
     <h3 id="chunking-demo-title-en">Process everything at once or in slices?</h3>
-    <p>Run the same amount of computation in one task or use only 5ms per frame. Click Compare both to keep the input focused while they run in sequence.</p>
+    <p>Run the same amount of computation in one task or use only 5ms per frame. Compare both to record the gaps between <code>requestAnimationFrame</code> callbacks automatically.</p>
   </div>
   <div class="demo-stage demo-work-stage">
     <div class="demo-progress-track" aria-hidden="true"><span data-demo-progress></span></div>
     <p class="demo-readout" data-demo-readout>0 / 500,000 units</p>
-    <div class="demo-input-test">
-      <div class="demo-input-heading">
-        <span class="demo-input-kicker">Live input</span>
-        <p>Compare both modes with one click. The input is focused automatically, so keep typing while they run.</p>
+    <div class="demo-frame-monitor">
+      <div class="demo-frame-heading">
+        <span class="demo-frame-kicker">Frame monitor</span>
+        <p>Record the time between <code>requestAnimationFrame</code> callbacks. Gaps over 50ms count as delayed frames.</p>
       </div>
-      <label class="demo-input-label"><span>Input response</span><input type="text" data-demo-input placeholder="Type here" autocomplete="off"></label>
-      <p class="demo-input-readout" data-demo-input-readout aria-live="polite">0 input events · max gap —</p>
+      <div class="demo-frame-results" aria-live="polite">
+        <div class="demo-frame-result">
+          <span class="demo-frame-result-label">Process at once</span>
+          <strong data-demo-frame-result="sync">Not measured yet</strong>
+        </div>
+        <div class="demo-frame-result">
+          <span class="demo-frame-result-label">5ms per frame</span>
+          <strong data-demo-frame-result="chunked">Not measured yet</strong>
+        </div>
+      </div>
     </div>
   </div>
   <div class="post-demo-controls">
@@ -237,18 +245,26 @@ item.animate(
   <div class="post-demo-heading">
     <p class="post-demo-kicker">Experiment / 03</p>
     <h3 id="worker-demo-title-en">Send a heavy calculation elsewhere</h3>
-    <p>Run the same numerical calculation on the main thread and in a Web Worker. Click Compare both to keep the input focused while they run in sequence.</p>
+    <p>Run the same numerical calculation on the main thread and in a Web Worker. Compare both to record the gaps between <code>requestAnimationFrame</code> callbacks automatically.</p>
   </div>
   <div class="demo-stage demo-work-stage">
     <div class="demo-progress-track" aria-hidden="true"><span data-worker-progress></span></div>
     <p class="demo-readout" data-worker-readout>0 / 8,000,000 iterations</p>
-    <div class="demo-input-test">
-      <div class="demo-input-heading">
-        <span class="demo-input-kicker">Live input</span>
-        <p>Compare both modes with one click. The input is focused automatically, so keep typing while they run.</p>
+    <div class="demo-frame-monitor">
+      <div class="demo-frame-heading">
+        <span class="demo-frame-kicker">Frame monitor</span>
+        <p>Record the time between <code>requestAnimationFrame</code> callbacks. Gaps over 50ms count as delayed frames.</p>
       </div>
-      <label class="demo-input-label"><span>Input response</span><input type="text" data-demo-input placeholder="Type here" autocomplete="off"></label>
-      <p class="demo-input-readout" data-demo-input-readout aria-live="polite">0 input events · max gap —</p>
+      <div class="demo-frame-results" aria-live="polite">
+        <div class="demo-frame-result">
+          <span class="demo-frame-result-label">Main thread</span>
+          <strong data-demo-frame-result="main">Not measured yet</strong>
+        </div>
+        <div class="demo-frame-result">
+          <span class="demo-frame-result-label">Worker</span>
+          <strong data-demo-frame-result="worker">Not measured yet</strong>
+        </div>
+      </div>
     </div>
   </div>
   <div class="post-demo-controls">
