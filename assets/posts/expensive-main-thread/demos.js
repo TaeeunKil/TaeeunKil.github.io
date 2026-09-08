@@ -145,7 +145,8 @@
     setObservation(false);
 
     const animate = (now) => {
-      const progress = ((now - startedAt) % 2400) / 2400;
+      const cycle = ((now - startedAt) % 2400) / 2400;
+      const progress = cycle <= 0.5 ? cycle * 2 : 2 - cycle * 2;
       jsRunner.style.transform = `translate(${progress * jsTravel}px, -50%)`;
       animationFrame = requestAnimationFrame(animate);
     };
