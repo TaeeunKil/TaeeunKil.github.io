@@ -19,7 +19,7 @@
   {
     "id": "expensive-main-thread",
     "number": 3,
-    "date": "2026-09-08",
+    "date": "2026-09-07",
     "title": {
       "ko": "브라우저의 메인 스레드를 아끼는 법",
       "en": "How to Be Careful with the Browser's Main Thread"
