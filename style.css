@@ -431,9 +431,75 @@ a:focus-visible {
   line-height: 1.65;
 }
 
+.post-body pre[class*="language-"] {
+  color: var(--text);
+  text-shadow: none;
+  tab-size: 2;
+}
+
 .post-body code {
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   font-size: 0.9em;
+}
+
+.post-body pre[class*="language-"] code[class*="language-"] {
+  color: inherit;
+  font-size: inherit;
+  text-shadow: none;
+}
+
+.post-body .token.comment,
+.post-body .token.prolog,
+.post-body .token.doctype,
+.post-body .token.cdata {
+  color: #8b877e;
+}
+
+.post-body .token.punctuation {
+  color: #5c5952;
+}
+
+.post-body .token.property,
+.post-body .token.tag,
+.post-body .token.boolean,
+.post-body .token.number,
+.post-body .token.constant,
+.post-body .token.symbol {
+  color: #ae4c2e;
+}
+
+.post-body .token.selector,
+.post-body .token.attr-name,
+.post-body .token.string,
+.post-body .token.char,
+.post-body .token.builtin,
+.post-body .token.inserted {
+  color: #64713f;
+}
+
+.post-body .token.operator,
+.post-body .token.entity,
+.post-body .token.url,
+.post-body .language-css .token.string,
+.post-body .style .token.string {
+  color: #79634e;
+}
+
+.post-body .token.atrule,
+.post-body .token.attr-value,
+.post-body .token.keyword {
+  color: var(--accent);
+}
+
+.post-body .token.function,
+.post-body .token.class-name {
+  color: #1d6070;
+}
+
+.post-body .token.regex,
+.post-body .token.important,
+.post-body .token.variable {
+  color: #865d2d;
 }
 
 .post-body a {
@@ -628,6 +694,36 @@ a:focus-visible {
   font-size: 0.78rem;
 }
 
+.demo-input-test {
+  display: grid;
+  gap: 0.85rem;
+  margin-top: 0.45rem;
+  padding-top: 1.1rem;
+  border-top: 1px solid var(--line);
+}
+
+.demo-input-heading {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+}
+
+.demo-input-heading p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.82rem;
+  line-height: 1.55;
+}
+
+.demo-input-kicker {
+  flex: 0 0 auto;
+  color: var(--accent);
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
 .demo-input-label {
   display: grid;
   gap: 0.45rem;
@@ -635,6 +731,12 @@ a:focus-visible {
   font-size: 0.76rem;
   font-weight: 650;
   letter-spacing: 0.03em;
+}
+
+.demo-input-label > span {
+  color: var(--muted);
+  font-size: 0.72rem;
+  text-transform: uppercase;
 }
 
 .demo-input-label input {
@@ -650,6 +752,15 @@ a:focus-visible {
 .demo-input-label input:focus {
   outline: 2px solid var(--focus);
   outline-offset: 2px;
+}
+
+.demo-input-readout {
+  display: flex;
+  justify-content: flex-end;
+  margin: 0;
+  color: var(--muted);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.72rem;
 }
 
 .post-demo-controls {
@@ -676,6 +787,18 @@ a:focus-visible {
 .post-demo-controls button:focus-visible {
   background: var(--text);
   color: var(--background);
+}
+
+.post-demo-controls button[data-demo-action="compare"] {
+  background: var(--text);
+  color: var(--background);
+}
+
+.post-demo-controls button[data-demo-action="compare"]:hover:not(:disabled),
+.post-demo-controls button[data-demo-action="compare"]:focus-visible {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--text);
 }
 
 .post-demo-controls button:disabled {
@@ -1095,6 +1218,15 @@ a:focus-visible {
 
   .demo-stage {
     padding: 1rem;
+  }
+
+  .demo-input-heading {
+    display: block;
+  }
+
+  .demo-input-kicker {
+    display: block;
+    margin-bottom: 0.5rem;
   }
 
   .demo-observation {

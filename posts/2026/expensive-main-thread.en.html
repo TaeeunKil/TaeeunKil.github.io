@@ -61,14 +61,22 @@
   <div class="post-demo-heading">
     <p class="post-demo-kicker">Experiment / 02</p>
     <h3 id="chunking-demo-title-en">Process everything at once or in slices?</h3>
-    <p>Run the same amount of computation in one task or use only 5ms per frame. Try typing in the field while the work is running.</p>
+    <p>Run the same amount of computation in one task or use only 5ms per frame. Click Compare both to keep the input focused while they run in sequence.</p>
   </div>
   <div class="demo-stage demo-work-stage">
     <div class="demo-progress-track" aria-hidden="true"><span data-demo-progress></span></div>
     <p class="demo-readout" data-demo-readout>0 / 500,000 units</p>
-    <label class="demo-input-label">Type while it runs<input type="text" placeholder="Type here"></label>
+    <div class="demo-input-test">
+      <div class="demo-input-heading">
+        <span class="demo-input-kicker">Live input</span>
+        <p>Compare both modes with one click. The input is focused automatically, so keep typing while they run.</p>
+      </div>
+      <label class="demo-input-label"><span>Input response</span><input type="text" data-demo-input placeholder="Type here" autocomplete="off"></label>
+      <p class="demo-input-readout" data-demo-input-readout aria-live="polite">0 input events · max gap —</p>
+    </div>
   </div>
   <div class="post-demo-controls">
+    <button type="button" data-demo-action="compare">Compare both</button>
     <button type="button" data-demo-action="process" data-mode="sync">Process at once</button>
     <button type="button" data-demo-action="process" data-mode="chunked">5ms per frame</button>
     <span class="post-demo-status" data-demo-status aria-live="polite">Ready · Choose a processing mode.</span>
@@ -77,7 +85,7 @@
 
 <p>The simplest way to yield is to schedule the next piece as a new task.</p>
 
-<pre><code>const yieldToBrowser = () =&gt;
+<pre><code class="language-javascript">const yieldToBrowser = () =&gt;
   new Promise((resolve) =&gt; setTimeout(resolve, 0));
 
 async function renderMessages(messages) {
@@ -92,7 +100,7 @@ async function renderMessages(messages) {
 
 <p>Sometimes work should be split by time rather than by item count. If each item takes a different amount of time, or if an animation is already running, it is safer to reserve a small budget for background work and continue on the next frame.</p>
 
-<pre><code>async function processInFrameBudget(items) {
+<pre><code class="language-javascript">async function processInFrameBudget(items) {
   let index = 0;
 
   while (index &lt; items.length) {
@@ -116,7 +124,7 @@ async function renderMessages(messages) {
 
 <p>Debouncing works well for a search request that only needs to run after typing pauses. Throttling is useful when the latest scroll position should be reflected at a controlled interval. For visual updates, <code>requestAnimationFrame</code> can limit rendering to once per frame.</p>
 
-<pre><code>let renderScheduled = false;
+<pre><code class="language-javascript">let renderScheduled = false;
 
 function requestBoardRender() {
   if (renderScheduled) return;
@@ -141,7 +149,7 @@ socket.addEventListener('tick', (event) =&gt; {
 
 <p>A simple queue can express this idea. Ordinary work goes to the back, while work triggered directly by the user goes to the front.</p>
 
-<pre><code>const jobs = [];
+<pre><code class="language-javascript">const jobs = [];
 const channel = new MessageChannel();
 
 channel.port1.onmessage = () =&gt; {
@@ -163,7 +171,7 @@ function enqueue(job, urgent = false) {
 
 <p>The most reliable optimization is postponing work that does not need to happen yet. Code that is not needed for the initial screen can be split and loaded later. Content outside the viewport can be filled only when it gets close to being visible.</p>
 
-<pre><code>const observer = new IntersectionObserver(
+<pre><code class="language-javascript">const observer = new IntersectionObserver(
   (entries) =&gt; {
     for (const entry of entries) {
       if (entry.isIntersecting) {
@@ -201,7 +209,7 @@ document.querySelectorAll('.feed-item').forEach((item) =&gt; {
 
 <p>When an actual layout change is needed, such as reordering a list, the FLIP technique can help. Measure the old position (First), change the layout and measure the new position (Last), apply an inverse <code>transform</code> so the element appears to remain in its old position (Invert), and then animate that transform away (Play).</p>
 
-<pre><code>const before = item.getBoundingClientRect();
+<pre><code class="language-javascript">const before = item.getBoundingClientRect();
 
 list.prepend(item);
 
@@ -229,21 +237,29 @@ item.animate(
   <div class="post-demo-heading">
     <p class="post-demo-kicker">Experiment / 03</p>
     <h3 id="worker-demo-title-en">Send a heavy calculation elsewhere</h3>
-    <p>Run the same numerical calculation on the main thread and in a Web Worker. See whether the input field remains responsive.</p>
+    <p>Run the same numerical calculation on the main thread and in a Web Worker. Click Compare both to keep the input focused while they run in sequence.</p>
   </div>
   <div class="demo-stage demo-work-stage">
     <div class="demo-progress-track" aria-hidden="true"><span data-worker-progress></span></div>
     <p class="demo-readout" data-worker-readout>0 / 8,000,000 iterations</p>
-    <label class="demo-input-label">Type while it runs<input type="text" placeholder="Type here"></label>
+    <div class="demo-input-test">
+      <div class="demo-input-heading">
+        <span class="demo-input-kicker">Live input</span>
+        <p>Compare both modes with one click. The input is focused automatically, so keep typing while they run.</p>
+      </div>
+      <label class="demo-input-label"><span>Input response</span><input type="text" data-demo-input placeholder="Type here" autocomplete="off"></label>
+      <p class="demo-input-readout" data-demo-input-readout aria-live="polite">0 input events · max gap —</p>
+    </div>
   </div>
   <div class="post-demo-controls">
+    <button type="button" data-demo-action="compare">Compare both</button>
     <button type="button" data-demo-action="worker" data-mode="main">Run on main thread</button>
     <button type="button" data-demo-action="worker" data-mode="worker">Run in a Worker</button>
     <span class="post-demo-status" data-demo-status aria-live="polite">Ready · Choose where to calculate.</span>
   </div>
 </section>
 
-<pre><code>const worker = new Worker('calculator.js');
+<pre><code class="language-javascript">const worker = new Worker('calculator.js');
 
 worker.postMessage(rawData);
 worker.addEventListener('message', (event) =&gt; {
@@ -254,7 +270,7 @@ worker.addEventListener('message', (event) =&gt; {
 
 <p>If a large <code>ArrayBuffer</code> would be copied repeatedly, a transferable object can move ownership of the buffer instead. The sender loses access to that buffer, but the copy cost is avoided.</p>
 
-<pre><code>worker.postMessage(
+<pre><code class="language-javascript">worker.postMessage(
   { buffer: pixels.buffer, width, height },
   [pixels.buffer]
 );</code></pre>

@@ -109,6 +109,7 @@ async function renderPost(post) {
   if (!response.ok) throw new Error("Post content could not be loaded");
   const body = document.querySelector("#post-body");
   body.innerHTML = `${usesFallback ? `<p class="translation-note">${postCopy[language].unavailable}</p>` : ""}${await response.text()}`;
+  window.Prism?.highlightAllUnder(body);
   window.initMainThreadDemos?.();
 }
 

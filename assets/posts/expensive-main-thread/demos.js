@@ -11,14 +11,22 @@
         blockingReady: "Ready",
         blockingJsPaused: "Paused → recovered",
         blockingCssRunning: "Kept running",
-        chunkSync: "Running one long task… Try typing now.",
-        chunked: "Running in 5ms slices… Try typing now.",
-        chunkDone: (mode, duration) => `Done · ${mode} finished in ${formatMs(duration)}.`,
+        inputPreparing: "Input focused · Starting in a moment. Keep typing.",
+        inputReadout: (events, maxGap) => `${events} input events · max gap ${maxGap ? formatMs(maxGap) : "—"}`,
+        chunkSync: "Running one long task… Keep typing.",
+        chunked: "Running in 5ms slices… Keep typing.",
+        chunkCompareSync: "1/2 · Running one long task… Keep typing.",
+        chunkCompareChunked: "2/2 · Running in 5ms slices… Keep typing.",
+        chunkCompareDone: (sync, chunked, input) => `Comparison done · One task ${formatMs(sync)} / Frame slices ${formatMs(chunked)} · ${input}`,
+        chunkDone: (mode, duration, input) => `Done · ${mode} finished in ${formatMs(duration)} · ${input}`,
         oneTask: "One task",
         frameSlices: "Frame slices",
-        workerMain: "Calculating on the main thread… Try typing now.",
-        worker: "Calculating in a Worker… Try typing now.",
-        workerDone: (mode, duration) => `Done · ${mode} finished in ${formatMs(duration)}.`,
+        workerMain: "Calculating on the main thread… Keep typing.",
+        worker: "Calculating in a Worker… Keep typing.",
+        workerCompareMain: "1/2 · Calculating on the main thread… Keep typing.",
+        workerCompareWorker: "2/2 · Calculating in a Worker… Keep typing.",
+        workerCompareDone: (main, worker, input) => `Comparison done · Main thread ${formatMs(main)} / Worker ${formatMs(worker)} · ${input}`,
+        workerDone: (mode, duration, input) => `Done · ${mode} finished in ${formatMs(duration)} · ${input}`,
         mainThread: "Main thread",
         workerThread: "Worker",
         workerError: "The Worker could not start in this context. Try the published site or a local server.",
@@ -29,14 +37,22 @@
         blockingReady: "실행 준비",
         blockingJsPaused: "멈췄다가 재개",
         blockingCssRunning: "계속 실행",
-        chunkSync: "한 번에 긴 작업을 실행 중… 지금 입력해보세요.",
-        chunked: "5ms씩 나눠 실행 중… 지금 입력해보세요.",
-        chunkDone: (mode, duration) => `완료 · ${mode} 작업이 ${formatMs(duration)}에 끝났습니다.`,
+        inputPreparing: "입력창에 포커스를 맞췄습니다 · 잠시 후 시작하니 계속 입력해보세요.",
+        inputReadout: (events, maxGap) => `입력 이벤트 ${events}회 · 최대 공백 ${maxGap ? formatMs(maxGap) : "—"}`,
+        chunkSync: "한 번에 긴 작업을 실행 중… 계속 입력해보세요.",
+        chunked: "5ms씩 나눠 실행 중… 계속 입력해보세요.",
+        chunkCompareSync: "1/2 · 한 번에 처리 중… 계속 입력해보세요.",
+        chunkCompareChunked: "2/2 · 프레임당 5ms씩 처리 중… 계속 입력해보세요.",
+        chunkCompareDone: (sync, chunked, input) => `비교 완료 · 한 번에 처리 ${formatMs(sync)} / 프레임 분할 ${formatMs(chunked)} · ${input}`,
+        chunkDone: (mode, duration, input) => `완료 · ${mode} 작업이 ${formatMs(duration)}에 끝났습니다 · ${input}`,
         oneTask: "한 번에 처리",
         frameSlices: "프레임 분할",
-        workerMain: "메인 스레드에서 계산 중… 지금 입력해보세요.",
-        worker: "Worker에서 계산 중… 지금 입력해보세요.",
-        workerDone: (mode, duration) => `완료 · ${mode} 계산이 ${formatMs(duration)}에 끝났습니다.`,
+        workerMain: "메인 스레드에서 계산 중… 계속 입력해보세요.",
+        worker: "Worker에서 계산 중… 계속 입력해보세요.",
+        workerCompareMain: "1/2 · 메인 스레드에서 계산 중… 계속 입력해보세요.",
+        workerCompareWorker: "2/2 · Worker에서 계산 중… 계속 입력해보세요.",
+        workerCompareDone: (main, worker, input) => `비교 완료 · 메인 스레드 ${formatMs(main)} / Worker ${formatMs(worker)} · ${input}`,
+        workerDone: (mode, duration, input) => `완료 · ${mode} 계산이 ${formatMs(duration)}에 끝났습니다 · ${input}`,
         mainThread: "메인 스레드",
         workerThread: "Worker",
         workerError: "이 환경에서는 Worker를 시작할 수 없습니다. 배포된 사이트나 로컬 서버에서 다시 시도하세요.",
@@ -46,6 +62,55 @@
     root.querySelectorAll("button").forEach((button) => {
       button.disabled = disabled;
     });
+  }
+
+  function focusDemoInput(root) {
+    const input = root.querySelector("[data-demo-input]");
+    if (!input) return;
+
+    input.focus({ preventScroll: true });
+    const end = input.value.length;
+    input.setSelectionRange?.(end, end);
+  }
+
+  function createInputTelemetry(root, copy) {
+    const input = root.querySelector("[data-demo-input]");
+    const readout = root.querySelector("[data-demo-input-readout]");
+    if (!input || !readout) return null;
+
+    let inputEvents = 0;
+    let maxGap = 0;
+    let lastInputAt = 0;
+
+    const render = () => {
+      readout.textContent = copy.inputReadout(inputEvents, maxGap);
+    };
+
+    const handleInput = () => {
+      const now = performance.now();
+      inputEvents += 1;
+      if (lastInputAt > 0) maxGap = Math.max(maxGap, now - lastInputAt);
+      lastInputAt = now;
+      render();
+    };
+
+    input.addEventListener("input", handleInput);
+    render();
+
+    return {
+      reset() {
+        inputEvents = 0;
+        maxGap = 0;
+        lastInputAt = 0;
+        render();
+      },
+      summary() {
+        return copy.inputReadout(inputEvents, maxGap);
+      },
+      destroy() {
+        input.removeEventListener("input", handleInput);
+      },
+    };
   }
 
   function setupBlockingDemo(root) {
@@ -117,7 +182,10 @@
     const readout = root.querySelector("[data-demo-readout]");
     const status = root.querySelector("[data-demo-status]");
     const buttons = [...root.querySelectorAll('[data-demo-action="process"]')];
+    const compareButton = root.querySelector('[data-demo-action="compare"]');
+    const telemetry = createInputTelemetry(root, copy);
     let animationFrame = 0;
+    let preparationTimeout = 0;
     let runToken = 0;
 
     const updateProgress = (done) => {
@@ -125,41 +193,49 @@
       readout.textContent = `${formatNumber(done)} / ${formatNumber(total)} units`;
     };
 
-    const finish = (startedAt, mode) => {
-      status.textContent = copy.chunkDone(mode, performance.now() - startedAt);
-      setButtonsDisabled(root, false);
-    };
+    const waitForInput = (token, message, delay = 900) => new Promise((resolve) => {
+      focusDemoInput(root);
+      status.textContent = message;
+      preparationTimeout = window.setTimeout(() => {
+        preparationTimeout = 0;
+        resolve(token === runToken);
+      }, delay);
+    });
 
-    const process = (event) => {
-      const mode = event.currentTarget.dataset.mode;
-      const token = ++runToken;
+    const pauseBetweenRuns = (token, delay = 300) => new Promise((resolve) => {
+      preparationTimeout = window.setTimeout(() => {
+        preparationTimeout = 0;
+        resolve(token === runToken);
+      }, delay);
+    });
+
+    const runMode = (mode, token) => new Promise((resolve) => {
+      if (token !== runToken) {
+        resolve(null);
+        return;
+      }
+
       const startedAt = performance.now();
       let checksum = 0;
       let index = 0;
-
-      setButtonsDisabled(root, true);
       updateProgress(0);
-      status.textContent = mode === "sync"
-        ? copy.chunkSync
-        : copy.chunked;
-
-      const finishIfCurrent = () => {
-        if (token !== runToken) return;
-        updateProgress(total);
-        finish(startedAt, mode === "sync" ? copy.oneTask : copy.frameSlices);
-      };
 
       if (mode === "sync") {
         for (index = 0; index < total; index += 1) {
           checksum ^= doChunkWork(index);
         }
         void checksum;
-        finishIfCurrent();
+        updateProgress(total);
+        resolve(performance.now() - startedAt);
         return;
       }
 
       const processFrame = () => {
-        if (token !== runToken) return;
+        if (token !== runToken) {
+          resolve(null);
+          return;
+        }
+
         const deadline = performance.now() + 5;
         while (index < total && performance.now() < deadline) {
           checksum ^= doChunkWork(index);
@@ -167,22 +243,79 @@
         }
         void checksum;
         updateProgress(index);
+
         if (index < total) {
           animationFrame = requestAnimationFrame(processFrame);
         } else {
-          finishIfCurrent();
+          resolve(performance.now() - startedAt);
         }
       };
 
       animationFrame = requestAnimationFrame(processFrame);
+    });
+
+    const run = async (mode) => {
+      const token = ++runToken;
+      setButtonsDisabled(root, true);
+      telemetry?.reset();
+
+      const ready = await waitForInput(token, copy.inputPreparing);
+      if (!ready || token !== runToken) return;
+
+      status.textContent = mode === "sync" ? copy.chunkSync : copy.chunked;
+      const duration = await runMode(mode, token);
+      if (duration === null || token !== runToken) return;
+
+      status.textContent = copy.chunkDone(
+        mode === "sync" ? copy.oneTask : copy.frameSlices,
+        duration,
+        telemetry?.summary() ?? "",
+      );
+      setButtonsDisabled(root, false);
     };
 
-    buttons.forEach((button) => button.addEventListener("click", process));
+    const compare = async () => {
+      const token = ++runToken;
+      setButtonsDisabled(root, true);
+      telemetry?.reset();
+
+      const ready = await waitForInput(token, copy.inputPreparing);
+      if (!ready || token !== runToken) return;
+
+      status.textContent = copy.chunkCompareSync;
+      const syncDuration = await runMode("sync", token);
+      if (syncDuration === null || token !== runToken) return;
+
+      const canContinue = await pauseBetweenRuns(token);
+      if (!canContinue || token !== runToken) return;
+
+      status.textContent = copy.chunkCompareChunked;
+      const chunkedDuration = await runMode("chunked", token);
+      if (chunkedDuration === null || token !== runToken) return;
+
+      status.textContent = copy.chunkCompareDone(
+        syncDuration,
+        chunkedDuration,
+        telemetry?.summary() ?? "",
+      );
+      setButtonsDisabled(root, false);
+    };
+
+    const processHandlers = new Map();
+    buttons.forEach((button) => {
+      const handler = () => run(button.dataset.mode);
+      processHandlers.set(button, handler);
+      button.addEventListener("click", handler);
+    });
+    compareButton?.addEventListener("click", compare);
 
     return () => {
       runToken += 1;
-      buttons.forEach((button) => button.removeEventListener("click", process));
+      processHandlers.forEach((handler, button) => button.removeEventListener("click", handler));
+      compareButton?.removeEventListener("click", compare);
       cancelAnimationFrame(animationFrame);
+      window.clearTimeout(preparationTimeout);
+      telemetry?.destroy();
     };
   }
 
@@ -201,6 +334,9 @@
     const readout = root.querySelector("[data-worker-readout]");
     const status = root.querySelector("[data-demo-status]");
     const buttons = [...root.querySelectorAll('[data-demo-action="worker"]')];
+    const compareButton = root.querySelector('[data-demo-action="compare"]');
+    const telemetry = createInputTelemetry(root, copy);
+    let preparationTimeout = 0;
     let worker;
     let runToken = 0;
 
@@ -209,60 +345,147 @@
       readout.textContent = `${formatNumber(done)} / ${formatNumber(iterations)} iterations`;
     };
 
-    const finish = (startedAt, mode) => {
-      updateProgress(iterations);
-      status.textContent = copy.workerDone(mode, performance.now() - startedAt);
-      setButtonsDisabled(root, false);
-    };
+    const waitForInput = (token, message, delay = 900) => new Promise((resolve) => {
+      focusDemoInput(root);
+      status.textContent = message;
+      preparationTimeout = window.setTimeout(() => {
+        preparationTimeout = 0;
+        resolve(token === runToken);
+      }, delay);
+    });
 
-    const run = (event) => {
-      const mode = event.currentTarget.dataset.mode;
-      const token = ++runToken;
+    const pauseBetweenRuns = (token, delay = 300) => new Promise((resolve) => {
+      preparationTimeout = window.setTimeout(() => {
+        preparationTimeout = 0;
+        resolve(token === runToken);
+      }, delay);
+    });
+
+    const runMode = (mode, token) => new Promise((resolve) => {
+      if (token !== runToken) {
+        resolve(null);
+        return;
+      }
+
       const startedAt = performance.now();
-
-      worker?.terminate();
-      worker = undefined;
-      setButtonsDisabled(root, true);
       updateProgress(0);
-      status.textContent = mode === "main"
-        ? copy.workerMain
-        : copy.worker;
 
       if (mode === "main") {
         window.setTimeout(() => {
-          if (token !== runToken) return;
+          if (token !== runToken) {
+            resolve(null);
+            return;
+          }
+
           void calculateIterations(iterations);
-          finish(startedAt, copy.mainThread);
+          updateProgress(iterations);
+          resolve(performance.now() - startedAt);
         }, 0);
         return;
       }
 
+      let settled = false;
+      worker?.terminate();
       worker = new Worker("assets/posts/expensive-main-thread/worker.js");
+
+      const finish = (duration) => {
+        if (settled) return;
+        settled = true;
+        worker?.terminate();
+        worker = undefined;
+        updateProgress(iterations);
+        resolve(duration);
+      };
+
       worker.addEventListener("message", (messageEvent) => {
-        if (token !== runToken) return;
+        if (token !== runToken) {
+          finish(null);
+          return;
+        }
+
         const message = messageEvent.data;
         if (message.type === "progress") {
           updateProgress(message.done);
         } else if (message.type === "done") {
-          worker.terminate();
-          worker = undefined;
-          finish(startedAt, copy.workerThread);
+          finish(performance.now() - startedAt);
         }
       });
       worker.addEventListener("error", () => {
-        if (token !== runToken) return;
+        if (settled) return;
+        settled = true;
+        worker?.terminate();
+        worker = undefined;
         status.textContent = copy.workerError;
-        setButtonsDisabled(root, false);
+        resolve(null);
       }, { once: true });
       worker.postMessage({ iterations });
+    });
+
+    const run = async (mode) => {
+      const token = ++runToken;
+      setButtonsDisabled(root, true);
+      telemetry?.reset();
+
+      const ready = await waitForInput(token, copy.inputPreparing);
+      if (!ready || token !== runToken) return;
+
+      status.textContent = mode === "main" ? copy.workerMain : copy.worker;
+      const duration = await runMode(mode, token);
+      if (duration === null || token !== runToken) {
+        if (token === runToken) setButtonsDisabled(root, false);
+        return;
+      }
+
+      status.textContent = copy.workerDone(
+        mode === "main" ? copy.mainThread : copy.workerThread,
+        duration,
+        telemetry?.summary() ?? "",
+      );
+      setButtonsDisabled(root, false);
     };
 
-    buttons.forEach((button) => button.addEventListener("click", run));
+    const compare = async () => {
+      const token = ++runToken;
+      setButtonsDisabled(root, true);
+      telemetry?.reset();
+
+      const ready = await waitForInput(token, copy.inputPreparing);
+      if (!ready || token !== runToken) return;
+
+      status.textContent = copy.workerCompareMain;
+      const mainDuration = await runMode("main", token);
+      if (mainDuration === null || token !== runToken) return;
+
+      const canContinue = await pauseBetweenRuns(token);
+      if (!canContinue || token !== runToken) return;
+
+      status.textContent = copy.workerCompareWorker;
+      const workerDuration = await runMode("worker", token);
+      if (workerDuration === null || token !== runToken) return;
+
+      status.textContent = copy.workerCompareDone(
+        mainDuration,
+        workerDuration,
+        telemetry?.summary() ?? "",
+      );
+      setButtonsDisabled(root, false);
+    };
+
+    const workerHandlers = new Map();
+    buttons.forEach((button) => {
+      const handler = () => run(button.dataset.mode);
+      workerHandlers.set(button, handler);
+      button.addEventListener("click", handler);
+    });
+    compareButton?.addEventListener("click", compare);
 
     return () => {
       runToken += 1;
       worker?.terminate();
-      buttons.forEach((button) => button.removeEventListener("click", run));
+      workerHandlers.forEach((handler, button) => button.removeEventListener("click", handler));
+      compareButton?.removeEventListener("click", compare);
+      window.clearTimeout(preparationTimeout);
+      telemetry?.destroy();
     };
   }
 
