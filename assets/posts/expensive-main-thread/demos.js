@@ -124,6 +124,18 @@
     let startFrame = 0;
     let timeoutId = 0;
     let startedAt = performance.now();
+    let jsTravel = 0;
+
+    const updateRunnerTravel = () => {
+      root.querySelectorAll(".demo-line").forEach((line) => {
+        const runner = line.querySelector(".demo-runner");
+        if (!runner) return;
+
+        const travel = Math.max(0, line.clientWidth - runner.offsetWidth);
+        line.style.setProperty("--demo-runner-travel", `${travel}px`);
+        if (runner === jsRunner) jsTravel = travel;
+      });
+    };
 
     const setObservation = (isBlocking) => {
       jsState.textContent = isBlocking ? copy.blockingJsPaused : copy.blockingReady;
@@ -134,7 +146,7 @@
 
     const animate = (now) => {
       const progress = ((now - startedAt) % 2400) / 2400;
-      jsRunner.style.transform = `translateX(${progress * 100}%)`;
+      jsRunner.style.transform = `translate(${progress * jsTravel}px, -50%)`;
       animationFrame = requestAnimationFrame(animate);
     };
 
@@ -156,11 +168,14 @@
       });
     };
 
+    updateRunnerTravel();
+    window.addEventListener("resize", updateRunnerTravel);
     buttons.forEach((button) => button.addEventListener("click", blockMainThread));
     animationFrame = requestAnimationFrame(animate);
 
     return () => {
       buttons.forEach((button) => button.removeEventListener("click", blockMainThread));
+      window.removeEventListener("resize", updateRunnerTravel);
       cancelAnimationFrame(animationFrame);
       cancelAnimationFrame(startFrame);
       window.clearTimeout(timeoutId);

@@ -612,6 +612,7 @@ a:focus-visible {
   position: relative;
   height: 1.2rem;
   border-bottom: 1px solid var(--line);
+  --demo-runner-travel: 0px;
 }
 
 .demo-runner {
@@ -664,8 +665,8 @@ a:focus-visible {
 }
 
 @keyframes demo-runner-slide {
-  from { transform: translate(0, -50%); }
-  to { transform: translate(calc(100% - 0.78rem), -50%); }
+  from { transform: translate(0px, -50%); }
+  to { transform: translate(var(--demo-runner-travel), -50%); }
 }
 
 .demo-work-stage {
