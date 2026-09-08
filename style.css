@@ -633,7 +633,7 @@ a:focus-visible {
 
 .demo-runner-css {
   background: var(--text);
-  animation: demo-runner-slide 1.2s ease-in-out infinite alternate;
+  animation: demo-runner-slide 2.4s linear infinite alternate;
 }
 
 .demo-observation {
