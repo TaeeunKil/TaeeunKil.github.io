@@ -1132,6 +1132,97 @@ a:focus-visible {
   height: 100%;
 }
 
+.post-body .ux-intro-figure {
+  margin-bottom: clamp(3rem, 6vw, 5rem);
+}
+
+.ux-intro-figure img {
+  height: auto;
+}
+
+.ux-intro-figure figcaption {
+  margin-top: 0.9rem;
+  color: var(--muted);
+  font-size: 0.85rem;
+  line-height: 1.7;
+}
+
+.ux-law-index {
+  margin: 0 0 3rem;
+  border-block: 1px solid var(--line);
+}
+
+.ux-law-index summary {
+  min-height: 44px;
+  padding: 1.1rem 0.25rem;
+  cursor: pointer;
+  font-weight: 600;
+  line-height: 1.6;
+}
+
+.ux-law-index summary::marker {
+  color: var(--accent);
+}
+
+.ux-index-hint {
+  display: inline-block;
+  margin-left: 0.5rem;
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 400;
+}
+
+.ux-law-table-wrap {
+  max-width: 100%;
+  overflow-x: auto;
+  padding-bottom: 1rem;
+}
+
+.ux-law-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  font-size: 0.92rem;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+
+.ux-law-table caption {
+  padding: 0.5rem 0 1rem;
+  color: var(--muted);
+  text-align: left;
+  font-size: 0.75rem;
+}
+
+.ux-law-table th,
+.ux-law-table td {
+  padding: 1rem 0.6rem;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  vertical-align: top;
+}
+
+.ux-law-table th:first-child {
+  width: 42%;
+}
+
+.ux-law-table th {
+  font-weight: 600;
+}
+
+.ux-law-table th span {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 400;
+}
+
+.ux-law-index summary:focus-visible,
+.ux-law-table-wrap:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 4px;
+}
+
 .js .panel {
   position: absolute;
   inset: 0;

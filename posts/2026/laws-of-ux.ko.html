@@ -1,0 +1,129 @@
+<figure class="post-figure ux-intro-figure">
+  <a href="https://lawsofux.com/" target="_blank" rel="noreferrer"><img src="assets/posts/laws-of-ux/site-overview.png" width="1265" height="712" alt="Laws of UX 첫 화면. 인터페이스를 만들 때 참고할 원칙을 소개하는 문구 아래에 각 개념을 표현한 그래픽이 나열되어 있다." fetchpriority="high"></a>
+  <figcaption>이번에 읽은 <a href="https://lawsofux.com/" target="_blank" rel="noreferrer">Laws of UX</a>. Jon Yablonski가 UX와 관련된 심리학 원칙과 개념을 모아둔 사이트다. 각 항목에서 핵심 설명과 적용할 때 생각할 점을 살펴볼 수 있다. 화면 캡처: 2026.09.29.</figcaption>
+</figure>
+
+<p class="post-lead">막연히 편하다고 느꼈던 화면에도<br>설명할 수 있는 이유가 있었다.</p>
+
+<p>어떤 화면은 처음 들어가도 다음에 무엇을 해야 할지 보인다. 반대로 기능은 다 갖췄는데 버튼을 찾고, 문구를 다시 읽고, 내가 제대로 누른 게 맞는지 확인하게 되는 화면도 있다. 이 차이를 조금 더 구체적으로 이해하고 싶어 Laws of UX를 읽었다.</p>
+
+<p>읽으면서 흥미로웠던 것은 낯선 법칙의 이름보다 익숙한 불편함에 붙는 설명이었다. 왜 메뉴가 많으면 고르기 어려운지, 왜 작은 버튼은 누르기 힘든지, 왜 전에 써본 서비스와 비슷한 화면이 편한지. 따로 느꼈던 경험들이 몇 가지 원칙으로 연결됐다.</p>
+
+<p>이 글은 그 내용을 내 말로 정리한 공부 기록이다. 먼저 전체 항목을 짧게 모아두고, 그중 화면을 만드는 입장에서 생각해볼 만한 부분을 묶어 풀어봤다. 아래의 화면 예시는 원칙을 이해하기 위해 구성한 가상의 상황이며, 특정 서비스의 효과를 검증한 사례는 아니다.</p>
+
+<h2>전체 원칙을 한 줄로 정리하면</h2>
+
+<p>2026년 9월 29일 기준 사이트에 올라온 30개 항목을 원문 순서대로 정리했다. 이름에 ‘법칙’이 붙지 않는 효과·원리·인지 개념도 모두 포함했다. 항목 이름을 누르면 원문 설명으로 이동한다.</p>
+
+<details class="ux-law-index">
+  <summary>30개 법칙·개념 한 줄 정리 <span class="ux-index-hint">펼치기 / 접기</span></summary>
+  <div class="ux-law-table-wrap" role="region" aria-label="UX 원칙 전체 요약표" tabindex="0">
+    <table class="ux-law-table">
+      <caption>Laws of UX 전체 항목 · 한국어 이름은 이해를 돕기 위한 표기</caption>
+      <thead><tr><th scope="col">법칙·개념</th><th scope="col">한 줄 정리</th></tr></thead>
+      <tbody>
+        <tr><th scope="row"><a href="https://lawsofux.com/aesthetic-usability-effect/">심미적 사용성 효과<span lang="en">Aesthetic-Usability Effect</span></a></th><td>보기 좋은 디자인은 실제 사용성과 별개로 더 쓰기 편하다는 인상을 줄 수 있다.</td></tr>
+        <tr><th scope="row"><a href="https://lawsofux.com/choice-overload/">선택 과부하<span lang="en">Choice Overload</span></a></th><td>선택지가 너무 많으면 비교와 판단의 부담이 커져 결정을 어려워할 수 있다.</td></tr>
+        <tr><th scope="row"><a href="https://lawsofux.com/chunking/">청킹<span lang="en">Chunking</span></a></th><td>흩어진 정보를 의미 있는 덩어리로 묶으면 내용을 파악하고 기억하기 쉬워진다.</td></tr>
+        <tr><th scope="row"><a href="https://lawsofux.com/cognitive-bias/">인지 편향<span lang="en">Cognitive Bias</span></a></th><td>사람의 판단은 경험과 사고의 지름길에 영향을 받아 일정한 방향으로 치우칠 수 있다.</td></tr>
+        <tr><th scope="row"><a href="https://lawsofux.com/cognitive-load/">인지 부하<span lang="en">Cognitive Load</span></a></th><td>화면을 이해하고 조작하는 데도 정신적 자원이 들며, 불필요한 해석은 그 부담을 늘린다.</td></tr>
+        <tr><th scope="row"><a href="https://lawsofux.com/doherty-threshold/">도허티 임계값<span lang="en">Doherty Threshold</span></a></th><td>빠른 시스템 반응은 작업 흐름을 이어주며, 사이트는 그 기준으로 400ms 미만을 제시한다.</td></tr>
+        <tr><th scope="row"><a href="https://lawsofux.com/fittss-law/">피츠의 법칙<span lang="en">Fitts’s Law</span></a></th><td>목표가 작고 멀수록 도달하기 어려우므로 버튼의 크기와 위치가 조작에 영향을 준다.</td></tr>
+        <tr><th scope="row"><a href="https://lawsofux.com/flow/">몰입<span lang="en">Flow</span></a></th><td>수행 중인 활동에 깊이 집중하고 참여하면서 즐거움을 느끼는 상태다.</td></tr>
+        <tr><th scope="row"><a href="https://lawsofux.com/goal-gradient-effect/">목표 경사 효과<span lang="en">Goal-Gradient Effect</span></a></th><td>목표에 가까워졌다고 느낄수록 끝까지 도달하려는 동기가 강해지는 경향이 있다.</td></tr>
+        <tr><th scope="row"><a href="https://lawsofux.com/hicks-law/">힉의 법칙<span lang="en">Hick’s Law</span></a></th><td>선택지의 수와 복잡성이 커질수록 결정을 내리는 데 걸리는 시간이 늘어난다.</td></tr>
+        <tr><th scope="row"><a href="https://lawsofux.com/jakobs-law/">제이콥의 법칙<span lang="en">Jakob’s Law</span></a></th><td>사용자는 다른 서비스에서 익힌 방식과 기대를 새로운 서비스에도 가져온다.</td></tr>
+        <tr><th scope="row"><a href="https://lawsofux.com/law-of-common-region/">공통 영역의 법칙<span lang="en">Law of Common Region</span></a></th><td>같은 경계 안에 있는 요소들은 하나의 집단으로 인식되기 쉽다.</td></tr>
+        <tr><th scope="row"><a href="https://lawsofux.com/law-of-proximity/">근접성의 법칙<span lang="en">Law of Proximity</span></a></th><td>서로 가까이 놓인 요소들은 관련된 정보로 인식되기 쉽다.</td></tr>
+        <tr><th scope="row"><a href="https://lawsofux.com/law-of-pr%C3%A4gnanz/">프레그난츠의 법칙<span lang="en">Law of Prägnanz</span></a></th><td>사람은 복잡하거나 모호한 형태를 가능한 한 단순한 구조로 해석하려 한다.</td></tr>
+        <tr><th scope="row"><a href="https://lawsofux.com/law-of-similarity/">유사성의 법칙<span lang="en">Law of Similarity</span></a></th><td>색·모양 등 시각적 특징이 비슷한 요소들은 같은 부류로 인식되기 쉽다.</td></tr>
+        <tr><th scope="row"><a href="https://lawsofux.com/law-of-uniform-connectedness/">연결성의 법칙<span lang="en">Law of Uniform Connectedness</span></a></th><td>시각적으로 연결된 요소들은 연결되지 않은 요소보다 서로 관련 있어 보인다.</td></tr>
+        <tr><th scope="row"><a href="https://lawsofux.com/mental-model/">멘탈 모델<span lang="en">Mental Model</span></a></th><td>사용자는 시스템의 작동 방식에 대해 머릿속에 만들어둔 이해를 바탕으로 행동한다.</td></tr>
+        <tr><th scope="row"><a href="https://lawsofux.com/millers-law/">밀러의 법칙<span lang="en">Miller’s Law</span></a></th><td>기억 용량에는 한계가 있으므로 의미 단위로 묶어 돕되, ‘7±2’를 메뉴 개수 규칙으로 쓰지 않는다.</td></tr>
+        <tr><th scope="row"><a href="https://lawsofux.com/occams-razor/">오컴의 면도날<span lang="en">Occam’s Razor</span></a></th><td>같은 현상을 똑같이 잘 설명하는 가설이라면 불필요한 가정이 적은 쪽을 택한다.</td></tr>
+        <tr><th scope="row"><a href="https://lawsofux.com/paradox-of-the-active-user/">능동적 사용자의 역설<span lang="en">Paradox of the Active User</span></a></th><td>사용자는 설명을 충분히 배우기보다 당장 작업부터 시작하려는 경향이 있다.</td></tr>
+        <tr><th scope="row"><a href="https://lawsofux.com/pareto-principle/">파레토 원리<span lang="en">Pareto Principle</span></a></th><td>소수의 원인이 결과의 큰 비중을 만드는 경향을 말하며, 80:20은 고정 비율이 아니다.</td></tr>
+        <tr><th scope="row"><a href="https://lawsofux.com/parkinsons-law/">파킨슨의 법칙<span lang="en">Parkinson’s Law</span></a></th><td>일은 주어진 시간을 채우는 방향으로 늘어나는 경향이 있다.</td></tr>
+        <tr><th scope="row"><a href="https://lawsofux.com/peak-end-rule/">피크엔드 법칙<span lang="en">Peak-End Rule</span></a></th><td>경험에 대한 회상은 모든 순간의 평균보다 감정이 강했던 순간과 끝에 크게 좌우될 수 있다.</td></tr>
+        <tr><th scope="row"><a href="https://lawsofux.com/postels-law/">포스텔의 법칙<span lang="en">Postel’s Law</span></a></th><td>입력의 다양한 형태는 허용 범위 안에서 유연하게 받아들이고, 출력은 일관되고 명확하게 제공한다.</td></tr>
+        <tr><th scope="row"><a href="https://lawsofux.com/selective-attention/">선택적 주의<span lang="en">Selective Attention</span></a></th><td>사용자는 화면의 모든 정보보다 현재 목표와 관련된 일부 정보에 주의를 기울인다.</td></tr>
+        <tr><th scope="row"><a href="https://lawsofux.com/serial-position-effect/">서열 위치 효과<span lang="en">Serial Position Effect</span></a></th><td>연속된 항목에서는 처음과 마지막에 접한 내용을 더 잘 기억하는 경향이 있다.</td></tr>
+        <tr><th scope="row"><a href="https://lawsofux.com/teslers-law/">테슬러의 법칙<span lang="en">Tesler’s Law</span></a></th><td>제거할 수 없는 복잡성이 남는다면 그것을 사용자와 시스템 중 누가 감당할지 결정해야 한다.</td></tr>
+        <tr><th scope="row"><a href="https://lawsofux.com/von-restorff-effect/">폰 레스토프 효과<span lang="en">Von Restorff Effect</span></a></th><td>비슷한 요소들 사이에서 유독 다른 요소는 더 잘 기억되는 경향이 있다.</td></tr>
+        <tr><th scope="row"><a href="https://lawsofux.com/working-memory/">작업 기억<span lang="en">Working Memory</span></a></th><td>작업에 필요한 정보를 잠시 붙잡아두고 처리하는 인지 체계다.</td></tr>
+        <tr><th scope="row"><a href="https://lawsofux.com/zeigarnik-effect/">자이가르닉 효과<span lang="en">Zeigarnik Effect</span></a></th><td>완료한 일보다 끝내지 못했거나 중단된 일을 더 잘 기억하는 경향이 있다.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</details>
+
+<h2>처음 보는 화면에도 이미 기대가 있다</h2>
+
+<p><a href="https://lawsofux.com/jakobs-law/">제이콥의 법칙</a>에서 눈에 들어온 것은 사용자가 우리 서비스 밖에서 훨씬 많은 시간을 보낸다는 점이다. 처음 방문한 사용자에게도 기대는 있다. 다른 곳에서 배운 경험을 가져오기 때문이다. <a href="https://lawsofux.com/mental-model/">멘탈 모델</a>은 그 기대를 이해하는 데 도움이 되는 개념이다.</p>
+
+<p>예를 들어 검색창에 단어를 입력한 뒤 Enter를 누르거나, 로고를 눌러 첫 화면으로 돌아가려는 행동을 떠올려볼 수 있다. 매번 새로 배우는 행동이 아니라 이미 익힌 방식으로 화면을 탐색하는 것이다.</p>
+
+<p>여기서 내가 가져갈 기준은 익숙한 동작을 바꿀 때 그 이유를 설명할 수 있어야 한다는 것이다. 새로운 표현을 쓰는 것은 좋지만, 검색이나 뒤로 가기처럼 작업의 기본이 되는 동작까지 낯설게 만들 필요가 있을까. 개성을 드러내는 부분과 사용자가 편하게 지나가야 하는 부분을 구분하고 싶다.</p>
+
+<h2>선택지를 줄이기 전에, 고를 수 있게 만들기</h2>
+
+<p><a href="https://lawsofux.com/hicks-law/">힉의 법칙</a>은 선택지의 수와 복잡성이 결정 시간에 영향을 준다고 설명한다. <a href="https://lawsofux.com/choice-overload/">선택 과부하</a>는 많은 선택 앞에서 느끼는 부담을 다룬다. 둘을 함께 읽으니 버튼 몇 개를 지우는 것보다 사용자가 무엇을 비교해야 하는지 보이게 만드는 일이 먼저라는 생각이 들었다.</p>
+
+<p>가령 요금제 세 개가 있어도 설명이 제각각이면 고르기 어렵다. 한쪽은 저장 용량, 다른 쪽은 협업 기능, 나머지는 할인율만 강조한다면 사용자는 비교 기준부터 직접 만들어야 한다. 반대로 같은 항목을 나란히 보여주면 차이를 파악하기 쉬워진다.</p>
+
+<p>이 글의 전체 요약표를 접어둔 것도 같은 관점이다. 처음에는 글의 흐름을 읽고, 특정 원칙을 찾고 싶을 때 표를 펼칠 수 있게 했다. 다만 접는다고 항상 편해지는 것은 아니다. 결제 금액이나 필수 조건처럼 지금 판단에 필요한 정보까지 숨기면 오히려 찾는 일이 늘어난다.</p>
+
+<h2>기억력에 기대지 않는 화면</h2>
+
+<p><a href="https://lawsofux.com/millers-law/">밀러의 법칙</a>을 보면 ‘7±2’라는 숫자가 먼저 기억에 남는다. 그런데 원문은 이 숫자로 불필요한 디자인 제한을 만들지 말라고 명시한다. 메뉴를 일곱 개로 맞추는 규칙으로 받아들이기보다, 정보를 의미 있는 단위로 묶는 <a href="https://lawsofux.com/chunking/">청킹</a>과 함께 읽는 편이 낫다.</p>
+
+<p>가입 화면을 만든다고 생각해보자. 이름, 연락처, 비밀번호, 배송지 입력란을 모두 같은 간격으로 나열하면 사용자가 관계를 해석해야 한다. 계정 정보와 배송 정보를 묶고, 각 설명을 해당 입력란 가까이에 두면 구조가 드러난다. 이때 여백은 단순한 장식이 아니라 어떤 정보끼리 관련 있는지 알려주는 역할을 한다. <a href="https://lawsofux.com/law-of-proximity/">근접성</a>과 <a href="https://lawsofux.com/law-of-common-region/">공통 영역</a>의 원칙으로도 설명할 수 있다.</p>
+
+<p>내가 적용해보고 싶은 것은 이전 화면의 내용을 외워서 다음 화면에 입력하게 하지 않는 것이다. 선택한 상품과 옵션을 주문 단계에서도 확인할 수 있게 하고, 오류가 나더라도 이미 입력한 내용은 남겨두는 식이다. 사용자의 <a href="https://lawsofux.com/working-memory/">작업 기억</a>을 화면이 조금이라도 대신해줄 수 있는지 살펴보고 싶다.</p>
+
+<h2>누르기 쉬운 것과 반응을 알 수 있는 것</h2>
+
+<p><a href="https://lawsofux.com/fittss-law/">피츠의 법칙</a>은 목표까지의 거리와 크기가 조작에 영향을 준다고 설명한다. 작은 아이콘을 정교하게 그려도 실제 클릭 영역이 작으면 누르기 어렵다. 내 화면에서는 예뻐 보였던 버튼을 손가락으로 눌렀을 때도 편한지 확인해야 하는 이유다.</p>
+
+<p>예를 들어 체크박스의 작은 사각형만 누를 수 있는 폼과, 연결된 레이블을 눌러도 선택되는 폼을 생각해볼 수 있다. 같은 디자인이어도 실제로 반응하는 영역에 따라 조작의 여유가 달라진다. 버튼 사이 간격도 함께 봐야 한다. 누르는 면적만 키우다가 옆의 다른 행동을 잘못 누르게 만들어서는 안 된다.</p>
+
+<p>누른 다음에는 <a href="https://lawsofux.com/doherty-threshold/">도허티 임계값</a>이 떠오른다. 사이트는 400ms 미만의 반응을 이야기하지만, 나는 이를 모든 서버 작업을 그 시간 안에 끝내라는 규칙으로 읽지는 않았다. 처리에 시간이 걸리더라도 입력이 접수됐고 진행 중이라는 사실은 빨리 알려줄 수 있다.</p>
+
+<p>저장 버튼을 눌렀을 때 아무 변화가 없으면 다시 누르게 된다. 반면 처리 중이라는 표시와 완료 결과가 이어지면 다음 행동을 결정할 수 있다. 구현할 때는 빠른 피드백과 실제 완료를 구분하려 한다. 아직 저장하지 못했는데 성공했다고 보여주는 것은 다른 문제를 만들기 때문이다.</p>
+
+<h2>아름다움과 강조에도 역할이 있다</h2>
+
+<p><a href="https://lawsofux.com/aesthetic-usability-effect/">심미적 사용성 효과</a>는 보기 좋은 화면을 더 사용하기 쉽다고 느낄 수 있다는 설명이다. 동시에 원문은 아름다움이 사용성 문제를 가릴 수 있다고도 말한다. 좋은 인상과 실제 작업의 성공을 따로 살펴볼 필요가 있다.</p>
+
+<p>정돈된 신청 화면을 보고 좋은 평가를 했더라도, 막상 오류를 수정하지 못하거나 마지막 제출 버튼을 찾지 못할 수 있다. 내가 화면을 확인할 때도 ‘보기 괜찮다’는 판단에서 멈추지 않고, 목표한 일을 끝낼 수 있는지까지 따라가봐야겠다고 느꼈다.</p>
+
+<p><a href="https://lawsofux.com/von-restorff-effect/">폰 레스토프 효과</a>도 비슷한 질문을 던진다. 다른 요소가 기억에 남는다면 강조는 상대적인 것이다. 모든 버튼에 진한 색을 넣으면 정작 무엇이 중요한지 구분하기 어렵다. 나는 강조색을 고르기 전에 이 화면에서 사용자가 먼저 발견해야 할 행동이 무엇인지 정해보려 한다.</p>
+
+<h2>복잡함을 누가 감당하고 있는가</h2>
+
+<p>개발하는 입장에서 가장 오래 생각하게 된 것은 <a href="https://lawsofux.com/teslers-law/">테슬러의 법칙</a>이다. 어떤 복잡성은 없앨 수 없고, 결국 시스템이나 사용자가 감당해야 한다는 관점이다. 겉으로 입력란이 적어졌다고 작업까지 단순해진 것은 아닐 수 있다.</p>
+
+<p>예를 들어 날짜를 정해진 형식에 맞춰 직접 입력하게 하면 구현은 간단할 수 있다. 하지만 사용자는 형식을 기억하고, 틀리면 고쳐 써야 한다. 반대로 명확한 예시와 적절한 선택 도구를 제공하면 구현에서 신경 쓸 부분이 늘어난다. 어느 쪽에서 수고를 부담하고 있는지 드러나는 장면이다.</p>
+
+<p><a href="https://lawsofux.com/postels-law/">포스텔의 법칙</a>도 함께 떠올랐다. 전화번호의 공백이나 하이픈처럼 의미가 분명한 표현 차이는 시스템에서 정리해줄 수 있다. 다만 내가 적용할 범위는 허용한 입력 안에서의 편의다. 모호한 날짜를 임의로 해석하거나 입력 검증을 생략하겠다는 뜻은 아니다. 해석할 수 없을 때 무엇을 고쳐야 하는지 명확히 알려주는 것까지 포함하고 싶다.</p>
+
+<h2>법칙을 외우기보다 화면에 질문하기</h2>
+
+<p>이름은 Laws of UX지만 모든 항목이 같은 성격은 아니다. 인지 현상을 설명하는 개념도 있고, 설계할 때 참고하는 원리도 있다. 숫자 하나나 짧은 정의만으로 모든 화면의 정답을 정하기는 어렵다. 이 글의 한 줄 표 역시 다시 찾아보기 위한 입구로 남겨두고 싶다.</p>
+
+<p>읽고 나서 내게 남은 질문은 다음과 같다.</p>
+
+<ul>
+  <li>사용자가 이미 알고 있는 동작을 이유 없이 바꾸고 있지는 않은가?</li>
+  <li>지금 해야 할 선택과 나중에 해도 되는 선택이 구분되어 있는가?</li>
+  <li>앞에서 본 내용을 기억해야만 다음 단계로 갈 수 있지는 않은가?</li>
+  <li>버튼은 실제로 누르기 쉽고, 누른 뒤 상태가 분명하게 드러나는가?</li>
+  <li>구현을 간단하게 만들기 위해 사용자에게 반복 작업을 넘기고 있지는 않은가?</li>
+</ul>
+
+<p>앞으로 화면을 만들 때는 ‘왠지 불편하다’는 느낌을 이 질문들로 조금 더 구체적으로 풀어보고 싶다. 그리고 고친 뒤에는 실제 사용 흐름을 다시 따라가며 나아졌는지 확인하려 한다. 법칙의 이름을 많이 아는 것보다, 사용자가 잠깐 멈추는 이유를 하나 더 알아차리는 쪽이 내게는 더 쓸모 있는 공부였다.</p>
+
+<div class="post-end">
+  <p><strong>참고 자료</strong><br><a href="https://lawsofux.com/">Laws of UX — Jon Yablonski</a> · 확인일 2026.09.29</p>
+  <p>각 항목의 정의와 설명을 참고해 한국어로 요약하고 개인적인 해석과 가상의 적용 예시를 덧붙였다. 원문은 표와 본문에 연결했다. 상단 스크린샷의 사이트 디자인과 그래픽 출처는 Laws of UX / Jon Yablonski다.</p>
+</div>

@@ -1,5 +1,22 @@
 [
   {
+    "id": "laws-of-ux",
+    "number": 5,
+    "date": "2026-09-29",
+    "title": {
+      "ko": "Laws of UX를 읽고 — 편한 화면에는 이유가 있다",
+      "en": "Reading Laws of UX — Why Some Interfaces Feel Easier"
+    },
+    "summary": {
+      "ko": "Laws of UX의 30개 원칙을 한 줄로 정리하고, 익숙함과 선택, 기억, 반응 속도를 화면을 만드는 관점에서 돌아봤다.",
+      "en": "Notes on all 30 Laws of UX concepts, with reflections on familiarity, choice, memory, and feedback in interface design."
+    },
+    "content": {
+      "ko": "posts/2026/laws-of-ux.ko.html"
+    },
+    "tags": ["UX", "UI", "Frontend", "독서 기록"]
+  },
+  {
     "id": "toss-fe-ai-verification",
     "number": 4,
     "date": "2026-09-08",
