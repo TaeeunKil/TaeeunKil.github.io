@@ -1,0 +1,286 @@
+<aside class="post-context-note" aria-label="글의 출처와 성격">
+  <p class="post-context-kicker">Study note / Personal application</p>
+  <p><strong>Jev와 Laya의 공식 소개와 문서를 읽고, DEVOCEAN의 적용 기록을 CoveLetter에서 준비 중인 자소서 검토 흐름에 대입해 본 글이다.</strong> GPT 초안 A에서 B와 C를 서로 독립적으로 갈라 만들고 Jev로 비교했다. C는 A만 Jev로 점수 평가한 결과를 참고해 GPT가 썼으며, B 문장은 전달하지 않았다. Jev를 CoveLetter에 연결하거나 자소서 개선 효과를 평가한 것은 아니다. 제품 소개, 한 편의 사용 사례, 작은 비교 실험을 구분해 적었다. (2026년 10월 7일 기준)</p>
+</aside>
+
+<p class="post-lead">CoveLetter에 자소서 검토 흐름을 만들면서<br>글을 고치는 다음 단계를 찾고 있었다.</p>
+
+<p>초안은 AI로 만들 수 있다. 내가 더 고민한 건 그 다음이었다. 질문에 제대로 답했는지, 실제로 한 일보다 크게 쓰지 않았는지, 고친 문장이 정말 나은지 확인해야 한다. 문장을 만드는 일과 여러 문장 중 하나를 고르는 일은 다른 판단이었다.</p>
+
+<p>TypeSafe가 소개한 <a href="https://typesafe.ai/blog/introducing-system-one-models-and-jev">Jev</a>는 바로 그 선택 단계에 초점을 둔다. 긴 문장을 만들어 주기보다, 입력한 내용에 질문을 붙이면 선택·점수·참 여부처럼 미리 정한 형식으로 답한다. 앱은 그 값을 받아 다음 동작을 정할 수 있다.</p>
+
+<h1>Jev는 어떤 답을 돌려주나</h1>
+
+<p>TypeSafe는 Jev를 System One 모델이라고 부른다. 실제 사용에서 눈에 띄는 건 이름보다 출력 방식이다. 텍스트 하나에 여러 질문을 붙여 한 번에 보내고, 긴 설명 대신 각 질문에 맞춘 값을 받는다.</p>
+
+<table>
+  <caption>TypeSafe 빠른 시작 문서에 나오는 세 가지 판단 형식</caption>
+  <thead>
+    <tr><th scope="col">형식</th><th scope="col">묻는 것</th><th scope="col">예시</th></tr>
+  </thead>
+  <tbody>
+    <tr><th scope="row"><code>choice</code></th><td>후보 중 어느 것이 맞는가</td><td>문의는 결제·기술·영업 중 어느 팀이 맡아야 하나</td></tr>
+    <tr><th scope="row"><code>score</code></th><td>정해 둔 단계 중 어디에 해당하는가</td><td>고객의 불만 정도는 0~2 중 어느 수준인가</td></tr>
+    <tr><th scope="row"><code>noul</code></th><td>예라고 볼 확률은 얼마인가</td><td>이 문의가 긴급한가</td></tr>
+  </tbody>
+</table>
+
+<p><a href="https://docs.typesafe.ai/introduction/quickstart">빠른 시작 예제</a>에는 고객 문의 하나를 두고 담당 부서, 불만 정도, 긴급 여부를 함께 묻는 장면이 나온다. 답은 선택지, 단계 점수, 참일 확률로 돌아온다. 프로그램은 그 결과로 담당 팀을 정하거나 급한 문의를 먼저 보낼 수 있다.</p>
+
+<p>생성형 모델이 다음 단어를 이어 쓰는 동안 Jev는 미리 정한 답의 확률을 계산해 구조화된 값으로 돌려준다. 그래서 자유 형식 답변을 다시 읽고 JSON으로 바꾸는 일은 줄어든다. TypeSafe는 이 구조를 두고 환각이 없다고 설명하지만, 출력 형식이 정해져 있다는 말과 판단이 항상 맞다는 말은 다르다. 입력한 사실이나 질문 기준이 잘못되면 결과도 빗나갈 수 있다.</p>
+
+<h1>어떤 일에 붙이면 유용할까</h1>
+
+<p>담당 부서 분류, 피싱 여부, 문의 긴급도, 검색 결과의 관련성처럼 기준을 정해 둘 수 있는 일이 잘 맞는다. 이런 작업은 매번 긴 해설을 읽기보다 결과를 코드에 넘겨 다음 단계로 보내는 편이 간단하다.</p>
+
+<p>질문과 선택지는 사람이 먼저 정해야 한다. “더 나은 문장”처럼 기준이 넓은 질문은 결과를 그대로 믿기 어렵다. 실제 자료에서 오답과 애매한 사례를 살펴보고 어디까지 자동으로 넘길지 정한 다음에야 업무 흐름에 넣을 수 있다.</p>
+
+<h1>글 검토에도 ‘판정만’ 맡길 수 있다</h1>
+
+<p>DEVOCEAN의 <a href="https://devocean.sk.com/blog/techBoardDetail.do?ID=168525">적용 기록</a>에서 가져오고 싶은 부분은 생성과 판정을 나눈 점이다. 한 모델이 글을 고치고, Jev는 “수정안이 원문보다 나은가”를 선택한다. 원문과 수정안의 순서를 뒤집어서도 묻는다. 두 결과가 다르거나 확신이 부족하면 새 문장을 바로 채택하지 않는다.</p>
+
+<p>검토할 때는 근거 자료도 같이 줬다. 출처를 보지 못한 검토자가 사실을 틀렸다고 판단하지 않도록 하기 위해서다. 원문과 수정안을 비교할 때 양쪽에 같은 근거를 제공해야 비교 조건이 맞는다.</p>
+
+<p>문체 판정 결과를 그대로 삭제 지시로 쓰지도 않았다. 글쓴이는 다듬은 원고에서 Jev가 표시한 문단 49개를 다시 읽었고, 그중 실제로 해당 패턴이 있다고 본 건 2개였다고 적었다. 문단을 따로 보면 글 전체에서 반복되는 표현도 놓칠 수 있었다. 표시 하나만 보고 문장을 지우기엔 오탐이 많았던 셈이다. 문체 신호는 참고로 두고, 반복은 코드로 세고, 사실은 근거와 따로 맞춰 보는 쪽이 낫겠다고 생각했다.</p>
+
+<p>글쓴이는 원고 교정과 문체 확인, 자동 발행 전 검토에 Jev를 써 본 과정을 공유한다. 한 사람의 실험 기록을 한국어 글 전반의 성능으로 읽을 수는 없다. 그 글에서 사용한 0.6 기준도 해당 원고에서 정한 값이다. 내 글에 그대로 적용할 이유는 아직 없다.</p>
+
+<h1>한 초안에서 세 갈래로 나눠 봤다</h1>
+
+<p>GPT가 만든 초안 A 하나를 공통 출발점으로 삼았다. B는 A에 문체 수정 프롬프트를 적용해 만들었다. C는 별도 경로로 A만 Jev에 평가받고, 그 결과를 참고해 GPT가 새로 썼다. C를 만들 때 B의 문장이나 A/B 비교 결과는 쓰지 않았다. 마지막에 Jev가 B와 C를 각각 먼저 보여 주는 순서로 비교했다. 두 수정안 모두 GPT가 썼고 Jev는 A의 점수 평가와 B/C 선택만 맡았다.</p>
+
+<figure class="post-figure">
+  <svg viewBox="0 0 980 410" width="100%" height="auto" role="img" aria-labelledby="jev-branches-title jev-branches-desc" xmlns="http://www.w3.org/2000/svg">
+    <title id="jev-branches-title">GPT 초안 A에서 독립적으로 갈라진 세 버전</title>
+    <desc id="jev-branches-desc">초안 A에서 문체 프롬프트를 적용해 GPT 수정안 B를 만들고, 별도로 Jev가 A를 점수 평가한 뒤 그 점수와 A만으로 GPT 수정안 C를 만든다. 마지막에 Jev가 B와 C를 순서를 바꿔 비교한다.</desc>
+    <style>
+      .branch-bg { fill: #f2f1ed; }
+      .branch-line { stroke: #d6d4ce; stroke-width: 1.5; }
+      .branch-text { fill: #171716; font-family: Pretendard, system-ui, sans-serif; }
+      .branch-muted { fill: #777570; font-family: Pretendard, system-ui, sans-serif; }
+      .branch-node { fill: #f2f1ed; stroke: #d6d4ce; stroke-width: 1.5; }
+      .branch-focus { fill: #f2f1ed; stroke: #e74b2b; stroke-width: 1.5; }
+      .branch-accent { fill: #e74b2b; }
+      .branch-arrow { fill: none; stroke: #777570; stroke-width: 1.5; marker-end: url(#jev-branch-arrowhead); }
+    </style>
+    <defs>
+      <marker id="jev-branch-arrowhead" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+        <path d="M 0 0 L 10 5 L 0 10 z" fill="#777570" />
+      </marker>
+    </defs>
+    <rect class="branch-bg" width="980" height="410" />
+    <text class="branch-muted" x="30" y="34" font-size="13" font-weight="600" letter-spacing="1.2">THREE DRAFTS / ONE SOURCE</text>
+    <text class="branch-text" x="30" y="68" font-size="24" font-weight="700">A에서 B와 C를 따로 만든다</text>
+    <line class="branch-line" x1="30" y1="88" x2="950" y2="88" />
+
+    <rect class="branch-focus" x="30" y="150" width="170" height="82" />
+    <circle class="branch-accent" cx="184" cy="166" r="4" />
+    <text class="branch-muted" x="46" y="176" font-size="12" font-weight="600">공통 출발점</text>
+    <text class="branch-text" x="46" y="204" font-size="18" font-weight="700">GPT 초안 A</text>
+
+    <rect class="branch-node" x="280" y="112" width="205" height="70" />
+    <text class="branch-muted" x="296" y="137" font-size="12" font-weight="600">경로 1 · A만 입력</text>
+    <text class="branch-text" x="296" y="160" font-size="14" font-weight="600">GPT 문체 프롬프트</text>
+    <rect class="branch-node" x="535" y="112" width="170" height="70" />
+    <text class="branch-muted" x="551" y="137" font-size="12" font-weight="600">수정안</text>
+    <text class="branch-text" x="551" y="160" font-size="16" font-weight="700">B · GPT 개선안</text>
+
+    <rect class="branch-node" x="280" y="218" width="205" height="70" />
+    <text class="branch-muted" x="296" y="243" font-size="12" font-weight="600">경로 2 · A만 평가</text>
+    <text class="branch-text" x="296" y="266" font-size="14" font-weight="600">Jev 점수 → GPT 지침</text>
+    <rect class="branch-node" x="535" y="218" width="170" height="70" />
+    <text class="branch-muted" x="551" y="243" font-size="12" font-weight="600">새 수정안</text>
+    <text class="branch-text" x="551" y="266" font-size="16" font-weight="700">C · Jev 반영 GPT안</text>
+
+    <rect class="branch-focus" x="770" y="158" width="180" height="82" />
+    <text class="branch-muted" x="786" y="184" font-size="12" font-weight="600">마지막 판정</text>
+    <text class="branch-text" x="786" y="207" font-size="16" font-weight="700">B ↔ C 순서 교차</text>
+    <text class="branch-muted" x="786" y="226" font-size="12">Jev가 두 번 비교</text>
+
+    <path class="branch-arrow" d="M 200 171 C 236 171, 240 147, 270 147" />
+    <path class="branch-arrow" d="M 200 211 C 237 235, 240 253, 270 253" />
+    <path class="branch-arrow" d="M 485 147 H 525" />
+    <path class="branch-arrow" d="M 485 253 H 525" />
+    <path class="branch-arrow" d="M 705 147 H 760" />
+    <path class="branch-arrow" d="M 705 253 C 742 253, 742 220, 760 220" />
+
+    <line class="branch-line" x1="30" y1="322" x2="950" y2="322" />
+    <text class="branch-text" x="30" y="352" font-size="13" font-weight="600">B와 C는 같은 A에서 시작한 별도 갈래</text>
+    <text class="branch-muted" x="30" y="376" font-size="13">C에 전달한 것은 A의 Jev 점수뿐이다. Jev가 글을 생성하지는 않는다.</text>
+  </svg>
+  <figcaption>원문 A → 문체 프롬프트만 적용한 B / 원문 A → Jev 점수 평가 → GPT가 새로 쓴 C. 마지막 비교에서는 두 안의 순서를 바꿨다.</figcaption>
+</figure>
+
+<h2>GPT 초안 (A)</h2>
+<blockquote>
+  <p>AI에게 문장을 써 달라는 일과, 두 문장 중 어느 쪽을 고를지 묻는 일은 다르다.</p>
+  <p>생성형 AI는 초안을 빠르게 만든다. 그런데 초안이 질문에 답했는지, 원래 경험에 없던 주장을 보태지는 않았는지, 고친 문장이 정말 나아졌는지를 다시 판단해야 한다. 이 검토까지 매번 긴 답변을 생성하는 모델에 맡기면 느리고, 결과를 코드에 연결하려면 문장을 다시 해석해야 한다.</p>
+  <p>DEVOCEAN의 적용 기록은 이 역할을 글 교정에 가져왔다. 글을 고치는 모델과 고친 결과를 판정하는 모델을 분리하고, 수정안이 원문보다 나은지를 Jev에 맡겼다. 원문과 수정안은 순서를 바꿔 다시 비교하고, 두 결과가 엇갈리거나 확신이 낮으면 수정안을 자동 채택하지 않는다.</p>
+  <p>이 기록에서 문체 검사는 자동 삭제 목록이 되지 않았다. 저자가 보고한 실험에서는 Jev가 표시한 49개 문단 가운데 실제로 해당 패턴이 있었다고 본 것은 2개였다. 문단 단위 판정은 글 전체에서 반복되는 말버릇도 놓쳤다. 그래서 문단 안의 패턴은 참고 신호로 두고, 반복 횟수는 코드로 세며, 사실 확인은 별도 단계로 남겼다.</p>
+  <p>CoveLetter에서 만들고 있는 것은 새 언어 모델이 아니다. 실제 경험 자료를 찾고, 문항에 맞는 초안을 쓰고, 각 주장을 근거와 대조하고, 원문과 수정안을 비교한 뒤 새 버전으로 보관하는 절차다. 현재 판정 방식은 assistant-review이고, Jev API나 Laya 모델은 연결하지 않았다.</p>
+  <p>내가 Jev에서 가져오고 싶은 것도 AI가 썼는지 맞히기가 아니다. 이미 가진 경험을 과장하지 않으면서, 더 나은 수정만 남기려는 작은 판정 단계다.</p>
+</blockquote>
+
+<h2>GPT에 준 수정 프롬프트</h2>
+<blockquote>
+  <p>아래 글을 자연스럽게 다듬어 줘. AI가 쓴 티가 덜 나게, 뻔한 도입과 같은 리듬의 문장을 줄이고 내 작업이 구체적으로 드러나게 해 줘. 사실·수치·출처나 내가 확인하지 않은 내용은 추가하지 말고, 핵심 주장은 유지해. 수정된 문안만 보여줘.</p>
+</blockquote>
+<p>이번 비교에서 “AI가 쓴 티”는 탐지 점수가 아니라 상투적인 도입과 반복되는 문장 리듬을 가리키도록 요청했다.</p>
+
+<h2>GPT 프롬프트 수정안 (B)</h2>
+<blockquote>
+  <p>CoveLetter에서 자소서 검토 흐름을 만들다 보니, 초안을 쓴 뒤 무엇을 다시 확인해야 할지가 가장 궁금해졌다.</p>
+  <p>초안이 질문에 답하는지, 실제 경험보다 부풀려 쓰진 않았는지, 수정한 문장이 정말 나아졌는지 봐야 한다. 글을 만드는 일과 두 문장을 비교하는 일은 다른 판단이다.</p>
+  <p>DEVOCEAN의 사례에서는 이 두 역할을 나눈다. 한 모델이 문장을 다듬고, Jev는 수정안이 원문보다 나은지를 고른다. 순서를 바꿔 한 번 더 물어보고, 결과가 엇갈리거나 애매하면 자동으로 채택하지 않는다.</p>
+  <p>문체 판정도 삭제 목록처럼 쓰지 않았다. 글쓴이는 다듬은 원고에서 Jev가 표시한 문단 49개를 다시 읽었고, 실제로 해당 패턴이 있다고 본 건 2개였다고 적었다. 문단 하나씩 보면 글 전체에 반복되는 표현을 놓칠 수 있었다. 그래서 문체 신호는 다시 읽을 후보로 두고, 반복은 코드로 세며, 사실은 근거와 대조한다.</p>
+  <p>CoveLetter에서 만들고 있는 건 새 언어 모델이 아니다. 경험 자료에서 쓸 내용을 찾고, 실제 문항에 맞춰 쓰고, 주장을 근거에 대조한 뒤 수정 전후를 새 버전으로 보관하는 절차다. 현재 판정은 assistant-review이고, Jev나 Laya는 연결하지 않았다.</p>
+  <p>내가 Jev로 알아보고 싶은 것도 AI가 썼는지를 맞히는 능력은 아니다. 경험을 부풀리지 않는 수정이 한국어 자소서에도 도움이 되는지, 실제 글 한 편에서 확인하는 일이다.</p>
+</blockquote>
+
+<h2>Jev 점수 반영 GPT 수정안 (C)</h2>
+<blockquote>
+  <p>아래 A만 바탕으로 새 수정안을 써 줘. 다른 수정안은 참고하지 않는다. Jev는 A를 ‘작성자의 CoveLetter 작업 구체성’ 1.99/2(확신도 0.98, 2단계 확률 0.99), ‘상투적 표현 의존도’ 0.09/2(확신도 0.86, 0단계 확률 0.91·1단계 확률 0.09)로 평가했다. 이 점수는 정한 기준에 대한 모델 판단이지 사실 정확성이나 품질 보증은 아니다. 구체성을 새로 보태려고 경험·수치·출처를 만들지 말고 A의 실제 디테일을 유지한다. 이미 낮은 상투성 평가를 고려해 불필요하게 크게 고치지 말고, 읽기 흐름이 나아지는 곳만 최소 수정한다. 주장과 근거 범위를 유지하고 수정 문안만 출력해.</p>
+</blockquote>
+<blockquote>
+  <p>AI가 초안을 쓰는 일과, 고친 문장을 고르는 일은 다르다.</p>
+  <p>AI는 초안을 빠르게 쓴다. 하지만 질문에 답했는지, 내 경험에 없던 주장을 보태지 않았는지, 수정안이 실제로 나아졌는지는 따로 확인해야 한다. 검토 결과를 긴 문장으로 받고 다시 읽어 코드에 연결하는 과정도 번거롭다.</p>
+  <p>DEVOCEAN의 적용 기록은 이 역할을 글 교정에 가져왔다. 글을 고치는 모델과 결과를 판정하는 모델을 분리하고, Jev가 수정안과 원문을 비교하도록 했다. 두 문장의 순서를 바꿔 다시 묻고, 결과가 엇갈리거나 확신이 낮으면 수정안을 자동으로 채택하지 않는다.</p>
+  <p>문체 판정도 삭제 목록으로 쓰지 않았다. 저자는 Jev가 표시한 문단 49개를 다시 읽었고, 실제로 해당 패턴이 있다고 본 건 2개였다고 적었다. 문단만 보면 글 전체에서 반복되는 말버릇을 놓칠 수 있었다. 그래서 문체 판정은 다시 읽을 후보로 두고, 반복 횟수는 코드로 세며, 사실은 근거와 대조하는 편이 낫다.</p>
+  <p>CoveLetter에서 만들고 있는 건 새 모델이 아니라, 경험 자료를 찾고 문항에 맞춰 쓴 뒤 주장을 근거와 대조하고 수정안을 별도 버전으로 보관하는 절차다. 현재 판정 방식은 assistant-review이며 Jev API나 Laya 모델은 연결하지 않았다.</p>
+  <p>Jev에서 가져오고 싶은 건 글쓴이가 사람인지 AI인지 가려내는 기능이 아니다. 확인한 경험을 벗어나지 않으면서 더 나은 수정안을 고르는 작은 판정 단계다.</p>
+</blockquote>
+
+<p>Jev 1.13.0은 B를 첫 번째로 본 요청에서 첫 번째(B)를 골랐다(선택 확률 0.87, 확신도 0.80). 순서를 뒤집은 요청에서는 두 번째(B)를 골랐다(선택 확률 0.83, 확신도 0.74). 두 번 모두 B였지만, 이는 같은 모델이 정한 문체 기준으로 발췌를 비교한 결과다. 특히 A를 평가한 Jev 점수로 C를 유도한 뒤 같은 모델로 B/C를 비교했으므로 독립적인 검증으로 볼 수 없다. 사람의 선호나 사실 정확도, 글 전체 품질을 대신하지 않는다.</p>
+
+<p>A 단독 점수 평가와 B/C 순서 교차 비교 두 회에서 입력은 999·1,533·1,533토큰으로 합계 4,065개였다. 출력은 총 119토큰이다. <a href="https://typesafe.ai/blog/introducing-system-one-models-and-jev">TypeSafe가 공개한 입력 단가</a>($0.042/백만 토큰, 출력 무료)를 적용하면 추정 입력 비용은 약 $0.00017이다. 이번 작은 시험은 세 버전 중 B와 C의 발췌 선호를 살펴본 기록이다. 확률은 합격 가능성이나 AI 작성 여부를 뜻하지 않으며, 다른 글에 적용할 기준값도 아니다.</p>
+
+<h1>Laya는 직접 실행할 수 있는 선택지</h1>
+
+<p><a href="https://github.com/NandhaKishorM/laya">Laya</a>도 선택·점수·예/아니오 형태의 판단을 내리는 오픈소스 엔진이다. <a href="https://nandhakishorm.github.io/laya/">공식 문서</a>를 보면 내 컴퓨터나 서버에서 실행하고, 입력 언어에 맞춰 모델을 고르거나 업무에 맞게 조정하는 방법을 안내한다. API를 쓰지 않고 직접 실행해 보고 싶은 팀이 비교해 볼 만하다.</p>
+
+<p><a href="https://news.hada.io/topic?id=33944">GeekNews 소개 글</a>은 Laya의 벤치마크와 속도, 확률 보정 결과를 자세히 정리한다. 숫자는 어떤 데이터와 모델로 시험했는지에 따라 달라진다. 개발팀이 낸 결과는 그 조건 안에서 읽어야 하고, 우리 업무에 잘 맞는지는 따로 확인해야 한다. 한국어 자소서에 써도 유용할지는 아직 모른다.</p>
+
+<h1>내가 자소서에 붙이려는 방식</h1>
+
+<p>나는 Jev를 바로 연결하는 대신, CoveLetter에 먼저 검토 순서를 만들고 있다. 경험 원문을 찾고, 회사 문항에 맞춰 초안을 쓴 다음, 문장에 쓴 사실을 근거와 대조한다. 수정 전후를 비교해도 제출본은 덮어쓰지 않고 새 버전으로 보관한다. 근거가 없는 주장은 매끄럽게 다듬기보다 확인할 항목으로 남긴다.</p>
+
+<ol>
+  <li><strong>경험 자료를 읽는다.</strong> 내가 한 일, 팀이 한 일, 확인된 결과를 나눠 본다.</li>
+  <li><strong>문항에 맞춰 쓴다.</strong> 실제 질문과 글자 수에 맞는 근거를 골라 초안을 만든다.</li>
+  <li><strong>확인할 수 있는 건 코드로 본다.</strong> 글자 수와 반복을 세고, 인용한 발췌가 원문 파일에 있는지 찾는다.</li>
+  <li><strong>두 안을 비교한다.</strong> 같은 근거를 제공한 뒤 질문에 답했는지, 내 행동이 구체적인지, 직무와 연결되는지 확인한다. 원문과 수정안의 순서도 바꿔 본다.</li>
+  <li><strong>애매하면 멈춘다.</strong> 근거가 부족하거나 결과가 갈리면 사람이 다시 읽는다. 제출본은 남겨 두고 수정 이유와 함께 새 버전을 저장한다.</li>
+</ol>
+
+<figure class="post-figure">
+  <svg viewBox="0 0 960 600" width="100%" height="auto" role="img" aria-labelledby="coveletter-flow-title coveletter-flow-desc" xmlns="http://www.w3.org/2000/svg">
+    <title id="coveletter-flow-title">CoveLetter 자소서 검토 하네스의 현재 흐름</title>
+    <desc id="coveletter-flow-desc">경험 근거에서 시작해 문항 초안, 코드 검사, 순서를 바꾼 두 차례 검토를 거친 뒤 사람이 사실을 확인하고 새 버전으로 저장한다. Jev와 Laya는 아직 연결하지 않았다.</desc>
+    <style>
+      .flow-bg { fill: #f2f1ed; }
+      .flow-line { stroke: #d6d4ce; stroke-width: 1.5; }
+      .flow-text { fill: #171716; font-family: Pretendard, system-ui, sans-serif; }
+      .flow-muted { fill: #777570; font-family: Pretendard, system-ui, sans-serif; }
+      .flow-node { fill: #f2f1ed; stroke: #d6d4ce; stroke-width: 1.5; }
+      .flow-node-review { fill: #f2f1ed; stroke: #e74b2b; stroke-width: 1.5; }
+      .flow-accent { fill: #e74b2b; }
+      .flow-arrow { fill: none; stroke: #777570; stroke-width: 1.5; marker-end: url(#flow-arrowhead); }
+    </style>
+    <defs>
+      <marker id="flow-arrowhead" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M 0 0 L 10 5 L 0 10 z" fill="#777570" />
+      </marker>
+    </defs>
+    <rect class="flow-bg" width="960" height="600" />
+    <text class="flow-muted" x="32" y="40" font-size="13" font-weight="600" letter-spacing="1.2">COVELETTER / REVIEW HARNESS</text>
+    <text class="flow-text" x="32" y="76" font-size="25" font-weight="700">경험 근거에서 새 버전까지</text>
+    <text class="flow-muted" x="32" y="102" font-size="14">생성, 기계 검사, 판정, 사람 확인을 나눠 연결한다.</text>
+
+    <text class="flow-muted" x="190" y="143" font-size="12" font-weight="600">01 · 근거</text>
+    <text class="flow-muted" x="340" y="143" font-size="12" font-weight="600">02 · 초안</text>
+    <text class="flow-muted" x="490" y="143" font-size="12" font-weight="600">03 · 검사</text>
+    <text class="flow-muted" x="640" y="143" font-size="12" font-weight="600">04 · 비교</text>
+    <text class="flow-muted" x="790" y="143" font-size="12" font-weight="600">05 · 확정</text>
+
+    <line class="flow-line" x1="32" y1="168" x2="928" y2="168" />
+    <line class="flow-line" x1="32" y1="278" x2="928" y2="278" />
+    <line class="flow-line" x1="32" y1="388" x2="928" y2="388" />
+    <line class="flow-line" x1="32" y1="498" x2="928" y2="498" />
+    <line class="flow-line" x1="178" y1="124" x2="178" y2="498" />
+
+    <text class="flow-text" x="34" y="220" font-size="15" font-weight="700">AI</text>
+    <text class="flow-muted" x="34" y="242" font-size="12">읽고 작성·비교</text>
+    <text class="flow-text" x="34" y="330" font-size="15" font-weight="700">CODE</text>
+    <text class="flow-muted" x="34" y="352" font-size="12">정해진 규칙 검사</text>
+    <text class="flow-text" x="34" y="440" font-size="15" font-weight="700">사람</text>
+    <text class="flow-muted" x="34" y="462" font-size="12">근거 확인·결정</text>
+
+    <rect class="flow-node" x="190" y="188" width="132" height="68" />
+    <text class="flow-text" x="204" y="215" font-size="14" font-weight="600">원문 근거를</text>
+    <text class="flow-text" x="204" y="237" font-size="14">읽는다</text>
+
+    <rect class="flow-node" x="340" y="188" width="132" height="68" />
+    <text class="flow-text" x="354" y="215" font-size="14" font-weight="600">실제 문항에</text>
+    <text class="flow-text" x="354" y="237" font-size="14">맞춰 작성</text>
+
+    <rect class="flow-node" x="490" y="298" width="132" height="68" />
+    <text class="flow-text" x="504" y="325" font-size="14" font-weight="600">글자 수·반복</text>
+    <text class="flow-text" x="504" y="347" font-size="14">발췌 존재 확인</text>
+
+    <rect class="flow-node-review" x="640" y="188" width="132" height="68" />
+    <circle class="flow-accent" cx="751" cy="202" r="4" />
+    <text class="flow-text" x="654" y="215" font-size="14" font-weight="600">원문·수정안</text>
+    <text class="flow-text" x="654" y="237" font-size="14">순서를 바꿔 비교</text>
+
+    <rect class="flow-node" x="640" y="298" width="132" height="68" />
+    <text class="flow-text" x="654" y="325" font-size="14" font-weight="600">누락·판정 일치</text>
+    <text class="flow-text" x="654" y="347" font-size="14">보고서로 확인</text>
+
+    <rect class="flow-node" x="190" y="408" width="132" height="68" />
+    <text class="flow-text" x="204" y="435" font-size="14" font-weight="600">경험 원문과</text>
+    <text class="flow-text" x="204" y="457" font-size="14">사실을 제공</text>
+
+    <rect class="flow-node" x="640" y="408" width="132" height="68" />
+    <text class="flow-text" x="654" y="435" font-size="14" font-weight="600">엇갈리거나 애매하면</text>
+    <text class="flow-text" x="654" y="457" font-size="14">보류 후 사실 확인</text>
+
+    <rect class="flow-node" x="790" y="408" width="132" height="68" />
+    <text class="flow-text" x="804" y="435" font-size="14" font-weight="600">수정 사유와 함께</text>
+    <text class="flow-text" x="804" y="457" font-size="14">새 버전 저장</text>
+
+    <path class="flow-arrow" d="M 322 222 H 333" />
+    <path class="flow-arrow" d="M 472 222 H 480 V 332 H 483" />
+    <path class="flow-arrow" d="M 622 332 H 630 V 222 H 633" />
+    <path class="flow-arrow" d="M 772 222 H 780 V 442 H 783" />
+    <path class="flow-arrow" d="M 256 408 V 267" />
+    <path class="flow-arrow" d="M 706 267 V 289" />
+    <path class="flow-arrow" d="M 706 366 V 399" />
+    <path class="flow-arrow" d="M 772 442 H 783" />
+
+    <line class="flow-line" x1="32" y1="530" x2="928" y2="530" />
+    <circle class="flow-accent" cx="40" cy="557" r="4" />
+    <text class="flow-text" x="54" y="562" font-size="13" font-weight="600">현재 판정 방식: assistant-review</text>
+    <text class="flow-muted" x="342" y="562" font-size="13">Jev·Laya 미연결 · 자동 채택·제출 없음</text>
+  </svg>
+  <figcaption>현재 CoveLetter 검토 흐름이다. 양방향 비교는 같은 AI가 순서를 바꿔 다시 보는 방식이다. Jev·Laya는 아직 연결하지 않았고, 실제 자소서에서 도움이 되는지도 확인 전이다.</figcaption>
+</figure>
+
+<p>지금 스킬이 쓰는 판정 방식은 <code>assistant-review</code>다. 검토 패킷의 순서를 바꿔 두 번 읽히고, 보고서에서 빠진 항목과 결론이 같은지 확인한다. 둘 다 같은 AI가 검토하므로 서로 독립된 모델 두 개가 맞춰 본 결과는 아니다. 합성 자료로는 동작을 확인했지만, 실제 자소서가 나아졌는지는 아직 평가하지 않았다. 다음에는 기존 자소서 한 편에 이 절차를 적용해 근거가 정확한지, 내가 수정을 선호하는지, 불필요한 수정이 생기지는 않는지부터 보려고 한다.</p>
+
+<h1>판정 점수는 합격 점수가 아니다</h1>
+
+<p>Jev나 Laya의 확률은 내가 입력한 질문에 대한 모델의 답이다. 그 값이 사실의 진위나 지원자의 실력, 서류 합격 가능성을 뜻하지는 않는다. 잘못된 근거를 넣거나 질문을 모호하게 쓰면 높은 확률로 틀린 답을 받을 수도 있다.</p>
+
+<p>결과를 믿을 수 있는지 보려면 확률과 함께 입력도 기록해야 한다. 어떤 근거를 읽혔는지, 질문을 어떻게 썼는지, 긴 문서가 잘리지 않았는지, 순서를 바꿔도 답이 같은지 살펴야 한다. 자동화할 수 있는 절차가 늘어도 최종 확인은 남는다.</p>
+
+<p>Jev를 보고 내가 CoveLetter에서 시험해 보고 싶어진 건 AI가 쓴 글을 가려내는 일이 아니다. 내 경험을 근거로 문장 두 개를 비교하고, 판단이 애매하면 멈추는 과정이다. 한국어 자소서에서 실제로 도움이 되는지는 아직 모른다. 기존 글 한 편부터 적용해 보고, 내가 무엇을 받아들이고 왜 고치지 않았는지 기록한 다음에 말하려 한다.</p>
+
+<h1>참고 자료</h1>
+
+<ul>
+  <li><a href="https://typesafe.ai/blog/introducing-system-one-models-and-jev">TypeSafe, Introducing System One Models &amp; Jev</a></li>
+  <li><a href="https://docs.typesafe.ai/introduction/quickstart">TypeSafe, Quick start</a></li>
+  <li><a href="https://devocean.sk.com/blog/techBoardDetail.do?ID=168525">DEVOCEAN, Jev로 AI 글 냄새 잡기</a></li>
+  <li><a href="https://news.hada.io/topic?id=33944">GeekNews, Laya — 직접 실행하고 학습할 수 있는 Jev의 오픈소스 대안</a></li>
+  <li><a href="https://github.com/NandhaKishorM/laya">Laya 공식 GitHub 저장소</a> · <a href="https://nandhakishorm.github.io/laya/">공식 문서</a></li>
+</ul>

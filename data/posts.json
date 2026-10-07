@@ -1,5 +1,22 @@
 [
   {
+    "id": "jev-decision-model",
+    "number": 6,
+    "date": "2026-10-07",
+    "title": {
+      "ko": "Jev는 글을 쓰지 않는다 — AI 글쓰기와 판정 모델",
+      "en": "Jev Doesn't Write — A Decision Model for AI Workflows"
+    },
+    "summary": {
+      "ko": "Jev의 선택·점수 판단을 소개하고, 한 GPT 초안에서 세 갈래로 나눈 수정 비교와 CoveLetter 적용 시 필요한 검증 절차를 정리했다.",
+      "en": "A look at Jev's typed decisions, the open-source Laya alternative, and what it takes to evaluate them in an essay-review workflow."
+    },
+    "content": {
+      "ko": "posts/2026/jev-decision-model.ko.html"
+    },
+    "tags": ["AI", "Jev", "Laya", "LLM", "자소서"]
+  },
+  {
     "id": "laws-of-ux",
     "number": 5,
     "date": "2026-09-29",
