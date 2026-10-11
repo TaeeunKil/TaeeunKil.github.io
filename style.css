@@ -533,6 +533,27 @@ a:focus-visible {
   color: var(--muted);
 }
 
+.post-body .jev-draft-comparison {
+  margin: 2rem 0 clamp(2.25rem, 4vw, 3.75rem);
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+
+.post-body .jev-draft-comparison > summary {
+  padding: 1rem 0;
+  color: var(--accent);
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.post-body .jev-draft-comparison[open] > summary {
+  margin-bottom: 1rem;
+}
+
+.post-body .jev-draft-comparison h2 {
+  margin: 2rem 0 1rem;
+}
+
 .post-context-note {
   margin: 0 0 clamp(2.75rem, 5vw, 4.5rem);
   padding: 1rem 0 1.1rem;
