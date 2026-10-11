@@ -8,7 +8,7 @@
       "en": "Jev Doesn't Write — A Decision Model for AI Workflows"
     },
     "summary": {
-      "ko": "Jev의 선택·점수 판단을 소개하고, 한 GPT 초안에서 세 갈래로 나눈 수정 비교와 CoveLetter 적용 시 필요한 검증 절차를 정리했다.",
+      "ko": "GPT 초안을 프롬프트로 고친 글과 Jev 점수를 참고해 다시 쓴 글을 비교했다.",
       "en": "A look at Jev's typed decisions, the open-source Laya alternative, and what it takes to evaluate them in an essay-review workflow."
     },
     "content": {
