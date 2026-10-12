@@ -15,7 +15,7 @@ const translations = {
     "nav.home": "홈",
     "nav.writing": "글",
     "nav.about": "소개",
-    "home.intro": "개발하며 배우고, 오래 남기고 싶은 것을 씁니다.",
+    "home.intro": "AI를 활용해 웹 기능 구현부터 배포와 운영 확인까지 연결하는 개발자 길태은입니다.",
     "writing.title": "글",
     "writing.loading": "글을 불러오고 있습니다.",
     "writing.emptyTitle": "첫 글을 준비하고 있습니다.",
@@ -42,7 +42,7 @@ const translations = {
     "nav.home": "Home",
     "nav.writing": "Writing",
     "nav.about": "About",
-    "home.intro": "I build, learn, and write down what I want to keep.",
+    "home.intro": "I'm Taeeun Kil. I use AI to connect web development with deployment and operational checks.",
     "writing.title": "Writing",
     "writing.loading": "Loading writing.",
     "writing.emptyTitle": "The first post is on its way.",
@@ -70,6 +70,13 @@ const TAB_FADE_OUT_MS = 280;
 function setLanguage(language, { persist = true } = {}) {
   currentLanguage = translations[language] ? language : "ko";
   const copy = translations[currentLanguage];
+
+  document.querySelectorAll('[data-ko][data-en]').forEach((element) => {
+    element.textContent = element.dataset[currentLanguage];
+  });
+  document.querySelectorAll('[data-ko-aria]').forEach((element) => {
+    element.setAttribute('aria-label', element.dataset[currentLanguage + 'Aria']);
+  });
 
   document.documentElement.lang = currentLanguage;
   document.querySelectorAll("[data-i18n]").forEach((element) => {
@@ -127,7 +134,8 @@ async function loadPosts() {
 }
 
 function selectTab(name, { updateHistory = true } = {}) {
-  const index = tabNames.indexOf(name);
+  const isPortfolio = name === 'portfolio';
+  const index = tabNames.indexOf(isPortfolio ? 'home' : name);
   const safeIndex = index === -1 ? 0 : index;
   const activeName = tabNames[safeIndex];
   const activePanel = panels[safeIndex];
@@ -153,7 +161,7 @@ function selectTab(name, { updateHistory = true } = {}) {
       panel.classList.remove("is-exiting");
       panel.setAttribute("aria-hidden", String(!active));
       panel.inert = !active;
-      if (active) panel.scrollTop = 0;
+      if (active) positionHome(panel, isPortfolio);
     });
   } else {
     currentPanel.classList.remove("is-active");
@@ -172,16 +180,31 @@ function selectTab(name, { updateHistory = true } = {}) {
         panel.classList.remove("is-exiting");
         panel.setAttribute("aria-hidden", String(!active));
         panel.inert = !active;
-        if (active) panel.scrollTop = 0;
+        if (active) positionHome(panel, isPortfolio);
       });
       tabTransitionTimer = undefined;
     }, reduceMotion.matches ? 0 : TAB_FADE_OUT_MS);
   }
 
-  if (updateHistory && location.hash !== `#${activeName}`) {
-    history.pushState(null, "", `#${activeName}`);
+  const targetHash = isPortfolio ? 'portfolio' : activeName;
+  if (updateHistory && location.hash !== `#${targetHash}`) {
+    history.pushState(null, "", `#${targetHash}`);
   }
 }
+
+function positionHome(panel, isPortfolio) {
+  const portfolio = document.getElementById('portfolio');
+  panel.scrollTo({ top: isPortfolio ? portfolio.offsetTop : 0, behavior: 'instant' });
+}
+
+document.querySelector('.portfolio-jump').addEventListener('click', (event) => {
+  event.preventDefault();
+  const home = document.getElementById('home');
+  const portfolio = document.getElementById('portfolio');
+  home.scrollTo({ top: portfolio.offsetTop, behavior: reduceMotion.matches ? 'instant' : 'smooth' });
+  document.getElementById('portfolio-title').focus({ preventScroll: true });
+  if (location.hash !== '#portfolio') history.pushState(null, '', '#portfolio');
+});
 
 tabs.forEach((tab) => {
   tab.addEventListener("click", (event) => {
@@ -222,6 +245,20 @@ window.scrollTo(0, 0);
 window.addEventListener("load", () => window.scrollTo(0, 0), { once: true });
 
 const mindMap = document.querySelector(".mind-map");
+document.querySelectorAll('[data-project-open]').forEach((button) => {
+  button.addEventListener('click', () => {
+    const dialog = document.getElementById(button.dataset.projectOpen);
+    dialog.showModal();
+    dialog.scrollTop = 0;
+  });
+});
+document.querySelectorAll('.project-dialog').forEach((dialog) => {
+  dialog.querySelector('.dialog-close').addEventListener('click', () => dialog.close());
+  dialog.addEventListener('click', (event) => {
+    const bounds = dialog.getBoundingClientRect();
+    if (event.target === dialog && (event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom)) dialog.close();
+  });
+});
 const mindNodes = [...document.querySelectorAll(".mind-node")];
 
 mindMap?.addEventListener("pointermove", (event) => {

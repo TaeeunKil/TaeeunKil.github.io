@@ -1,0 +1,4 @@
+interface:
+  display_name: "개발 블로그 글 검수"
+  short_description: "독자 관점으로 기술 글을 검수하고 필요한 설명과 작성자의 목소리를 보존합니다"
+  default_prompt: "$blog-writing-review로 이 블로그 글을 검수하고, 원문 근거와 수정 예시를 보여줘."
