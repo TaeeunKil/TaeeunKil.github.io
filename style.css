@@ -183,9 +183,14 @@ a:focus-visible {
 .project-tile:hover { transform: translateY(-4px); border-color: #dbb4a8; background: #fffdfa; }
 .project-tile:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
 .tile-screenshot { width: calc(100% + 3.2rem); height: 150px; margin: -1.6rem -1.6rem 1.3rem; object-fit: cover; object-position: top; border-radius: 18px 18px 0 0; }
-.project-logo { background: transparent; overflow: hidden; }
-.project-logo img { width: 100%; height: 100%; object-fit: contain; }
+.tile-symbol.project-logo { width: 112px; height: 52px; background: transparent; border-radius: 0; overflow: hidden; justify-items: start; }
+.project-logo img { display: block; width: auto; max-width: 112px; height: auto; max-height: 48px; object-fit: contain; }
+.tile-symbol.project-logo.logo-ovion { background: #282c32; border-radius: 8px; padding: 8px; }
+.logo-ovion img { width: 96px; max-height: 36px; }
 .project-case { margin-top: 2rem; }
+.project-role ul { padding-left: 1.2rem; margin: 1rem 0; }
+.project-role li { font-size: .9rem; line-height: 1.9; margin: .6rem 0; }
+.dialog-content .project-boundary { font-size: .78rem; color: #67655f; border-left: 2px solid var(--line); padding-left: 1rem; margin-top: 1.5rem; }
 .project-case dl { display: grid; grid-template-columns: 4rem minmax(0, 1fr); gap: .8rem 1rem; font-size: .88rem; line-height: 1.8; }
 .project-case dt { color: #b33e24; font-weight: 600; }
 .project-case dd { margin: 0; }
@@ -193,7 +198,7 @@ a:focus-visible {
 .project-evidence img { display: block; max-width: 100%; max-height: 620px; width: auto; height: auto; margin: 0 auto; object-fit: contain; }
 .project-evidence figcaption { margin-top: 1rem; font-size: .82rem; color: #67655f; line-height: 1.8; }
 .project-evidence a { display: inline-flex; align-items: center; min-height: 44px; font-size: .75rem; }
-.tile-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.4rem; }
+.tile-top { display: flex; align-items: center; justify-content: space-between; min-height: 52px; margin-bottom: 1.4rem; }
 .tile-symbol { display: grid; place-items: center; width: 48px; height: 48px; border-radius: 12px; background: #f2e6df; color: #a83b23; font-size: 1.15rem; letter-spacing: -.06em; font-weight: 700; }
 .tile-arrow { color: var(--muted); font-size: 1.1rem; transition: transform 180ms ease; }
 .project-tile:hover .tile-arrow { color: var(--accent); transform: translate(2px,-2px); }
@@ -201,6 +206,7 @@ a:focus-visible {
 .tile-subtitle { font-size: .8rem; color: #b33e24; line-height: 1.6; margin-bottom: .75rem; }
 .tile-description { font-size: .83rem; line-height: 1.8; color: #67655f; margin-bottom: 1.5rem; }
 .tile-tech { margin-top: auto; font-size: .68rem; color: #67655f; word-spacing: .12rem; }
+.tile-meta { display: block; margin-top: .65rem; font-size: .65rem; color: #76736d; }
 .project-dialog { border: 0; border-radius: 22px; width: min(780px, calc(100% - 32px)); max-height: calc(100svh - 64px); padding: 0; background: #faf9f6; color: var(--text); overscroll-behavior: contain; }
 .project-dialog::backdrop { background: rgb(23 23 22 / 48%); backdrop-filter: blur(3px); }
 .dialog-content { padding: clamp(1.5rem, 5vw, 3.5rem); }

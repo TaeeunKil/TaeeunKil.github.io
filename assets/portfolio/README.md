@@ -12,3 +12,10 @@
 - moayo-logo.jpg: 4쪽 로고 이미지 객체.
 - moayo-crawling.jpg: 5쪽 크롤링 구성도.
 - ttomanito-lazy-loading.jpg: 11쪽 비교표. 당시 발표 수치이며 측정 조건은 재검증하지 않음.
+
+- ovion-logo.svg: OVION 웹 프로젝트의 기존 로고. 흰색 워드마크를 어두운 배경에 표시.
+- mattermost-logo.svg: Mattermost 웹 프로젝트의 기존 로고.
+- rental-logo.svg: 기존 PDF 12쪽 로그인 화면의 로고 영역을 SVG viewBox로 표시.
+- ttomanito-logo.svg: 기존 PDF 8쪽 표지의 마스코트 영역을 SVG viewBox로 표시.
+
+- jacmel-mark.svg, deploy-mark.svg, legal-mark.svg, moayo-mark.svg: 포트폴리오용으로 만든 프로젝트 표식. 공식 서비스 로고가 아님. 모아요의 기존 추출 이미지 대신 사용.
