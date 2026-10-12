@@ -132,7 +132,7 @@ async function renderPost(post, { loadComments = false } = {}) {
   document.querySelector("#post-number").textContent = String(post.number ?? 1).padStart(3, "0");
   document.querySelector("#post-date").textContent = post.date.replaceAll("-", ".");
   document.querySelector("#post-date").dateTime = post.date;
-  document.querySelector("#post-tags").textContent = post.tags.join(" · ");
+  document.querySelector("#post-tags").textContent = post.tags.join(post.tagSeparator ?? " · ");
   document.querySelector("#post-summary").textContent = summary;
 
   const response = await fetch(contentPath);

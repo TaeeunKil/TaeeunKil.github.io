@@ -1,5 +1,23 @@
 [
   {
+    "id": "what-is-kafka",
+    "tagSeparator": " / ",
+    "number": 7,
+    "date": "2026-10-08",
+    "title": {
+      "ko": "카프카란?",
+      "en": "What Is Kafka?"
+    },
+    "summary": {
+      "ko": "주문 이벤트로 알아보는 카프카. 기본 구조부터 중복 처리와 장애 복구까지 정리했다.",
+      "en": "Following an order event through Kafka: partitions, consumer groups, database atomicity, duplicates, and retries."
+    },
+    "content": {
+      "ko": "posts/2026/what-is-kafka.ko.html"
+    },
+    "tags": ["Kafka", "Backend", "이벤트", "분산 시스템"]
+  },
+  {
     "id": "jev-decision-model",
     "number": 6,
     "date": "2026-10-07",
