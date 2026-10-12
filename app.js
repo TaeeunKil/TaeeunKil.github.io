@@ -124,7 +124,7 @@ async function loadPosts() {
   const list = document.querySelector("[data-post-list]");
 
   try {
-    const response = await fetch("data/posts.json");
+    const response = await fetch("data/posts.json?v=20261012-6831c64");
     if (!response.ok) throw new Error("Post index could not be loaded");
     postsCache = await response.json();
     postsCache.sort((a, b) => b.date.localeCompare(a.date));

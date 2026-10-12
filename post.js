@@ -165,7 +165,7 @@ async function renderPost(post, { loadComments = false } = {}) {
 
 async function loadPost() {
   try {
-    const response = await fetch("data/posts.json");
+    const response = await fetch("data/posts.json?v=20261012-6831c64");
     if (!response.ok) throw new Error("Post index could not be loaded");
     const posts = await response.json();
     activePost = posts.find((post) => post.id === postId);
