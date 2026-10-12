@@ -77,6 +77,13 @@ class ComparisonTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             review.validate_response({"answers": {}})
 
+    def test_malformed_facts_rejected(self):
+        facts = self.responses()
+        for payload in ([], {"candidates": []}, {"candidates": {"revision": None}}):
+            facts.write_text(__import__("json").dumps(payload), encoding="utf-8")
+            with self.assertRaises(ValueError):
+                self.result(facts)
+
 
 if __name__ == "__main__":
     unittest.main()

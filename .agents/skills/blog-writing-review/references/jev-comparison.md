@@ -25,7 +25,7 @@ macOS/Linux에서는 현재 셸 또는 사용하는 비밀 관리 도구를 통�
 
 `scripts/jev_review.py` 경로를 아래 명령의 SCRIPT 대신 사용한다. 실행 자료는 공개 레포 밖의 작업 디렉터리에 둔다.
 
-1. Windows에서는 `powershell -NoProfile -File scripts/credential.ps1`을 로컬 터미널에서 실행하고 숨김 입력에 키를 붙인다. 사용자 홈의 `.codex/secrets/typesafe-blog-review.dpapi`에 Windows 사용자 단위 암호화로 저장한다. 다른 환경에서는 `TYPESAFE_API_KEY` 환경변수를 사용한다. 환경변수가 우선한다. `credential.ps1 -Read`는 도구 내부용이며 직접 실행하면 키가 출력되므로 호출하거나 로그로 남기지 않는다.
+1. Windows에서는 `powershell -NoProfile -File scripts/credential.ps1`을 로컬 터미널에서 실행하고 숨김 입력에 키를 붙인다. 사용자 홈의 `.codex/secrets/typesafe-blog-review.dpapi`에 Windows 사용자 단위 암호화로 저장한다. 다른 환경에서는 `TYPESAFE_API_KEY` 환경변수를 사용한다. 환경변수가 우선한다. 설정 스크립트는 저장만 지원한다. Python이 Windows DPAPI로 키를 직접 읽으며 평문 출력 명령은 제공하지 않는다.
 2. `python -X utf8 SCRIPT key-status`로 키 존재를 확인한다. 이 명령은 실제 인증 요청을 보내지 않는다.
 3. 아래 형식의 실제 입력을 `input.json`으로 저장한다. original/revision에는 파일 경로가 아닌 제목과 본문을 넣는다.
 4. `python -X utf8 SCRIPT prepare input.json run-01`로 요청 두 개를 만든다. 준비 단계는 네트워크를 사용하지 않는다.

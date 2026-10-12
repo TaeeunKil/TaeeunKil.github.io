@@ -188,7 +188,11 @@ def report(directory, facts_path=None):
     if not versions["forward"] or versions["forward"] != versions["reverse"]:
         reasons.append("Model version is missing or changed between requests.")
     facts = read(facts_path) if facts_path else {}
+    if not isinstance(facts, dict) or not isinstance(facts.get("candidates", {}), dict):
+        raise ValueError("Fact review must contain a candidates object.")
     checked = facts.get("candidates", {}).get(preferred, {})
+    if not isinstance(checked, dict):
+        raise ValueError("Candidate fact review must be an object.")
     if preferred and (facts.get("input_sha256") != manifest["input_sha256"] or checked.get("status") != "pass"
             or not isinstance(checked.get("evidence"), str) or not checked["evidence"].strip()):
         reasons.append("Separate fact and condition review is missing, stale, or not passed.")
