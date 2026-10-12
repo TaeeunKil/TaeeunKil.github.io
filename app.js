@@ -15,8 +15,6 @@ const translations = {
     "nav.home": "홈",
     "nav.writing": "글",
     "nav.about": "소개",
-    "home.meta": "개인 웹사이트",
-    "home.place": "대전 · 2026",
     "home.intro": "개발하며 배우고, 오래 남기고 싶은 것을 씁니다.",
     "writing.title": "글",
     "writing.loading": "글을 불러오고 있습니다.",
@@ -34,7 +32,6 @@ const translations = {
     "about.campus": "04 / 학교",
     "about.cnu": "충남대학교",
     "about.company": "05 / 회사",
-    status: { home: "홈", writing: "글", about: "소개" },
   },
   en: {
     "meta.description": "TaeeunKil's personal website for code, learning, and ideas.",
@@ -45,8 +42,6 @@ const translations = {
     "nav.home": "Home",
     "nav.writing": "Writing",
     "nav.about": "About",
-    "home.meta": "Personal website",
-    "home.place": "Daejeon · 2026",
     "home.intro": "I build, learn, and write down what I want to keep.",
     "writing.title": "Writing",
     "writing.loading": "Loading writing.",
@@ -64,7 +59,6 @@ const translations = {
     "about.campus": "04 / CAMPUS",
     "about.cnu": "Chungnam National University",
     "about.company": "05 / COMPANY",
-    status: { home: "Home", writing: "Writing", about: "About" },
   },
 };
 
@@ -91,9 +85,6 @@ function setLanguage(language, { persist = true } = {}) {
     button.setAttribute("aria-pressed", String(button.dataset.language === currentLanguage));
   });
 
-  const activeName = tabNames[Number(getComputedStyle(document.documentElement).getPropertyValue("--panel-index"))] ?? "home";
-  document.querySelector("#current-label").textContent = copy.status[activeName];
-
   if (persist) {
     try { localStorage.setItem("language", currentLanguage); } catch {}
   }
@@ -113,7 +104,7 @@ function renderPostList() {
       <span class="post-number">${number}</span>
       <time datetime="${post.date}">${displayDate}</time>
       <div><h3>${title}</h3><p>${summary}</p></div>
-      <span class="post-arrow" aria-hidden="true">→</span>
+      <img class="post-thumbnail" src="${post.thumbnail}" alt="" width="160" height="100" loading="lazy" decoding="async">
     </a>`;
   }).join("");
   list.classList.remove("is-loading");
@@ -124,7 +115,7 @@ async function loadPosts() {
   const list = document.querySelector("[data-post-list]");
 
   try {
-    const response = await fetch("data/posts.json?v=20261012-6831c64");
+    const response = await fetch("data/posts.json?v=20261012-thumbnails");
     if (!response.ok) throw new Error("Post index could not be loaded");
     postsCache = await response.json();
     postsCache.sort((a, b) => b.date.localeCompare(a.date));
@@ -143,7 +134,6 @@ function selectTab(name, { updateHistory = true } = {}) {
   const currentPanel = panels.find((panel) => panel.classList.contains("is-active"));
 
   document.documentElement.style.setProperty("--panel-index", safeIndex);
-  document.querySelector("#current-label").textContent = translations[currentLanguage].status[activeName];
 
   tabs.forEach((tab) => {
     const active = tab.dataset.tabLink === activeName;

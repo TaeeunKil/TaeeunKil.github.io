@@ -14,7 +14,8 @@
     "content": {
       "ko": "posts/2026/decision-models-after-jev.ko.html"
     },
-    "tags": ["AI", "Decision Model", "Jev", "LLM", "API"]
+    "tags": ["AI", "Decision Model", "Jev", "LLM", "API"],
+    "thumbnail": "assets/thumbnails/decision-models-after-jev.svg"
   },
   {
     "id": "what-is-kafka",
@@ -32,7 +33,8 @@
     "content": {
       "ko": "posts/2026/what-is-kafka.ko.html"
     },
-    "tags": ["Kafka", "Backend", "이벤트", "분산 시스템"]
+    "tags": ["Kafka", "Backend", "이벤트", "분산 시스템"],
+    "thumbnail": "assets/thumbnails/what-is-kafka.svg"
   },
   {
     "id": "jev-decision-model",
@@ -49,7 +51,8 @@
     "content": {
       "ko": "posts/2026/jev-decision-model.ko.html"
     },
-    "tags": ["AI", "Jev", "Laya", "LLM", "자소서"]
+    "tags": ["AI", "Jev", "Laya", "LLM", "자소서"],
+    "thumbnail": "assets/thumbnails/jev-decision-model.svg"
   },
   {
     "id": "laws-of-ux",
@@ -66,7 +69,8 @@
     "content": {
       "ko": "posts/2026/laws-of-ux.ko.html"
     },
-    "tags": ["UX", "UI", "Frontend", "독서 기록"]
+    "tags": ["UX", "UI", "Frontend", "독서 기록"],
+    "thumbnail": "assets/posts/laws-of-ux/site-overview.png"
   },
   {
     "id": "toss-fe-ai-verification",
@@ -83,7 +87,8 @@
     "content": {
       "ko": "posts/2026/toss-fe-ai-verification.ko.html"
     },
-    "tags": ["Frontend", "E2E", "AI", "Testing", "Toss"]
+    "tags": ["Frontend", "E2E", "AI", "Testing", "Toss"],
+    "thumbnail": "assets/posts/toss-fe-ai-verification/02-real-device-funnel.jpg"
   },
   {
     "id": "expensive-main-thread",
@@ -101,7 +106,8 @@
       "ko": "posts/2026/expensive-main-thread.ko.html",
       "en": "posts/2026/expensive-main-thread.en.html"
     },
-    "tags": ["Frontend", "Browser", "Performance", "Main Thread"]
+    "tags": ["Frontend", "Browser", "Performance", "Main Thread"],
+    "thumbnail": "assets/thumbnails/expensive-main-thread.svg"
   },
   {
     "id": "ssafy-13-first-semester",
@@ -119,7 +125,8 @@
       "ko": "posts/2025/ssafy-13-first-semester.ko.html",
       "en": "posts/2025/ssafy-13-first-semester.en.html"
     },
-    "tags": ["SSAFY", "SSAFY 13기", "회고"]
+    "tags": ["SSAFY", "SSAFY 13기", "회고"],
+    "thumbnail": "assets/posts/ssafy-13-first-semester/buds-01.jpg"
   },
   {
     "id": "naeil-baeum-card-success-story",
@@ -137,6 +144,7 @@
       "ko": "posts/2026/naeil-baeum-card-success-story.ko.html",
       "en": "posts/2026/naeil-baeum-card-success-story.en.html"
     },
-    "tags": ["국민내일배움카드", "K-디지털 트레이닝", "취업성공기"]
+    "tags": ["국민내일배움카드", "K-디지털 트레이닝", "취업성공기"],
+    "thumbnail": "assets/thumbnails/naeil-baeum-card-success-story.svg"
   }
 ]

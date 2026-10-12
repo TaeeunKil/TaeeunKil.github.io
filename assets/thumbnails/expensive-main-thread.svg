@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="320" height="200" viewBox="0 0 320 200">
+  <rect width="320" height="200" fill="#dce6e8"/>
+  <circle cx="278" cy="40" r="9" fill="#ce5737"/>
+  <path d="M28 40H72" stroke="#242623" stroke-width="3"/>
+  <text x="26" y="113" font-family="Arial, sans-serif" font-size="43" font-weight="700" letter-spacing="-2" fill="#242623">Main</text>
+  <text x="28" y="151" font-family="Arial, sans-serif" font-size="19" fill="#555951">Thread</text>
+</svg>

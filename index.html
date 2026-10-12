@@ -7,8 +7,8 @@
   <meta name="theme-color" content="#f2f1ed">
   <title>TaeeunKil</title>
   <link rel="preload" href="assets/fonts/PretendardVariable.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="style.css">
-  <script src="app.js?v=20261012-6831c64" defer></script>
+  <link rel="stylesheet" href="style.css?v=20261012-thumbnails">
+  <script src="app.js?v=20261012-thumbnails" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#content" data-i18n="skip">본문으로 건너뛰기</a>
@@ -38,11 +38,6 @@
     <main class="viewport" id="content">
       <div class="panel-track">
         <section class="panel home-panel" id="home" data-panel="home" aria-labelledby="home-title">
-          <div class="home-meta">
-            <span data-i18n="home.meta">Personal website</span>
-            <span data-i18n="home.place">Daejeon · 2026</span>
-          </div>
-
           <h1 id="home-title">
             <span>Taeeun</span><span>Kil<i aria-hidden="true">.</i></span>
           </h1>
@@ -51,10 +46,7 @@
         </section>
 
         <section class="panel writing-panel" id="writing" data-panel="writing" aria-labelledby="writing-title">
-          <header class="panel-heading">
-            <p>01 / Writing</p>
-            <h2 id="writing-title" data-i18n="writing.title">글</h2>
-          </header>
+          <h2 id="writing-title" class="visually-hidden" data-i18n="writing.title">글</h2>
 
           <div class="post-list is-loading" aria-live="polite" aria-busy="true" data-post-list>
             <p class="post-list-status" data-i18n="writing.loading">글을 불러오고 있습니다.</p>
@@ -65,7 +57,7 @@
                 <h3>AI가 코드를 쓰는 시대, 프론트엔드 검증은 누가 하는가</h3>
                 <p>토스의 발표에서 본 실기기 기반 E2E, 에이전트 기기 제어, Replay 중심의 프론트엔드 검증 시스템.</p>
               </div>
-              <span class="post-arrow" aria-hidden="true">→</span>
+              <img class="post-thumbnail" src="assets/posts/toss-fe-ai-verification/02-real-device-funnel.jpg" alt="" width="160" height="100" loading="lazy" decoding="async">
             </a>
             <a class="post-row" href="post.html?id=expensive-main-thread">
               <span class="post-number">003</span>
@@ -74,7 +66,7 @@
                 <h3>브라우저의 메인 스레드를 아끼는 법</h3>
                 <p>메인 스레드가 병목이 되는 이유와 작업을 나누고, 모으고, 미루고, 밖으로 보내는 방법을 정리했다.</p>
               </div>
-              <span class="post-arrow" aria-hidden="true">→</span>
+              <img class="post-thumbnail" src="assets/thumbnails/expensive-main-thread.svg" alt="" width="160" height="100" loading="lazy" decoding="async">
             </a>
             <a class="post-row" href="post.html?id=naeil-baeum-card-success-story">
               <span class="post-number">002</span>
@@ -83,7 +75,7 @@
                 <h3>내일을 배우고, 멈춰 있던 나를 움직이다.</h3>
                 <p>그래도 이제는 실패하거나 모른다는 이유로 삶 전체를 멈추지 않는다.</p>
               </div>
-              <span class="post-arrow" aria-hidden="true">→</span>
+              <img class="post-thumbnail" src="assets/thumbnails/naeil-baeum-card-success-story.svg" alt="" width="160" height="100" loading="lazy" decoding="async">
             </a>
             <a class="post-row" href="post.html?id=ssafy-13-first-semester">
               <span class="post-number">001</span>
@@ -92,7 +84,7 @@
                 <h3>SSAFY 1학기를 마치면서</h3>
                 <p>방황의 끝에서 만난 SSAFY 13기, 그리고 단단한 토대를 만든 1학기.</p>
               </div>
-              <span class="post-arrow" aria-hidden="true">→</span>
+              <img class="post-thumbnail" src="assets/posts/ssafy-13-first-semester/buds-01.jpg" alt="" width="160" height="100" loading="lazy" decoding="async">
             </a>
           </div>
         </section>
@@ -128,10 +120,6 @@
       </div>
     </main>
 
-    <footer class="status-bar">
-      <p><span class="status-dot" aria-hidden="true"></span><span id="current-label">Home</span></p>
-      <p>HTML · CSS · 2 KB JS</p>
-    </footer>
   </div>
 </body>
 </html>
