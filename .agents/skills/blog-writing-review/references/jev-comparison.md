@@ -1,6 +1,63 @@
 # 블로그 검수를 Jev 비교로 확장하기
 
-상태: 설계만 저장. API 호출·실행 스크립트·자동 채택은 구현하지 않았다.
+상태: Python 표준 라이브러리 기반 호출 도구를 구현했다. 키 설정과 실제 인증 여부는 환경마다 별도로 확인한다. 자동 채택·원고 덮어쓰기는 하지 않는다.
+
+## 실행 방법
+
+### 다른 PC에서 레포를 처음 받았을 때
+
+레포에는 API 키가 없다. 해당 PC에서 [TypeSafe API Keys](https://console.typesafe.ai/keys)에 로그인해 사용할 키를 준비하고 아래 방법으로 설정한다. DPAPI 파일은 만든 Windows 사용자/PC에서만 사용할 수 있으므로 다른 PC로 복사하지 않는다. Python 3.10 이상이면 별도 pip 설치는 필요 없다.
+
+레포 루트 기준 도구 경로는 `.agents/skills/blog-writing-review/scripts/jev_review.py`다. Windows 암호화 저장을 위한 설정 스크립트는 `.agents/skills/blog-writing-review/scripts/credential.ps1`이다. PowerShell 스크립트 실행이 제한된 환경에서는 정책을 바꾸지 않고 현재 터미널 세션의 환경변수를 사용할 수 있다.
+
+```powershell
+# 키 값은 숨김 입력으로 받고, 명령 기록에 직접 쓰지 않는다.
+$reviewKey = Read-Host 'TypeSafe API key' -AsSecureString
+$env:TYPESAFE_API_KEY = [System.Net.NetworkCredential]::new('', $reviewKey).Password
+python -X utf8 .agents/skills/blog-writing-review/scripts/jev_review.py key-status
+# 검수 실행 후 세션의 키 제거
+Remove-Item Env:TYPESAFE_API_KEY
+```
+
+macOS/Linux에서는 현재 셸 또는 사용하는 비밀 관리 도구를 통해 `TYPESAFE_API_KEY`를 설정한다. 키 값을 스킬, 소스 코드, JSON 입력, 셸 기록, 결과 보고서에 붙이지 않는다. Python 도구는 환경변수를 먼저 읽고, Windows에서만 로컬 DPAPI 저장소를 추가로 확인한다. 키가 없는 환경에서는 GPT 검수는 가능하지만 Jev API 호출은 중단한다.
+
+### 검수 실행
+
+`scripts/jev_review.py` 경로를 아래 명령의 SCRIPT 대신 사용한다. 실행 자료는 공개 레포 밖의 작업 디렉터리에 둔다.
+
+1. Windows에서는 `powershell -NoProfile -File scripts/credential.ps1`을 로컬 터미널에서 실행하고 숨김 입력에 키를 붙인다. 사용자 홈의 `.codex/secrets/typesafe-blog-review.dpapi`에 Windows 사용자 단위 암호화로 저장한다. 다른 환경에서는 `TYPESAFE_API_KEY` 환경변수를 사용한다. 환경변수가 우선한다. `credential.ps1 -Read`는 도구 내부용이며 직접 실행하면 키가 출력되므로 호출하거나 로그로 남기지 않는다.
+2. `python -X utf8 SCRIPT key-status`로 키 존재를 확인한다. 이 명령은 실제 인증 요청을 보내지 않는다.
+3. 아래 형식의 실제 입력을 `input.json`으로 저장한다. original/revision에는 파일 경로가 아닌 제목과 본문을 넣는다.
+4. `python -X utf8 SCRIPT prepare input.json run-01`로 요청 두 개를 만든다. 준비 단계는 네트워크를 사용하지 않는다.
+5. `python -X utf8 SCRIPT run run-01`은 두 번의 유료 API 요청을 보낸다. 실패한 요청은 자동 재시도하지 않으며 같은 run 디렉터리를 재실행하지 않는다. 부분 결과를 확인한 다음 새 시도가 필요할 때 새 run을 만든다.
+6. `python -X utf8 SCRIPT report run-01 --facts facts.json`으로 추천/보류 결과를 읽는다. facts를 생략하면 모델의 선호만 보여주고 추천은 보류한다. 보고서는 표준 출력으로 나오며 원하면 레포 밖 파일로 리다이렉트한다.
+
+```json
+{
+  "audience": "앱 배포 경험이 있지만 Docker는 처음 쓰는 개발자",
+  "purpose": "Dockerfile의 역할을 이해한다",
+  "required_facts": ["초안에서 확인한 보존할 조건"],
+  "source_excerpts": ["해당 조건을 확인할 수 있는 자료와 위치"],
+  "original": "실제 원문 제목과 본문",
+  "revision": "실제 수정안 제목과 본문"
+}
+```
+
+facts.json은 GPT 또는 사람이 실제 근거 대조를 수행한 뒤 작성한다. 모델 선호만 보고 pass를 채우지 않는다. 해시는 run의 manifest.json에서 가져온다. original도 추천하려면 해당 후보의 검토 기록을 추가한다.
+
+```json
+{
+  "input_sha256": "manifest.json의 input_sha256",
+  "candidates": {
+    "revision": {
+      "status": "pass",
+      "evidence": "어떤 원문/근거와 대조했고 수치·환경·조건·한계가 어떻게 보존됐는지 기록"
+    }
+  }
+}
+```
+
+이 기록은 검토자의 확인 선언이며 코드가 사실의 진위를 증명하지 않는다. API 응답에서 선택·확신도·확률과 실제 모델 버전·사용량은 각 response.json에 보존된다. 테스트는 `python -X utf8 -m unittest discover -s scripts -p test_jev_review.py`로 실행한다.
 
 ## 역할
 
@@ -77,9 +134,9 @@ API는 `POST https://api.typesafe.ai/v1/systemone`을 사용한다. 위 예시�
 - 기존 글의 0.6 같은 임계값을 그대로 가져오지 않는다. 확률·확신도는 관측값으로 저장하고, 자신의 글 사례와 사람의 판단을 모은 뒤 사용할 임계값을 정한다.
 - 모델 점수를 올리기 위한 무한 재작성은 하지 않는다. 초기 실험은 수정안 하나와 순서 교환 두 요청으로 끝낸다.
 
-## 구현할 파일과 확인할 동작
+## 구현된 명령과 확인할 동작
 
-후속 구현은 작은 CLI로 충분하다.
+작은 CLI로 아래 역할을 분리했다.
 
 - `prepare`: 입력을 검증하고 두 요청 JSON과 A/B 매핑을 만든다. 네트워크를 사용하지 않는다.
 - `run`: 명시적으로 실행할 때만 환경변수의 키로 두 요청을 보낸다. 실패를 숨기거나 자동 재시도하지 않는다.

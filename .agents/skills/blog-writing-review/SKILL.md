@@ -45,7 +45,7 @@ description: Review and revise developer blog posts for reader value, assumed kn
 
 ## 근거와 적용 범위
 
-Jev 연동이나 판정 모델 실험을 요청하면 [Jev 비교 설계](references/jev-comparison.md)를 읽는다. 이 문서는 구현 설계이며 실행 스크립트나 API 연결은 아직 포함하지 않는다. 일반 검수에는 필요 없다.
+Jev 연동이나 판정 모델 실험을 요청하면 [Jev 사용법과 비교 기준](references/jev-comparison.md)을 읽고 `scripts/jev_review.py`의 prepare → run → report를 사용한다. GPT가 작성하고 실제 TypeSafe API가 비교한다. 일반 검수에는 외부 호출이 필요 없다. 사용자가 Jev 비교를 요청한 범위 안에서만 원고를 전송한다. 비밀키를 출력하거나 Git에 저장하지 않는다.
 
 사용자가 제공한 GeekNews 한국어 정리와 Michael Lynch의 [Anti-Patterns in Software Blogging](https://refactoringenglish.com/blog/anti-patterns-software-blogging/)을 바탕으로 만든 검수 지침이다. 원문 전체의 복제·번역이 아니라 실무용 재구성과 자체 예시다. 참고 글을 매번 다시 열 필요는 없다.
 
