@@ -19,3 +19,6 @@
 - ttomanito-logo.svg: 기존 PDF 8쪽 표지의 마스코트 영역을 SVG viewBox로 표시.
 
 - jacmel-mark.svg, deploy-mark.svg, legal-mark.svg, moayo-mark.svg: 포트폴리오용으로 만든 프로젝트 표식. 공식 서비스 로고가 아님. 모아요의 기존 추출 이미지 대신 사용.
+
+- 모아요 마크는 moayo-home.jpg의 왼쪽 위 서비스 마크를 참고해 SVG로 재구성했다. 원본 벡터 파일은 찾지 못했다. 이전에 추출한 moayo-logo.jpg는 서비스 로고로 사용하지 않는다.
+- Jacmel MGCMS는 사용자 확인에 따라 OVION 로고를 함께 사용한다.
