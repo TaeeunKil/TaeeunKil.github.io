@@ -10,6 +10,7 @@
   --gutter: clamp(1.25rem, 4vw, 4rem);
   --header-height: 5rem;
   --panel-index: 0;
+  --scrollbar-track: var(--background);
 }
 
 *,
@@ -26,7 +27,7 @@ html {
 /* Apply the same palette to page, panel, dialog and horizontal scrollbars. */
 @media (forced-colors: none) {
   * {
-    scrollbar-color: #8b877e var(--background);
+    scrollbar-color: #8b877e var(--scrollbar-track);
     scrollbar-width: thin;
   }
 
@@ -40,16 +41,16 @@ html {
     ::-webkit-scrollbar {
       width: 10px;
       height: 10px;
-      background: var(--background);
+      background: var(--scrollbar-track);
     }
 
     ::-webkit-scrollbar-track,
     ::-webkit-scrollbar-corner {
-      background: var(--background);
+      background: var(--scrollbar-track);
     }
 
     ::-webkit-scrollbar-thumb {
-      border: 2px solid var(--background);
+      border: 2px solid var(--scrollbar-track);
       border-radius: 999px;
       background: #8b877e;
       background-clip: padding-box;
@@ -243,9 +244,10 @@ a:focus-visible {
 .tile-description { font-size: .83rem; line-height: 1.8; color: #67655f; margin-bottom: 1.5rem; }
 .tile-tech { margin-top: auto; font-size: .68rem; color: #67655f; word-spacing: .12rem; }
 .tile-meta { display: block; margin-top: .65rem; font-size: .65rem; color: #76736d; }
-.project-dialog { border: 0; border-radius: 22px; width: min(780px, calc(100% - 32px)); max-height: calc(100svh - 64px); padding: 0; background: #faf9f6; color: var(--text); overscroll-behavior: contain; }
+.project-dialog { --scrollbar-track: #faf9f6; border: 8px solid #faf9f6; border-radius: 22px; width: min(780px, calc(100% - 32px)); max-height: calc(100svh - 64px); padding: 0; background: #faf9f6; color: var(--text); overscroll-behavior: contain; }
 .project-dialog::backdrop { background: rgb(23 23 22 / 48%); backdrop-filter: blur(3px); }
-.dialog-content { padding: clamp(1.5rem, 5vw, 3.5rem); }
+.dialog-content { padding: calc(clamp(1.5rem, 5vw, 3.5rem) - 8px); }
+.project-dialog::-webkit-scrollbar-track { margin-block: 14px; }
 .dialog-content > .portfolio-meta { margin-top: 1.5rem; }
 .dialog-content h2 { margin: .5rem 0; font-size: 2.3rem; line-height: 1.2; letter-spacing: -.04em; }
 .dialog-subtitle { color: #b33e24; }
