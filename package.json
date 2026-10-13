@@ -1,0 +1,6 @@
+{
+  "name": "taeeunkil-site-checks",
+  "private": true,
+  "scripts": { "test": "node --test tests/frontend.test.cjs" },
+  "devDependencies": { "playwright": "1.64.0" }
+}

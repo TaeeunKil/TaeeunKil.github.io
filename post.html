@@ -5,22 +5,26 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="TaeeunKil의 글">
   <meta name="theme-color" content="#f2f1ed">
+  <!-- legacy-routing:start -->
+  <script>
+    const legacyId = new URLSearchParams(location.search).get("id");
+    if (["decision-models-after-jev", "what-is-kafka", "jev-decision-model", "laws-of-ux", "toss-fe-ai-verification", "expensive-main-thread", "naeil-baeum-card-success-story", "ssafy-13-first-semester"].includes(legacyId)) location.replace("writing/" + encodeURIComponent(legacyId) + "/" + location.hash);
+  </script>
+  <!-- legacy-routing:end -->
   <title>Writing — TaeeunKil</title>
-  <link rel="preload" href="assets/fonts/PretendardSite.woff2" fetchpriority="high" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="assets/fonts/fonts.css?v=20261013-subset">
+  <link rel="preload" href="assets/fonts/PretendardSite.woff2?v=8f938278b1" fetchpriority="high" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="assets/fonts/fonts.css?v=20261013-performance">
   <style>html.fonts-loading body { visibility: hidden; }</style>
   <script>
     // Reveal the designed typeface only after fonts used by the page are ready.
     document.documentElement.classList.add("fonts-loading");
     document.addEventListener("DOMContentLoaded", () => {
       const reveal = () => document.documentElement.classList.remove("fonts-loading");
-      document.fonts.ready.then(reveal, reveal);
+      Promise.resolve(window.pageReady).then(() => document.fonts.ready).then(reveal, reveal);
     }, { once: true });
   </script>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism.min.css">
-  <link rel="stylesheet" href="style.css?v=20261013-font-ready">
-  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js" defer></script>
-  <script src="post.js?v=20261012-6831c64" defer></script>
+  <link rel="stylesheet" href="style.css?v=20261013-performance">
+  <script src="post.js?v=20261013-performance" defer></script>
 </head>
 <body class="post-page">
   <a class="skip-link" href="#post-content" data-post-copy="skip">본문으로 건너뛰기</a>
@@ -40,7 +44,8 @@
         <div class="post-meta"><time id="post-date"></time><span id="post-tags"></span></div>
         <p class="post-summary" id="post-summary"></p>
       </header>
-      <div class="post-body" id="post-body"></div>
+      <p id="post-load-error" role="alert" hidden>글을 불러오지 못했습니다. 잠시 후 다시 시도해 주세요. / Could not load the article. Please try again.</p>
+      <div class="post-body" id="post-body"><noscript><p>글을 선택해 주세요.</p><ul><li><a href="writing/decision-models-after-jev/">Jev 뒤에 나온 판정 모델들 — 무엇을 비교해야 할까</a></li><li><a href="writing/what-is-kafka/">카프카란?</a></li><li><a href="writing/jev-decision-model/">Jev는 글을 쓰지 않는다 — AI 글쓰기와 판정 모델</a></li><li><a href="writing/laws-of-ux/">Laws of UX를 읽고 — 편한 화면에는 이유가 있다</a></li><li><a href="writing/toss-fe-ai-verification/">AI가 코드를 쓰는 시대, 프론트엔드 검증은 누가 하는가</a></li><li><a href="writing/expensive-main-thread/">브라우저의 메인 스레드를 아끼는 법</a></li><li><a href="writing/naeil-baeum-card-success-story/">내일을 배우고, 멈춰 있던 나를 움직이다.</a></li><li><a href="writing/ssafy-13-first-semester/">SSAFY 1학기를 마치면서</a></li></ul></noscript></div>
     </article>
 
     <section class="comments-shell" aria-labelledby="comments-title">
