@@ -11,6 +11,7 @@
   --header-height: 5rem;
   --footer-height: 2.75rem;
   --panel-index: 0;
+  --scrollbar-thumb: #8b877e;
 }
 
 *,
@@ -22,6 +23,43 @@
 html {
   background: var(--background);
   scroll-behavior: smooth;
+}
+
+/* Use native scrollbars, including nested panels, dialogs and code blocks. */
+@media (forced-colors: none) {
+  * {
+    scrollbar-color: var(--scrollbar-thumb) transparent;
+  }
+
+  @media (pointer: fine) {
+    * {
+      scrollbar-width: thin;
+    }
+  }
+
+  /* Fallback for browsers without the standard scrollbar properties. */
+  @supports not (scrollbar-width: thin) {
+    ::-webkit-scrollbar {
+      width: 10px;
+      height: 10px;
+    }
+
+    ::-webkit-scrollbar-track,
+    ::-webkit-scrollbar-corner {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      border: 2px solid transparent;
+      border-radius: 999px;
+      background: var(--scrollbar-thumb);
+      background-clip: padding-box;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background-color: var(--muted);
+    }
+  }
 }
 
 body {
