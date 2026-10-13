@@ -20,9 +20,10 @@
 :root {
   --background: #f2f1ed;
   --text: #171716;
-  --muted: #777570;
+  --muted: #6d6b66;
   --line: #d6d4ce;
   --accent: #e74b2b;
+--accent-text: #bf3b21;
   --focus: #171716;
 }
 ```
@@ -134,3 +135,14 @@
 - 탭 내용을 홈 아래에 반복해서 배치하지 않는다.
 - 장식용 이미지나 아이콘을 추가하지 않는다.
 - 두 번째 포인트 컬러를 만들지 않는다.
+
+## 14. Static build and performance checks
+
+- 글 원본은 `posts/`, 메타데이터는 `data/posts.json`, 공통 글 화면은 `post.html`에서 수정한다.
+- `python -m pip install -r scripts/requirements.txt` 후 `python scripts/build-site.py`, `python scripts/subset-font.py`, `python scripts/build-site.py` 순서로 생성한다. 생성된 `writing/`, `assets/optimized/`, 폰트와 HTML 변경을 함께 커밋한다.
+- `writing/<id>/`는 본문을 포함한 정적 글 주소다. 기존 `post.html?id=<id>`는 알려진 글만 새 주소로 연결한다. JavaScript 없는 기존 주소에는 정적 글 목록을 제공한다.
+- 홈의 글 목록은 글 탭을 열 때 렌더링한다. 이미지에는 크기와 지연 로딩을 지정하고, 래스터 이미지에는 WebP 크기별 후보를 제공한다. 원본 이미지는 보존한다.
+- 장식용 주황색은 유지하고 작은 텍스트에만 같은 계열의 대비가 높은 색을 사용한다. 일반 링크 내비게이션은 `aria-current`로 현재 위치를 표시하며 모든 메뉴를 Tab 키로 방문할 수 있다.
+- 코드 강조는 코드가 있는 글에만 로컬 Prism을 사용한다. 댓글은 댓글 영역에 접근할 때 불러온다.
+- WebP 파일명과 폰트 URL에는 내용 해시가 포함된다. GitHub Pages의 `max-age=600`은 호스팅 설정이므로 이 저장소에서 장기 캐시 헤더를 강제하지 않는다.
+- 회귀 검사는 `npm ci`, `npx playwright install chromium`, `npm test`로 실행한다. 별도 서버가 필요하며 `BASE_URL` 기본값은 `http://127.0.0.1:8766/`다. `python -m http.server 8766 --bind 127.0.0.1`로 실행할 수 있다.

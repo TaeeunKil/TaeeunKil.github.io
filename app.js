@@ -9,7 +9,7 @@ const translations = {
   ko: {
     "meta.description": "TaeeunKil의 개발, 배움, 생각을 기록하는 개인 웹사이트입니다.",
     skip: "본문으로 건너뛰기",
-    logoLabel: "홈으로 이동",
+    logoLabel: "TK 홈으로 이동",
     navLabel: "주요 메뉴",
     languageLabel: "언어 선택",
     "nav.home": "홈",
@@ -36,7 +36,7 @@ const translations = {
   en: {
     "meta.description": "TaeeunKil's personal website for code, learning, and ideas.",
     skip: "Skip to content",
-    logoLabel: "Go to home",
+    logoLabel: "TK — Go to home",
     navLabel: "Main navigation",
     languageLabel: "Choose language",
     "nav.home": "Home",
@@ -98,39 +98,29 @@ function setLanguage(language, { persist = true } = {}) {
   renderPostList();
 }
 
-function renderPostList() {
+function renderPostList({ force = false } = {}) {
   const list = document.querySelector("[data-post-list]");
-  if (!list || postsCache.length === 0) return;
+  if (!list || postsCache.length === 0 || (!force && document.documentElement.dataset.initialPanel !== "writing" && !document.querySelector(".writing-panel.is-active") && location.hash !== "#writing")) return;
 
   list.innerHTML = postsCache.map((post, index) => {
     const title = post.title[currentLanguage] ?? post.title.ko;
     const summary = post.summary[currentLanguage] ?? post.summary.ko;
     const number = String(post.number ?? index + 1).padStart(3, "0");
     const displayDate = post.date.replaceAll("-", ".");
-    return `<a class="post-row" href="post.html?id=${encodeURIComponent(post.id)}">
+    return `<a class="post-row" href="writing/${encodeURIComponent(post.id)}/">
       <span class="post-number">${number}</span>
       <time datetime="${post.date}">${displayDate}</time>
       <div><h3>${title}</h3><p>${summary}</p></div>
-      <img class="post-thumbnail" src="${post.thumbnail}" alt="" width="160" height="100" loading="lazy" decoding="async">
+      <img class="post-thumbnail" src="${post.thumbnail}" ${post.thumbnailSrcset ? `srcset="${post.thumbnailSrcset}" sizes="160px"` : ""} alt="" width="160" height="100" loading="lazy" decoding="async">
     </a>`;
   }).join("");
   list.classList.remove("is-loading");
   list.setAttribute("aria-busy", "false");
 }
 
-async function loadPosts() {
-  const list = document.querySelector("[data-post-list]");
-
-  try {
-    const response = await fetch("data/posts.json?v=20261012-thumbnails");
-    if (!response.ok) throw new Error("Post index could not be loaded");
-    postsCache = await response.json();
-    postsCache.sort((a, b) => b.date.localeCompare(a.date));
-    renderPostList();
-  } catch {
-    list?.classList.remove("is-loading");
-    list?.setAttribute("aria-busy", "false");
-  }
+function loadPosts() {
+  postsCache = JSON.parse(document.getElementById("post-index").textContent);
+  renderPostList();
 }
 
 function selectTab(name, { updateHistory = true } = {}) {
@@ -145,14 +135,16 @@ function selectTab(name, { updateHistory = true } = {}) {
 
   tabs.forEach((tab) => {
     const active = tab.dataset.tabLink === activeName;
-    tab.setAttribute("aria-selected", String(active));
-    tab.setAttribute("tabindex", active ? "0" : "-1");
+    if (active) tab.setAttribute("aria-current", "page");
+    else tab.removeAttribute("aria-current");
   });
 
   if (tabTransitionTimer) {
     window.clearTimeout(tabTransitionTimer);
     tabTransitionTimer = undefined;
   }
+
+  if (activeName === "writing") renderPostList({ force: true });
 
   if (!currentPanel || currentPanel === activePanel) {
     panels.forEach((panel) => {
@@ -161,7 +153,7 @@ function selectTab(name, { updateHistory = true } = {}) {
       panel.classList.remove("is-exiting");
       panel.setAttribute("aria-hidden", String(!active));
       panel.inert = !active;
-      if (active) positionHome(panel, isPortfolio);
+      if (active && (currentPanel || isPortfolio)) positionHome(panel, isPortfolio);
     });
   } else {
     currentPanel.classList.remove("is-active");
@@ -180,7 +172,7 @@ function selectTab(name, { updateHistory = true } = {}) {
         panel.classList.remove("is-exiting");
         panel.setAttribute("aria-hidden", String(!active));
         panel.inert = !active;
-        if (active) positionHome(panel, isPortfolio);
+        if (active && (currentPanel || isPortfolio)) positionHome(panel, isPortfolio);
       });
       tabTransitionTimer = undefined;
     }, reduceMotion.matches ? 0 : TAB_FADE_OUT_MS);
@@ -246,8 +238,7 @@ requestAnimationFrame(() => requestAnimationFrame(() => {
   document.documentElement.classList.add("tabs-ready");
 }));
 loadPosts();
-window.scrollTo(0, 0);
-window.addEventListener("load", () => window.scrollTo(0, 0), { once: true });
+
 
 const mindMap = document.querySelector(".mind-map");
 document.querySelectorAll('[data-project-open]').forEach((button) => {

@@ -30,18 +30,18 @@ const postCopy = {
 };
 
 const query = new URLSearchParams(location.search);
-const postId = query.get("id");
+const postId = document.documentElement.dataset.postId || query.get("id");
 let language = "ko";
 let activePost;
 let postRenderToken = 0;
 let demoScriptPromise;
-let commentsPending = false;
 
 function storedLanguage() {
   try { return localStorage.getItem("language"); } catch { return null; }
 }
 
-function setPostLanguage(nextLanguage, { persist = true } = {}) {
+function setPostLanguage(nextLanguage, { persist = true, render = true } = {}) {
+  const previousLanguage = language;
   language = postCopy[nextLanguage] ? nextLanguage : "ko";
   const copy = postCopy[language];
   document.documentElement.lang = language;
@@ -59,7 +59,14 @@ function setPostLanguage(nextLanguage, { persist = true } = {}) {
   if (persist) {
     try { localStorage.setItem("language", language); } catch {}
   }
-  if (activePost) renderPost(activePost);
+  if (activePost && render) {
+    const selectionToken = postRenderToken + 1;
+    renderPost(activePost).catch(() => {
+      if (selectionToken !== postRenderToken) return;
+      setPostLanguage(previousLanguage, { persist, render: false });
+      document.querySelector("#post-load-error").hidden = false;
+    });
+  }
   updateGiscusLanguage();
 }
 
@@ -117,14 +124,51 @@ function loadGiscus() {
   document.querySelector("#giscus-comments").append(script);
 }
 
-async function renderPost(post, { loadComments = false } = {}) {
-  const renderToken = ++postRenderToken;
-  const title = post.title[language] ?? post.title.ko;
-  const summary = post.summary[language] ?? post.summary.ko;
-  const contentPath = post.content[language] ?? post.content.ko;
-  const usesFallback = language !== "ko" && !post.content[language];
+let highlightPromise;
+function highlightCode(body) {
+  if (!body.querySelector('code[class*="language-"]')) return;
+  if (!highlightPromise) {
+    window.Prism = { manual: true };
+    highlightPromise = new Promise((resolve, reject) => {
+      const script = document.createElement("script");
+      script.src = "assets/vendor/prism/prism.min.js";
+      script.onload = resolve;
+      script.onerror = reject;
+      document.head.append(script);
+    });
+  }
+  highlightPromise.then(() => window.Prism.highlightAllUnder(body)).catch(() => {});
+}
 
-  if (loadComments) commentsPending = true;
+let commentsObserver;
+function prepareExtras(body) {
+  scheduleIdle(async () => {
+    highlightCode(body);
+    if (body.querySelector("[data-main-thread-demo]")) {
+      try { await loadDemoScript(); window.initMainThreadDemos?.(); } catch {}
+    }
+  });
+  if (!commentsObserver && !document.querySelector("script[data-giscus-loader]")) {
+    commentsObserver = new IntersectionObserver(([entry]) => {
+      if (!entry.isIntersecting) return;
+      loadGiscus();
+      commentsObserver.disconnect();
+    }, { rootMargin: "300px" });
+    commentsObserver.observe(document.querySelector("#giscus-comments"));
+  }
+}
+
+async function renderPost(post) {
+  const renderToken = ++postRenderToken;
+  const nextLanguage = language;
+  const title = post.title[nextLanguage] ?? post.title.ko;
+  const summary = post.summary[nextLanguage] ?? post.summary.ko;
+  const contentPath = post.content[nextLanguage] ?? post.content.ko;
+  const usesFallback = nextLanguage !== "ko" && !post.content[nextLanguage];
+  const response = await fetch(contentPath);
+  if (!response.ok) throw new Error("Post content could not be loaded");
+  const markup = await response.text();
+  if (renderToken !== postRenderToken) return;
 
   document.title = `${title} — TaeeunKil`;
   document.querySelector('meta[name="description"]').content = summary;
@@ -134,33 +178,10 @@ async function renderPost(post, { loadComments = false } = {}) {
   document.querySelector("#post-date").dateTime = post.date;
   document.querySelector("#post-tags").textContent = post.tags.join(post.tagSeparator ?? " · ");
   document.querySelector("#post-summary").textContent = summary;
-
-  const response = await fetch(contentPath);
-  if (!response.ok) throw new Error("Post content could not be loaded");
+  document.querySelector("#post-load-error").hidden = true;
   const body = document.querySelector("#post-body");
-  const markup = await response.text();
-  if (renderToken !== postRenderToken) return;
-
-  body.innerHTML = `${usesFallback ? `<p class="translation-note">${postCopy[language].unavailable}</p>` : ""}${markup}`;
-
-  scheduleIdle(async () => {
-    if (renderToken !== postRenderToken) return;
-
-    window.Prism?.highlightAllUnder(body);
-
-    if (body.querySelector("[data-main-thread-demo]")) {
-      try {
-        await loadDemoScript();
-      } catch {}
-      if (renderToken !== postRenderToken) return;
-      window.initMainThreadDemos?.();
-    }
-
-    if (renderToken === postRenderToken && commentsPending) {
-      commentsPending = false;
-      loadGiscus();
-    }
-  });
+  body.innerHTML = `${usesFallback ? `<p class="translation-note">${postCopy[nextLanguage].unavailable}</p>` : ""}${markup}`;
+  prepareExtras(body);
 }
 
 async function loadPost() {
@@ -170,10 +191,11 @@ async function loadPost() {
     const posts = await response.json();
     activePost = posts.find((post) => post.id === postId);
     if (!activePost) throw new Error("Post not found");
-    await renderPost(activePost, { loadComments: true });
+    await renderPost(activePost);
   } catch {
     document.querySelector("#post-title").textContent = postCopy[language].notFound;
     document.querySelector("#post-body").innerHTML = "";
+    document.querySelector(".comments-shell").hidden = true;
   }
 }
 
@@ -183,4 +205,18 @@ document.querySelectorAll("[data-language]").forEach((button) => {
 
 const initialLanguage = storedLanguage() ?? (navigator.language.toLowerCase().startsWith("ko") ? "ko" : "en");
 setPostLanguage(initialLanguage, { persist: false });
-loadPost();
+const embeddedPost = document.getElementById("post-data");
+if (embeddedPost) {
+  activePost = JSON.parse(embeddedPost.textContent);
+  if (initialLanguage === "ko") {
+    prepareExtras(document.querySelector("#post-body"));
+    window.pageReady = Promise.resolve();
+  } else {
+    window.pageReady = renderPost(activePost).catch(() => {
+      // Keep the pre-rendered Korean article readable if translation fails.
+      setPostLanguage("ko", { persist: false, render: false });
+    });
+  }
+} else {
+  window.pageReady = loadPost();
+}

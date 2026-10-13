@@ -1,0 +1,132 @@
+<style>
+.kafka-figure { margin: 3.5rem 0; padding: 1.5rem 0 1rem; border-top: 1px solid #d6d4ce; }
+.kafka-figure .kafka-diagram-heading { display:flex; align-items:baseline; gap:1rem; margin:0 0 1.5rem; }
+.kafka-figure .kafka-diagram-heading span { color:var(--accent-text); font-size:.75rem; font-weight:600; }
+.kafka-figure .kafka-diagram-heading strong { font-size:1.125rem; font-weight:600; letter-spacing:-.025em; }
+.kafka-figure .kafka-scroll { overflow-x:auto; }
+.kafka-figure svg { display:block; width:100%; min-width:640px; height:auto; font-family:Pretendard,system-ui,sans-serif; }
+.kafka-figure figcaption { margin-top:1rem; max-width:65ch; font-size:.875rem; line-height:1.7; color:#65635e; }
+.kafka-figure svg text { fill:#171716; }
+.kafka-figure svg .muted { fill:var(--muted); }
+.kafka-figure svg .accent { fill:var(--accent-text); }
+.kafka-article-note { font-size:.875rem; color:#65635e; }
+@media print { .kafka-figure { break-inside:avoid; } .kafka-figure svg { min-width:0; } }
+</style>
+
+<p class="post-lead">카프카는 이벤트를 저장하고<br>여러 서비스가 읽어 갈 수 있게 해주는 시스템이다.</p>
+
+<p>쇼핑몰에서 주문이 하나 들어왔다고 하자. 주문을 저장한 뒤에는 고객에게 알림을 보내야 한다. 배송도 준비해야 하고 매출 통계에도 반영해야 한다. 이 일을 전부 주문 서비스에서 처리하면 다른 시스템의 장애까지 신경 써야 한다. 알림 서버가 멈췄다는 이유로 주문을 실패시켜야 할까?</p>
+
+<p>카프카를 두면 주문 서비스는 주문이 생성됐다는 사실을 기록한다. 알림이나 배송 시스템은 그 기록을 읽고 자기 일을 처리한다. 이 구조가 어떻게 동작하는지 주문 하나를 따라가 보자.</p>
+
+<h2>주문이 생겼다는 사실을 기록한다</h2>
+
+<p>주문 서비스가 카프카에 <code>OrderCreated</code>라는 이벤트를 보낸다. 여기에는 주문 ID나 주문 시각처럼 다른 시스템에서 필요한 값을 담는다. 배송 시스템은 이 이벤트를 읽고 배송을 준비한다. 알림 시스템은 같은 이벤트를 읽고 고객에게 메시지를 보낸다.</p>
+
+<figure class="kafka-figure"><div class="kafka-diagram-heading"><span>01</span><strong>한 번 기록하고 각자 읽는다</strong></div><div class="kafka-scroll" tabindex="0" role="region" aria-label="한 번 기록하고 각자 읽는다. 좁은 화면에서는 가로로 스크롤할 수 있습니다."><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 296" role="img" aria-labelledby="kafka-overview-title kafka-overview-desc"><title id="kafka-overview-title">한 번 기록하고 각자 읽는다</title><desc id="kafka-overview-desc">주문 서비스가 기록한 이벤트를 배송과 알림 그리고 통계 그룹이 각각 읽는다.</desc><defs><marker id="kafka-overview-arrow" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0 0 L7 3.5 L0 7Z" fill="#918d83"/></marker></defs><path d="M168 152 H256" fill="none" stroke="#918d83" stroke-width="1.25" marker-end="url(#kafka-overview-arrow)"/><path d="M488 120 H520 Q528 120 528 112 V68 Q528 60 536 60 H584" fill="none" stroke="#918d83" stroke-width="1.25" marker-end="url(#kafka-overview-arrow)"/><path d="M488 152 H584" fill="none" stroke="#918d83" stroke-width="1.25" marker-end="url(#kafka-overview-arrow)"/><path d="M488 184 H520 Q528 184 528 192 V236 Q528 244 536 244 H584" fill="none" stroke="#918d83" stroke-width="1.25" marker-end="url(#kafka-overview-arrow)"/><text x="16" y="124" font-size="12" font-weight="600" text-anchor="start" class="muted">PRODUCER</text><text x="16" y="156" font-size="24" font-weight="600" text-anchor="start" class="">주문 서비스</text><text x="16" y="184" font-size="16" font-weight="400" text-anchor="start" class="muted">주문 생성</text><text x="272" y="44" font-size="12" font-weight="600" text-anchor="start" class="accent">KAFKA</text><text x="272" y="76" font-size="24" font-weight="600" text-anchor="start" class="">order-events</text><rect x="256" y="100" width="232" height="112" rx="2" fill="#e8e6df" stroke="none"/><rect x="272" y="120" width="44" height="72" rx="2" fill="#f2f1ed" stroke="none"/><path d="M284 140 L304 140" fill="none" stroke="#b5b1a7" stroke-width="1"/><path d="M284 152 L300 152" fill="none" stroke="#b5b1a7" stroke-width="1"/><rect x="324" y="120" width="44" height="72" rx="2" fill="#f2f1ed" stroke="none"/><path d="M336 140 L356 140" fill="none" stroke="#b5b1a7" stroke-width="1"/><path d="M336 152 L352 152" fill="none" stroke="#b5b1a7" stroke-width="1"/><rect x="376" y="120" width="44" height="72" rx="2" fill="#f2f1ed" stroke="none"/><path d="M388 140 L408 140" fill="none" stroke="#b5b1a7" stroke-width="1"/><path d="M388 152 L404 152" fill="none" stroke="#b5b1a7" stroke-width="1"/><rect x="428" y="120" width="44" height="72" rx="2" fill="#f2f1ed" stroke="none"/><path d="M440 140 L460 140" fill="none" stroke="#b5b1a7" stroke-width="1"/><path d="M440 152 L456 152" fill="none" stroke="#b5b1a7" stroke-width="1"/><text x="272" y="240" font-size="16" font-weight="400" text-anchor="start" class="muted">보관된 이벤트</text><text x="608" y="60" font-size="20" font-weight="600" text-anchor="start" class="">배송</text><text x="608" y="88" font-size="16" font-weight="400" text-anchor="start" class="muted">배송 준비</text><text x="608" y="152" font-size="20" font-weight="600" text-anchor="start" class="">알림</text><text x="608" y="180" font-size="16" font-weight="400" text-anchor="start" class="muted">주문 안내</text><text x="608" y="244" font-size="20" font-weight="600" text-anchor="start" class="">통계</text><text x="608" y="272" font-size="16" font-weight="400" text-anchor="start" class="muted">매출 집계</text></svg></div><figcaption>주문 서비스는 이벤트를 기록한다. 세 그룹은 같은 기록을 각자 읽는다. 화살표는 데이터가 이동하는 방향이다.</figcaption></figure>
+
+<p>이벤트를 보내는 프로그램은 <strong>프로듀서</strong>다. 읽는 프로그램은 <strong>컨슈머</strong>라고 부른다. 카프카에서 이벤트를 저장하고 제공하는 서버는 <strong>브로커</strong>다. 여러 브로커를 묶어 클러스터로 운영할 수 있다.</p>
+
+<p>카프카의 공식 명칭은 분산 이벤트 스트리밍 플랫폼이다. <a href="https://kafka.apache.org/43/getting-started/introduction/">공식 소개</a>를 보면 이벤트를 주고받는 기능에 더해 저장과 처리도 다룬다. 여기서 먼저 알아둘 특징은 읽은 이벤트가 바로 사라지지 않는다는 점이다.</p>
+
+<h2>읽은 이벤트도 다시 읽을 수 있다</h2>
+
+<p>배송 시스템이 이벤트를 읽었다고 통계 시스템에서 읽을 수 없게 되는 것은 아니다. 각 시스템은 어디까지 읽었는지 따로 관리한다. 알림 시스템이 잠시 멈춰도 복구한 뒤 밀린 이벤트를 읽으면 된다.</p>
+
+<p>통계 계산에 버그가 생겼을 때도 이 구조가 도움이 된다. 코드를 고친 뒤 남아 있는 주문 이벤트를 다시 읽어 집계할 수 있다. 새 분석 서비스를 만들 때도 주문 서비스에 과거 이벤트를 다시 보내 달라고 할 필요가 없다.</p>
+
+<p>다만 기록이 영원히 남는 것은 아니다. 보관 기간과 용량을 설정해야 한다. 이미 지워진 이벤트는 다시 읽을 수 없다. 키별 최신 값을 남기는 로그 컴팩션을 사용한다면 과거 변경 이력 전체가 보존되는 것도 아니다. 보관 방식은 <a href="https://kafka.apache.org/43/design/design/">Kafka 설계 문서</a>에 설명되어 있다.</p>
+
+<p>카프카를 선택할 때도 이 특성이 필요한지부터 보면 된다. 여러 서비스가 같은 이벤트를 읽어야 하는가? 과거 기록을 다시 처리할 일이 있는가? 단순히 작업 하나를 워커에 맡기려는 목적이라면 다른 메시징 도구와 운영 비용을 비교해 볼 만하다.</p>
+
+<h2>토픽과 파티션</h2>
+
+<p>주문 이벤트를 모으는 스트림에 <code>order-events</code>라는 이름을 붙였다고 하자. 이것이 <strong>토픽</strong>이다. 토픽은 여러 <strong>파티션</strong>으로 나눌 수 있다. 이벤트는 각 파티션에 차례로 쌓인다.</p>
+
+<p>파티션 안에서 기록의 위치를 나타내는 값이 <strong>오프셋</strong>이다. 파티션 0의 오프셋 10과 파티션 1의 오프셋 10은 다른 기록을 가리킨다. 토픽 전체에서 쓰는 하나의 번호가 아니다.</p>
+
+<h2>같은 그룹에서는 일을 나눠 맡는다</h2>
+
+<p>배송 프로그램을 두 개 실행했다고 하자. 둘을 같은 컨슈머 그룹에 넣으면 파티션을 나눠 맡는다. 통계 프로그램은 별도 그룹으로 두면 된다. 그러면 배송 그룹이 어디까지 읽었는지와 관계없이 같은 주문 이벤트를 읽을 수 있다.</p>
+
+<figure class="kafka-figure"><div class="kafka-diagram-heading"><span>02</span><strong>파티션을 나눠 맡는 방법</strong></div><div class="kafka-scroll" tabindex="0" role="region" aria-label="파티션을 나눠 맡는 방법. 좁은 화면에서는 가로로 스크롤할 수 있습니다."><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 352" role="img" aria-labelledby="kafka-groups-title kafka-groups-desc"><title id="kafka-groups-title">파티션을 나눠 맡는 방법</title><desc id="kafka-groups-desc">P0과 P1은 배송 A가 읽고 P2는 배송 B가 읽는다. 별도 통계 그룹의 C는 세 파티션 모두를 읽는다.</desc><defs><marker id="kafka-groups-arrow" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0 0 L7 3.5 L0 7Z" fill="#918d83"/></marker></defs><text x="16" y="24" font-size="12" font-weight="600" text-anchor="start" class="muted">ORDER-EVENTS</text><text x="388" y="24" font-size="18" font-weight="600" text-anchor="start" class="">배송 그룹</text><text x="592" y="24" font-size="18" font-weight="600" text-anchor="start" class="">통계 그룹</text><path d="M16 44 L744 44" fill="none" stroke="#d6d4ce" stroke-width="1"/><path d="M16 128 L744 128" fill="none" stroke="#d6d4ce" stroke-width="1"/><path d="M292 88 H356" fill="none" stroke="#918d83" stroke-width="1.25" marker-end="url(#kafka-groups-arrow)"/><text x="16" y="94" font-size="18" font-weight="600" text-anchor="start" class="">P0</text><rect x="72" y="68" width="44" height="36" rx="2" fill="#e8e6df" stroke="none"/><rect x="124" y="68" width="44" height="36" rx="2" fill="#e8e6df" stroke="none"/><rect x="176" y="68" width="44" height="36" rx="2" fill="#e8e6df" stroke="none"/><rect x="228" y="68" width="44" height="36" rx="2" fill="#e8e6df" stroke="none"/><text x="388" y="94" font-size="20" font-weight="600" text-anchor="start" class="">배송 A</text><text x="592" y="94" font-size="20" font-weight="600" text-anchor="start" class="">통계 C</text><path d="M16 208 L744 208" fill="none" stroke="#d6d4ce" stroke-width="1"/><path d="M292 168 H356" fill="none" stroke="#918d83" stroke-width="1.25" marker-end="url(#kafka-groups-arrow)"/><text x="16" y="174" font-size="18" font-weight="600" text-anchor="start" class="">P1</text><rect x="72" y="148" width="44" height="36" rx="2" fill="#e8e6df" stroke="none"/><rect x="124" y="148" width="44" height="36" rx="2" fill="#e8e6df" stroke="none"/><rect x="176" y="148" width="44" height="36" rx="2" fill="#e8e6df" stroke="none"/><rect x="228" y="148" width="44" height="36" rx="2" fill="#e8e6df" stroke="none"/><text x="388" y="174" font-size="20" font-weight="600" text-anchor="start" class="">배송 A</text><text x="592" y="174" font-size="20" font-weight="600" text-anchor="start" class="">통계 C</text><path d="M16 288 L744 288" fill="none" stroke="#d6d4ce" stroke-width="1"/><path d="M292 248 H356" fill="none" stroke="#918d83" stroke-width="1.25" marker-end="url(#kafka-groups-arrow)"/><text x="16" y="254" font-size="18" font-weight="600" text-anchor="start" class="">P2</text><rect x="72" y="228" width="44" height="36" rx="2" fill="#e8e6df" stroke="none"/><rect x="124" y="228" width="44" height="36" rx="2" fill="#e8e6df" stroke="none"/><rect x="176" y="228" width="44" height="36" rx="2" fill="#e8e6df" stroke="none"/><rect x="228" y="228" width="44" height="36" rx="2" fill="#e8e6df" stroke="none"/><text x="388" y="254" font-size="20" font-weight="600" text-anchor="start" class="">배송 B</text><text x="592" y="254" font-size="20" font-weight="600" text-anchor="start" class="">통계 C</text><path d="M368 60 L368 276" fill="none" stroke="#d6d4ce" stroke-width="1"/><path d="M572 60 L572 276" fill="none" stroke="#d6d4ce" stroke-width="1"/><text x="16" y="328" font-size="16" font-weight="400" text-anchor="start" class="muted">파티션마다 기록이 쌓인다</text><text x="388" y="328" font-size="16" font-weight="400" text-anchor="start" class="muted">두 컨슈머가 분담</text><text x="592" y="328" font-size="16" font-weight="400" text-anchor="start" class="muted">한 컨슈머가 모두 읽음</text></svg></div><figcaption>각 행은 한 파티션이다. 오른쪽에는 그룹별 담당 컨슈머를 표시했다. 통계 그룹의 진행 위치는 배송 그룹과 별도로 관리한다.</figcaption></figure>
+
+<p>그림에서 배송 A는 P0과 P1을 맡는다. 배송 B는 P2를 읽는다. 통계 C는 다른 그룹에 있으므로 세 파티션을 모두 읽는다. 실제 담당 파티션은 할당 전략에 따라 달라진다. 컨슈머가 추가되거나 빠져서 담당을 다시 나누는 과정을 리밸런싱이라고 한다.</p>
+
+<p>일반 컨슈머 그룹에서는 한 파티션을 그룹 안의 한 컨슈머가 맡는다. 파티션이 세 개라면 컨슈머를 열 개로 늘려도 열 개가 동시에 나눠 읽을 수는 없다. 서버 수만 늘리기 전에 파티션 수와 작업이 몰리는 곳을 확인해야 한다.</p>
+
+<p>이 글은 일반 Consumer Group을 기준으로 설명한다. Share Group은 별도의 소비 모델이다. 그룹의 동작은 <a href="https://archive.apache.org/dist/kafka/4.2.0/javadoc/org/apache/kafka/clients/consumer/KafkaConsumer.html">KafkaConsumer 문서</a>에서 더 자세히 볼 수 있다.</p>
+
+<h2>순서는 파티션 안에서 보장된다</h2>
+
+<p>한 주문에서 <code>주문 생성 → 결제 완료 → 주문 취소</code> 이벤트가 발생했다. 취소를 먼저 처리하고 나중에 결제 완료를 반영하면 상태가 꼬일 수 있다. 그래서 같은 주문의 이벤트는 보통 주문 ID를 키로 삼아 같은 파티션으로 보낸다.</p>
+
+<p>카프카가 보장하는 것은 <strong>파티션에 기록된 순서</strong>다. 여러 파티션을 합친 전체 순서는 보장하지 않는다. 서로 다른 프로듀서가 보낸 이벤트 중 업무상 무엇이 먼저인지도 판단해 주지 않는다. 같은 키라도 파티션 수나 파티셔닝 방식이 바뀌면 다른 파티션에 들어갈 수 있다. <a href="https://kafka.apache.org/43/getting-started/introduction/">키와 파티션의 관계</a>를 볼 때 함께 알아둘 부분이다.</p>
+
+<p>소비자 코드에서도 순서를 지켜야 한다. 두 이벤트를 순서대로 읽었더라도 다른 스레드에 넘기면 두 번째 작업이 먼저 끝날 수 있다. 순서가 중요한 작업은 같은 주문끼리 직렬로 처리하는 등의 방법이 필요하다.</p>
+
+<h2>주문은 저장됐는데 이벤트를 보내지 못했다면</h2>
+
+<p>DB에 주문을 저장한 다음 카프카로 이벤트를 보낸다고 하자. DB 커밋 직후 서버가 꺼지면 주문만 남는다. 이벤트부터 보내도록 순서를 바꾸면 반대 문제가 생긴다. DB 저장이 실패했는데 다른 시스템은 주문이 생겼다고 전달받을 수 있다.</p>
+
+<p>필요한 것은 두 작업이 함께 성공하거나 함께 실패하는 원자성이다. 하지만 보통의 DB 트랜잭션으로 카프카 발행까지 묶을 수는 없다. 이때 사용하는 방법 중 하나가 <strong>Transactional Outbox</strong>다.</p>
+
+<figure class="kafka-figure"><div class="kafka-diagram-heading"><span>03</span><strong>DB 저장과 이벤트 전달을 나눈다</strong></div><div class="kafka-scroll" tabindex="0" role="region" aria-label="DB 저장과 이벤트 전달을 나눈다. 좁은 화면에서는 가로로 스크롤할 수 있습니다."><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 344" role="img" aria-labelledby="kafka-outbox-title kafka-outbox-desc"><title id="kafka-outbox-title">DB 저장과 이벤트 전달을 나눈다</title><desc id="kafka-outbox-desc">주문과 Outbox 이벤트를 하나의 DB 트랜잭션으로 저장한 뒤 별도 전달 과정이 Kafka에 보낸다.</desc><defs><marker id="kafka-outbox-arrow" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0 0 L7 3.5 L0 7Z" fill="#918d83"/></marker></defs><rect x="16" y="40" width="300" height="208" rx="2" fill="#e8e6df" stroke="none"/><text x="36" y="76" font-size="18" font-weight="600" text-anchor="start" class="">하나의 DB 트랜잭션</text><path d="M36 96 L296 96" fill="none" stroke="#c9c5bb" stroke-width="1"/><text x="36" y="140" font-size="20" font-weight="600" text-anchor="start" class="">주문 테이블</text><text x="36" y="208" font-size="20" font-weight="600" text-anchor="start" class="">Outbox 테이블</text><text x="36" y="232" font-size="16" font-weight="400" text-anchor="start" class="muted">발행할 이벤트</text><path d="M316 196 H400" fill="none" stroke="#918d83" stroke-width="1.25" marker-end="url(#kafka-outbox-arrow)"/><path d="M536 196 H612" fill="none" stroke="#918d83" stroke-width="1.25" marker-end="url(#kafka-outbox-arrow)"/><text x="416" y="164" font-size="20" font-weight="600" text-anchor="start" class="">이벤트 전달</text><text x="416" y="200" font-size="16" font-weight="400" text-anchor="start" class="muted">조회 또는 CDC</text><text x="632" y="164" font-size="24" font-weight="600" text-anchor="start" class="">Kafka</text><text x="632" y="200" font-size="16" font-weight="400" text-anchor="start" class="muted">이벤트 저장</text><path d="M16 284 L316 284" fill="none" stroke="#e74b2b" stroke-width="1"/><text x="16" y="316" font-size="16" font-weight="600" text-anchor="start" class="accent">주문과 이벤트를 함께 저장</text><text x="416" y="316" font-size="16" font-weight="400" text-anchor="start" class="muted">커밋 이후에 전달</text></svg></div><figcaption>음영 영역은 하나의 트랜잭션이다. 전송에 실패해도 DB에는 다시 보낼 이벤트가 남는다.</figcaption></figure>
+
+<p>주문을 저장할 때 발행할 이벤트도 Outbox 테이블에 넣는다. 같은 DB 트랜잭션으로 처리하면 둘 다 커밋되거나 둘 다 롤백된다. 이후 별도 프로세스가 Outbox를 읽어 카프카에 이벤트를 보낸다.</p>
+
+<p>Outbox를 주기적으로 조회할 수도 있고 DB의 변경 기록을 추적하는 CDC를 사용할 수도 있다. <a href="https://debezium.io/documentation/reference/stable/transformations/outbox-event-router.html">Debezium의 Outbox Event Router</a>가 이런 구성에 쓰인다.</p>
+
+<p>이제 전송에 실패해도 다시 보낼 기록이 DB에 남는다. 그렇다고 배송까지 함께 완료된 것은 아니다. 전달 프로세스가 멈추면 이벤트는 Outbox에 쌓인다. 이 과정을 감시하고 복구할 수 있어야 한다.</p>
+
+<p>중복도 생길 수 있다. Outbox를 조회해 전송한 뒤 발행 완료를 표시하는 방식을 생각해 보자. 전송에는 성공했지만 완료 표시 전에 서버가 꺼지면 다음 실행에서 같은 이벤트를 또 보낼 수 있다.</p>
+
+<h2>같은 이벤트를 두 번 받는 경우</h2>
+
+<p>소비자에서도 비슷한 일이 일어난다. 주문 이벤트를 읽고 적립금을 지급했다. DB에는 지급 결과가 반영됐다. 그런데 오프셋을 커밋하기 전에 서버가 꺼졌다. 다시 실행하면 같은 이벤트를 읽을 수 있다.</p>
+
+<figure class="kafka-figure"><div class="kafka-diagram-heading"><span>04</span><strong>지급은 끝났지만 읽은 위치는 저장되지 않았다</strong></div><div class="kafka-scroll" tabindex="0" role="region" aria-label="지급은 끝났지만 읽은 위치는 저장되지 않았다. 좁은 화면에서는 가로로 스크롤할 수 있습니다."><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 464" role="img" aria-labelledby="kafka-duplicate-title kafka-duplicate-desc"><title id="kafka-duplicate-title">지급은 끝났지만 읽은 위치는 저장되지 않았다</title><desc id="kafka-duplicate-desc">적립금 DB 커밋 후 오프셋 커밋 전에 종료되면 재시작한 소비자가 같은 이벤트를 다시 읽을 수 있다.</desc><defs><marker id="kafka-duplicate-arrow" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0 0 L7 3.5 L0 7Z" fill="#918d83"/></marker></defs><text x="80" y="28" font-size="20" font-weight="600" text-anchor="middle" class="">Kafka</text><path d="M80 52 L80 400" fill="none" stroke="#d6d4ce" stroke-width="1" stroke-dasharray="4 6"/><text x="368" y="28" font-size="20" font-weight="600" text-anchor="middle" class="">소비자</text><path d="M368 52 L368 400" fill="none" stroke="#d6d4ce" stroke-width="1" stroke-dasharray="4 6"/><text x="664" y="28" font-size="20" font-weight="600" text-anchor="middle" class="">업무 DB</text><path d="M664 52 L664 400" fill="none" stroke="#d6d4ce" stroke-width="1" stroke-dasharray="4 6"/><path d="M80 112 H368" fill="none" stroke="#918d83" stroke-width="1.25" marker-end="url(#kafka-duplicate-arrow)"/><rect x="96" y="76" width="164" height="24" rx="2" fill="#f2f1ed" stroke="none"/><text x="104" y="96" font-size="16" font-weight="400" text-anchor="start" class="">offset 42 읽기</text><path d="M368 184 H664" fill="none" stroke="#918d83" stroke-width="1.25" marker-end="url(#kafka-duplicate-arrow)"/><rect x="384" y="148" width="160" height="24" rx="2" fill="#f2f1ed" stroke="none"/><text x="392" y="168" font-size="16" font-weight="400" text-anchor="start" class="">적립금 지급</text><path d="M664 248 H368" fill="none" stroke="#918d83" stroke-width="1.25" marker-end="url(#kafka-duplicate-arrow)" stroke-dasharray="4 5"/><rect x="384" y="212" width="160" height="24" rx="2" fill="#f2f1ed" stroke="none"/><text x="392" y="232" font-size="16" font-weight="400" text-anchor="start" class="">DB 커밋 성공</text><rect x="288" y="276" width="448" height="48" rx="2" fill="#ebe3db" stroke="none"/><rect x="288" y="276" width="3" height="48" rx="2" fill="#e74b2b" stroke="none"/><text x="308" y="306" font-size="18" font-weight="600" text-anchor="start" class="">offset 43 커밋 전에 서버 종료</text><path d="M80 384 H368" fill="none" stroke="#918d83" stroke-width="1.25" marker-end="url(#kafka-duplicate-arrow)"/><rect x="96" y="348" width="252" height="24" rx="2" fill="#f2f1ed" stroke="none"/><text x="104" y="368" font-size="16" font-weight="400" text-anchor="start" class="">재시작 후 offset 42 재수신</text><text x="80" y="444" font-size="20" font-weight="600" text-anchor="start" class="">이미 지급한 이벤트를 다시 읽을 수 있다.</text></svg></div><figcaption>시간은 위에서 아래로 흐른다. 지급 기록과 오프셋 저장 사이에 장애가 나면 같은 이벤트를 다시 받는다.</figcaption></figure>
+
+<p>오프셋 커밋은 다음에 읽기 시작할 위치를 저장하는 작업이다. 그림처럼 오프셋 42의 이벤트를 처리했다면 보통 다음 위치인 43을 커밋한다. DB에 적립금이 지급됐는지 카프카가 확인해 주는 것은 아니다.</p>
+
+<p>처리 전에 오프셋을 커밋하면 장애가 났을 때 작업을 건너뛸 수 있다. 처리 후에 커밋하면 그 사이의 장애로 같은 작업을 반복할 수 있다. <a href="https://kafka.apache.org/40/design/design/">메시지 전달 보장 문서</a>에서 설명하는 at-most-once와 at-least-once의 차이다.</p>
+
+<p>그래서 같은 이벤트를 다시 받아도 결과는 한 번 처리했을 때와 같도록 만든다. 이를 <strong>멱등성</strong>이라고 한다. 적립금이라면 이벤트의 고유 ID인 <code>eventId</code>를 처리 이력에 남기는 방법을 쓸 수 있다.</p>
+
+<p>이때 처리 이력 저장과 적립금 지급은 같은 DB 트랜잭션으로 묶어야 한다. 처리 이력에는 유니크 제약을 둔다. 이미 처리한 ID가 들어오면 지급을 반복하지 않는다. 같은 DB에서 여러 소비 업무를 관리한다면 업무 식별자도 중복 판단 기준에 포함해야 한다.</p>
+
+<p>먼저 조회해서 ID가 없을 때만 지급하는 코드로는 부족하다. 동시에 실행된 두 작업이 모두 “아직 없다”고 판단할 수 있기 때문이다. DB 제약으로 중복을 막고 지급 결과까지 함께 커밋해야 한다.</p>
+
+<p>카프카의 멱등 프로듀서는 재전송에 따른 중복 기록을 막는 기능이다. 외부 DB의 적립금 지급까지 한 번으로 만들어주지는 않는다. 카프카 트랜잭션 역시 소비한 오프셋과 새로 발행할 카프카 레코드를 묶는 데 사용할 수 있지만 외부 DB나 결제 API 호출은 자동으로 포함되지 않는다. 외부 API는 해당 서비스가 제공하는 멱등 키와 결과 조회 방법을 확인해야 한다.</p>
+
+<h2>재시도하는 동안 다음 이벤트는 어떻게 할까</h2>
+
+<p>실패한 이벤트에서 멈추면 같은 파티션의 다음 이벤트도 기다린다. 별도 재시도 토픽으로 보내고 계속 진행하면 뒤의 이벤트를 처리할 수 있다. 대신 순서가 바뀔 수 있다. <a href="https://docs.spring.io/spring-kafka/reference/retrytopic.html">Spring Kafka의 비차단 재시도 문서</a>도 이 점을 명시한다.</p>
+
+<p>주문 생성 이벤트를 재시도하는 사이에 취소 이벤트가 먼저 도착했다고 하자. 아직 없는 주문의 취소를 어떻게 처리해야 할까? 취소를 잠시 보류할 수도 있다. 같은 주문의 후속 처리를 멈출 수도 있다. 업무에 맞는 선택이 필요하다.</p>
+
+<p>계속 실패하는 이벤트는 DLQ(Dead Letter Queue)에 따로 보관할 수 있다. 이후 누가 원인을 확인하고 언제 다시 처리할지도 정해야 한다. 네트워크가 잠시 끊긴 경우와 필수 값이 빠진 경우에 같은 재시도를 반복할 이유는 없다.</p>
+
+<h2>이벤트 형식을 바꿀 때도 주의해야 한다</h2>
+
+<p>과거 이벤트를 다시 읽을 수 있다면 새 소비자도 예전 형식을 이해해야 한다. 프로듀서와 소비자가 동시에 배포된다는 보장도 없다.</p>
+
+<p>예를 들어 <code>amount</code>를 <code>totalAmount</code>로 바꾸면 이전 소비자는 값을 찾지 못할 수 있다. 필드 이름은 그대로 두고 금액 단위만 바꿔도 문제가 된다. 파싱은 성공하는데 계산 결과가 틀릴 수 있다.</p>
+
+<p>필드를 추가할 때는 기본값이나 선택적 필드 처리를 검토한다. 삭제하거나 의미를 바꿀 때는 이전 소비자가 남아 있는지 확인한다. Schema Registry를 쓰면 스키마 호환성 검사를 자동화할 수 있다. 구체적인 규칙은 데이터 형식과 검사 모드에 따라 다르다. <a href="https://docs.confluent.io/platform/current/schema-registry/fundamentals/schema-evolution.html">Confluent의 스키마 진화 문서</a>에서 차이를 확인할 수 있다.</p>
+
+<p>이벤트 형식의 버전과 주문 상태의 버전도 구분해야 한다. 주문 상태 전체를 덮어쓰는 이벤트라면 오래된 버전의 갱신을 거절할 수 있다. 반면 “수량을 1 늘린다”라는 이벤트는 오래됐다는 이유로 버리면 그만큼 누락된다. 버전 숫자만 붙여서는 해결되지 않는다.</p>
+
+<h2>함께 바뀌어야 하는 데이터는 함께 둔다</h2>
+
+<p>잔액과 출금 원장을 같은 DB에서 관리한다면 하나의 트랜잭션으로 처리하는 편이 명확하다. 출금 완료 알림이나 통계 집계를 이후 이벤트 처리로 분리할 수 있다. 먼저 반드시 함께 반영돼야 할 데이터의 범위를 정해야 한다.</p>
+
+<p>여러 서비스의 상태를 바꿔야 한다면 실패했을 때 되돌리는 작업도 필요하다. 재고를 예약한 뒤 결제가 실패하면 예약을 해제하는 식이다. <a href="https://microservices.io/patterns/data/saga.html">Saga</a>는 이런 보상 작업을 사용하는 패턴이다. 다만 보상도 실패할 수 있고 처리 중인 상태가 밖에서 보일 수 있다. DB 트랜잭션의 롤백과 같은 보장은 아니다.</p>
+
+<h2>어디까지 알아야 할까</h2>
+
+<p>카프카를 공부할 때 설정 이름을 외우는 것만으로는 부족하다는 생각이 든다. 같은 주문을 어느 파티션에 넣을지 정해야 한다. DB에만 저장된 주문은 어떻게 복구할지 알아야 한다. 이벤트가 두 번 들어와도 적립금을 두 번 지급하지 않도록 만들어야 한다.</p>
+
+<p>설계를 확인하고 싶다면 주문 하나를 골라 중간에 서버가 꺼지는 상황을 가정해 보면 좋겠다. 주문을 저장한 직후에 꺼지면 무엇이 남을까? 적립금을 지급한 직후라면 무엇을 다시 하게 될까? 재시작한 뒤의 동작까지 설명할 수 있을 때 카프카를 쓴다는 말에도 구체적인 근거가 생긴다.</p>
+
+<p class="kafka-article-note">주문과 적립금 처리는 설명을 위한 예시다. 도식에서는 복제본과 세부 네트워크 요청을 생략했다.</p>

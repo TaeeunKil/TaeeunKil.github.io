@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="ko" data-post-id="decision-models-after-jev">
+<head>
+  <base href="../../">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Clef, Microsoft Decision-1, OpenAI Decisions, Solar Decide와 공개 모델을 가격·입력 범위·운영 방식으로 비교했다.">
+  <meta name="theme-color" content="#f2f1ed">
+  <title>Jev 뒤에 나온 판정 모델들 — 무엇을 비교해야 할까 — TaeeunKil</title>
+  <link rel="preload" href="assets/fonts/PretendardSite.woff2?v=8f938278b1" fetchpriority="high" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="assets/fonts/fonts.css?v=20261013-performance">
+  <style>html.fonts-loading body { visibility: hidden; }</style>
+  <script>
+    // Reveal the designed typeface only after fonts used by the page are ready.
+    document.documentElement.classList.add("fonts-loading");
+    document.addEventListener("DOMContentLoaded", () => {
+      const reveal = () => document.documentElement.classList.remove("fonts-loading");
+      Promise.resolve(window.pageReady).then(() => document.fonts.ready).then(reveal, reveal);
+    }, { once: true });
+  </script>
+  <link rel="stylesheet" href="style.css?v=20261013-dialog-scrollbars">
+  <script src="post.js?v=20261013-performance" defer></script>
+  <link rel="canonical" href="https://taeeunkil.github.io/writing/decision-models-after-jev/">
+</head>
+<body class="post-page">
+  <a class="skip-link" href="writing/decision-models-after-jev/#post-content" data-post-copy="skip">본문으로 건너뛰기</a>
+
+  <main class="post-shell" id="post-content">
+    <div class="post-toolbar">
+      <a class="post-back" href="index.html#writing" data-post-copy="back">← 글 목록</a>
+      <div class="language-switch" role="group" aria-label="언어 선택" data-post-aria="languageLabel">
+        <button type="button" data-language="ko" aria-pressed="true">KR</button><span aria-hidden="true">/</span><button type="button" data-language="en" aria-pressed="false">EN</button>
+      </div>
+    </div>
+
+    <article class="post-article" aria-live="polite">
+      <header class="post-header">
+        <p class="post-kicker">Writing / <span id="post-number">008</span></p>
+        <h1 id="post-title">Jev 뒤에 나온 판정 모델들 — 무엇을 비교해야 할까</h1>
+        <div class="post-meta"><time id="post-date" datetime="2026-10-12">2026.10.12</time><span id="post-tags">AI · Decision Model · Jev · LLM · API</span></div>
+        <p class="post-summary" id="post-summary">Clef, Microsoft Decision-1, OpenAI Decisions, Solar Decide와 공개 모델을 가격·입력 범위·운영 방식으로 비교했다.</p>
+      </header>
+      <p id="post-load-error" role="alert" hidden>글을 불러오지 못했습니다. 잠시 후 다시 시도해 주세요. / Could not load the article. Please try again.</p>
+      <div class="post-body" id="post-body"><aside class="post-context-note" aria-label="글의 출처와 성격">
+  <p class="post-context-kicker">Jev 이후 등장한 판정 모델 조사</p>
+  <p>공식 제품 문서와 발표를 기준으로 2026년 10월 12일에 정리했다. 직접 모델별 성능을 비교한 실험은 아니다.</p>
+</aside>
+
+<p class="post-lead">새로 나온 모델들은<br>글을 읽고 정해진 답을 고른다.</p>
+
+<p>Jev를 찾아본 뒤 비슷한 서비스가 빠르게 늘었다. Cloudflare는 Clef를 내놨고, Microsoft는 Decision-1을, OpenAI는 Decisions API를 공개했다. Upstage와 Perplexity, Fastino도 각자 판정 API를 제공한다. 내려받아 직접 돌리는 모델도 이어졌다.</p>
+
+<p>이름과 출시 발표만 보면 다 같은 일을 하는 것 같지만 차이가 있다. API 가격과 호스팅 방식이 다르고, 입력할 수 있는 자료와 벤치마크도 제각각이다. CoveLetter에서 쓸 모델을 고르려면 먼저 무엇을 비교하는지 나눠 볼 필요가 있다.</p>
+
+<h1>문장을 만드는 대신 판정을 돌려준다</h1>
+
+<p>판정 모델은 상태와 질문을 받아 정해진 형식으로 답한다. 예를 들어 자소서와 경험 근거를 주고 “이 주장이 자료에 있는가”, “문항의 요구에 답했는가”, “두 수정안 중 어느 쪽이 기준에 더 맞는가”를 물을 수 있다. 답은 참·거짓 확률, 선택지, 점수처럼 프로그램이 바로 읽을 수 있는 값이다.</p>
+
+<p>이런 모델은 글을 고쳐 쓰거나 이유를 길게 설명하지 않는다. 따라서 <strong>AI가 쓴 문장을 사람처럼 바꾸는 교정기나 AI 작성 탐지기와는 다르다.</strong> ‘더 자연스럽다’ 같은 기준도 직접 정의해야 한다. 그 기준에 따라 모델이 점수를 낼 수는 있지만, 점수가 글의 객관적인 품질이나 사실성을 보증하지는 않는다.</p>
+
+<h1>호스팅 API는 가격과 입력 범위부터 다르다</h1>
+
+<p>아래 요금은 2026년 10월 12일 공개 문서에서 확인했다. 대부분은 입력 토큰 100만 개 기준이다. Perplexity는 1,000회 판정 단가를 공개했다. 과금 단위가 달라 표의 숫자를 그대로 비교할 수는 없다. 이미지·영상 토큰 산정이나 계정 요금도 별도로 확인해야 한다.</p>
+
+<table>
+  <caption>호스팅 방식으로 사용할 수 있는 주요 판정 모델</caption>
+  <thead>
+    <tr><th scope="col">모델</th><th scope="col">접근 방식과 입력</th><th scope="col">공개 과금 기준</th><th scope="col">눈에 띄는 차이</th></tr>
+  </thead>
+  <tbody>
+    <tr><th scope="row"><a href="https://typesafe.ai/blog/introducing-system-one-models-and-jev">Jev</a></th><td>TypeSafe API · 텍스트</td><td>$0.042</td><td><code>choice</code>, <code>score</code>, <code>noul</code> 판정의 출발점</td></tr>
+    <tr><th scope="row"><a href="https://developers.cloudflare.com/changelog/post/2026-10-09-clef-omni-workers-ai/">Clef 계열</a></th><td>Workers AI API와 공개 가중치 · Clef·Flash는 이미지, Omni는 이미지·음성·영상 입력</td><td>Flash $0.038 / Omni $0.150 / Clef $0.240</td><td>Flash는 호스팅 문맥 24K, Clef·Omni는 64K. Jev API 호환을 표방</td></tr>
+    <tr><th scope="row"><a href="https://commandline.microsoft.com/microsoft-decision-1-model-foundry/">Microsoft Decision-1</a></th><td>Microsoft Foundry 또는 OpenRouter · 텍스트</td><td>$0.042</td><td>32K 문맥. 고정 선택지와 기준표 평가에 맞춘 모델</td></tr>
+    <tr><th scope="row"><a href="https://developers.openai.com/api/docs/guides/decisions">OpenAI Decisions</a></th><td>전용 Decisions API · 텍스트·이미지</td><td>$0.10</td><td>GPT-6 Luna를 쓰는 공개 베타. 참·거짓은 <code>predicate</code>로 요청</td></tr>
+    <tr><th scope="row"><a href="https://console.upstage.ai/docs/models/solar-decide">Upstage Solar Decide</a></th><td>Upstage Console · 텍스트</td><td>$0.10</td><td>Solar Mini 4 기반, 512K 문맥. Jev와 같은 System One 요청 형식이며 현재 베타</td></tr>
+    <tr><th scope="row"><a href="https://community.perplexity.ai/t/pplx-decider-v1-1-27b-our-updated-open-weights-multimodal-decision-model-is-now-available/6286">Perplexity Decider</a></th><td>Decisions API와 공개 가중치 · 이미지 입력 지원</td><td><a href="https://community.perplexity.ai/t/pplx-decider-v1-1-27b-scores-the-highest-on-decision-bench-for-accuracy-with-the-lowest-cost/6312">$0.017 / 1,000회 판정</a></td><td>27B 모델 가중치도 공개. 내려받는 저장소는 접근 승인이 필요</td></tr>
+    <tr><th scope="row"><a href="https://fastino.ai/blog/introducing-glide-the-first-thinking-decision-model">Fastino GLiDE</a></th><td>Fastino API · 텍스트</td><td>$0.15</td><td>불확실할 때 추가 추론을 배정한다고 소개한 모델. 40K 문맥</td></tr>
+  </tbody>
+</table>
+
+<p>토큰 단가만 보면 Clef-flash가 낮다. Perplexity는 판정 횟수 기준 요금을 공개했으므로 입력 길이가 달라질 때 비용을 같은 방식으로 비교할 수 없다. OpenAI Decisions와 Solar Decide는 토큰 단가가 더 높지만 이미지 입력과 긴 문맥을 지원한다. Upstage는 한국어 이해력을 내세운다. Solar Decide는 선택지가 26개를 넘으면 한 번의 판정으로 처리하지 못한다. Clef도 모델별 문맥 길이와 요금이 다르다.</p>
+
+<p>API 모양도 전부 같지는 않다. Clef와 Solar Decide, GLiDE는 System One 형식을 따른다고 안내한다. Microsoft는 비슷하게 상태와 질문을 받지만 Azure 배포와 인증이 필요하고, OpenAI는 별도 <code>/v1/decisions</code> API를 쓴다. 기존 Jev 호출 코드를 그대로 쓸 수 있는지 확인하지 않고, 모델 이름만 바꾸는 방식으로 접근하면 안 된다.</p>
+
+<h1>공개 모델은 직접 운영하는 선택지다</h1>
+
+<p><a href="https://github.com/NandhaKishorM/laya">Laya</a>는 로컬에서 선택·점수·예/아니요 판단을 실행하는 엔진이다. 여러 체크포인트와 라우터를 제공하고, 프로젝트 문서는 100개가 넘는 언어를 지원한다고 설명한다. 앞선 Jev 글에서 살펴봤듯, 한국어 자소서에서 쓸 만한지는 별도 평가가 필요하다.</p>
+
+<p><a href="https://huggingface.co/h2oai/h2o-lightning-4b">H2O-Lightning-4B</a>는 이미지 입력도 받는 4B 공개 가중치 모델이다. Apache 2.0 라이선스로 공개됐고 vLLM으로 실행할 수 있다. AWS Strands 팀의 <a href="https://github.com/strands-labs/strands-decider">Strands Decider</a>처럼 작은 체크포인트를 내려받아 CPU나 Apple Silicon에서 시도할 수 있는 프로젝트도 나왔다.</p>
+
+<p>모델 가중치를 받을 수 있다고 해서 곧바로 관리형 서비스가 생기는 것은 아니다. 하드웨어를 준비하고 추론 서버를 운영해야 하며, 체크포인트마다 정확도와 확률 보정, 라이선스를 확인해야 한다. 대신 민감한 경험 자료를 외부 API로 보내지 않고 로컬에서 처리하는 구성을 만들 수 있다.</p>
+
+<h1>발표된 숫자를 한 줄로 세우기 어렵다</h1>
+
+<p>각 회사는 서로 다른 평가 결과를 내놓았다. Cloudflare가 인용한 TypeSafe 자체 평가 표에서는 Clef가 네 업무 유형 가운데 세 곳에서 Jev보다 높은 값을 보였다. Microsoft는 36개 벤치마크에서 Decision-1 평균 정확도 83.5%, Jev 82.3%를 보고했다. Perplexity는 1,071개 사례의 정확도 94.5%를 발표했다. H2O는 JevBench의 종합 점수에서 자사 모델이 Jev보다 높았다고 모델 카드에 적었다.</p>
+
+<p>이 수치는 같은 시험에서 얻은 결과가 아니다. Microsoft와 Cloudflare의 수치는 각 회사가 구성한 평가를 포함하고, Perplexity의 94.5%도 다른 사례 묶음에서 나온 값이다. H2O가 제시한 JevBench 수치는 여러 축을 합친 종합 점수라 정답률과 같은 뜻이 아니다. 순위 하나로 제품의 우열을 정하기보다 시험 데이터, 모델 버전, 장비, 비용 계산 방식을 같이 봐야 한다.</p>
+
+<p>한국어 자기소개서에 대한 공개 성능 평가는 이 자료들에서 확인하지 못했다. Upstage가 한국어 이해력을 강점으로 소개한다는 점은 시험 후보를 고르는 데 참고할 수 있지만, 한국어 자소서를 실제로 잘 판단한다는 증거와는 구분해야 한다.</p>
+
+<h1>CoveLetter에서는 같은 초안을 나란히 넣어 본다</h1>
+
+<p>첫 비교에서는 GPT 초안 A를 바탕으로 만든 두 갈래, 프롬프트 개선안 B와 Jev 점수를 반영한 수정안 C를 고정한다. Jev 외의 판정 모델에도 같은 경험 자료와 기준을 준 뒤 B와 C를 평가하게 하면, 작성에 사용한 모델이 자기 결과를 다시 고르는 순환을 줄일 수 있다.</p>
+
+<p>처음에는 Jev, Clef-flash, Solar Decide 정도를 후보로 삼을 만하다. Jev는 기준점이고 Clef-flash는 입력 단가가 낮고 API 호환을 내세우며, Solar Decide는 한국어 이해력과 긴 문맥을 강조한다. 같은 자료와 질문을 넣고, 두 수정안의 순서를 바꾸어 다시 물어본다. 모델의 선택과 확률뿐 아니라 내가 선호하는 문장, 근거와 맞지 않는 주장, 불필요한 수정도 따로 기록한다.</p>
+
+<p>수정안 판정을 한 번 해보는 것은 절차를 익히는 데 도움이 된다. 그러나 자소서 한 편의 결과로 모델을 평가했다고 말할 수는 없다. 글자 수와 반복은 코드로 확인하고, 사실은 경험 원문과 대조한다. 애매한 판정은 보류하고 최종 선택은 사람이 한다.</p>
+
+<p>Jev 이후 선택지는 많아졌다. 지금 비교할 것은 가장 높은 점수를 내세운 모델이 아니다. 같은 한국어 자료를 읽혔을 때 근거를 놓치지 않는지, 내가 불필요한 수정을 받아들이지 않게 하는지다.</p>
+
+<h1>참고 자료</h1>
+
+<ul>
+  <li><a href="https://typesafe.ai/blog/introducing-system-one-models-and-jev">TypeSafe, Introducing System One Models &amp; Jev</a> · <a href="https://docs.typesafe.ai/introduction/quickstart">Jev Quickstart</a></li>
+  <li><a href="https://blog.cloudflare.com/clef-decision-models/">Cloudflare, Introducing Clef</a> · <a href="https://developers.cloudflare.com/changelog/post/2026-10-09-clef-omni-workers-ai/">Clef-omni, 가격과 문맥 변경</a></li>
+  <li><a href="https://commandline.microsoft.com/microsoft-decision-1-model-foundry/">Microsoft, Microsoft-Decision-1</a> · <a href="https://learn.microsoft.com/en-us/azure/foundry/foundry-models/how-to/use-foundry-models-microsoft-decision">Microsoft Foundry 사용 문서</a></li>
+  <li><a href="https://developers.openai.com/api/docs/guides/decisions">OpenAI Decisions API 문서</a></li>
+  <li><a href="https://console.upstage.ai/docs/models/solar-decide">Upstage Solar Decide</a> · <a href="https://console.upstage.ai/api/systemone">System One API 문서</a></li>
+  <li><a href="https://huggingface.co/perplexity-ai/pplx-decider-v1.1-27b">Perplexity Decider 모델 카드</a> · <a href="https://community.perplexity.ai/t/pplx-decider-v1-1-27b-scores-the-highest-on-decision-bench-for-accuracy-with-the-lowest-cost/6312">Perplexity API 발표</a></li>
+  <li><a href="https://fastino.ai/blog/introducing-glide-the-first-thinking-decision-model">Fastino GLiDE 소개</a> · <a href="https://docs.fastino.ai/concepts/models">Fastino 모델 및 가격 문서</a></li>
+  <li><a href="https://github.com/NandhaKishorM/laya">Laya</a> · <a href="https://huggingface.co/h2oai/h2o-lightning-4b">H2O-Lightning-4B</a> · <a href="https://github.com/strands-labs/strands-decider">Strands Decider</a></li>
+</ul>
+</div>
+    </article>
+
+    <section class="comments-shell" aria-labelledby="comments-title">
+      <div class="comments-heading">
+        <p>Discussion / 01</p>
+        <h2 id="comments-title" data-post-copy="comments">댓글</h2>
+      </div>
+      <div class="giscus" id="giscus-comments"></div>
+    </section>
+
+    <a class="post-end" href="index.html#writing" data-post-copy="back">← 글 목록</a>
+  </main>
+<script id="post-data" type="application/json">{"id": "decision-models-after-jev", "number": 8, "date": "2026-10-12", "title": {"ko": "Jev 뒤에 나온 판정 모델들 — 무엇을 비교해야 할까", "en": "Decision Models After Jev: What Should We Compare?"}, "summary": {"ko": "Clef, Microsoft Decision-1, OpenAI Decisions, Solar Decide와 공개 모델을 가격·입력 범위·운영 방식으로 비교했다.", "en": "A comparison of Jev-like hosted APIs and open models by price, input scope, and deployment approach."}, "content": {"ko": "writing/decision-models-after-jev/body.ko.html"}, "tags": ["AI", "Decision Model", "Jev", "LLM", "API"], "thumbnail": "assets/thumbnails/decision-models-after-jev.svg"}</script>
+</body>
+</html>
