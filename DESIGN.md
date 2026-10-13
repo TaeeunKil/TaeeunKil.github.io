@@ -34,16 +34,11 @@
 
 ## 4. Typography
 
-제목과 본문 모두 저장소에 포함한 Pretendard Variable을 우선 사용한다. 외부 CDN을 호출하지 않으며, 폰트가 첫 렌더링에 맞춰 준비되지 않으면 해당 페이지에서는 시스템 산세리프를 유지해 뒤늦은 글꼴 교체를 방지한다.
+제목과 본문 모두 Pretendard Variable을 사용한다. 현재 사이트에 필요한 글자를 담은 `PretendardSite.woff2`를 높은 우선순위로 preload하고, `document.fonts.ready` 이후 화면을 표시한다. 폰트 로딩이 실패한 경우에는 대체 글꼴로 접근할 수 있다. JavaScript가 꺼져 있어도 콘텐츠를 숨기지 않는다.
+
+`assets/fonts/fonts.css`는 `unicode-range`로 사이트용 서브셋과 나머지 글자를 분리한다. 새 글자가 서브셋에 없으면 원본 폰트에서 불러온다. 콘텐츠 추가 후 `pip install fonttools brotli` 및 `python scripts/subset-font.py`로 서브셋을 갱신한다. 생성된 WOFF2와 CSS를 함께 반영한다.
 
 ```css
-@font-face {
-  font-family: "Pretendard";
-  src: url("assets/fonts/PretendardVariable.woff2") format("woff2");
-  font-weight: 100 900;
-  font-display: optional;
-}
-
 --font: "Pretendard", system-ui, -apple-system, "Segoe UI", sans-serif;
 ```
 

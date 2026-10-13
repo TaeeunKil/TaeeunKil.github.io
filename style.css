@@ -1,12 +1,3 @@
-@font-face {
-  font-family: "Pretendard";
-  src: url("assets/fonts/PretendardVariable.woff2") format("woff2");
-  font-style: normal;
-  font-weight: 100 900;
-  /* Keep the first rendered font stable when the download is slow. */
-  font-display: optional;
-}
-
 :root {
   --background: #f2f1ed;
   --text: #171716;
@@ -228,7 +219,7 @@ a:focus-visible {
 .home-hero {
   min-height: calc(100svh - var(--header-height) - var(--footer-height));
   display: grid;
-  grid-template-rows: 1fr auto auto;
+  grid-template-rows: 1fr auto;
   padding: clamp(2rem, 5vw, 4.5rem) var(--gutter) 1.5rem;
 }
 .home-hero h1 { grid-row: 1 !important; }
@@ -315,13 +306,7 @@ a:focus-visible {
   display: inline;
 }
 
-.home-intro {
-  max-width: 34rem;
-  margin: 0;
-  font-size: clamp(1.05rem, 2vw, 1.45rem);
-  font-weight: 500;
-  letter-spacing: -0.025em;
-}
+
 
 .panel-heading {
   display: grid;

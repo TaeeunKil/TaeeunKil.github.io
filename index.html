@@ -6,15 +6,25 @@
   <meta name="description" content="TaeeunKil의 개발, 배움, 생각을 기록하는 개인 웹사이트입니다." data-i18n-content="meta.description">
   <meta name="theme-color" content="#f2f1ed">
   <title>TaeeunKil</title>
-  <link rel="preload" href="assets/fonts/PretendardVariable.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="assets/fonts/PretendardSite.woff2" fetchpriority="high" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="assets/fonts/fonts.css?v=20261013-subset">
+  <style>html.fonts-loading body { visibility: hidden; }</style>
+  <script>
+    // Reveal the designed typeface only after fonts used by the page are ready.
+    document.documentElement.classList.add("fonts-loading");
+    document.addEventListener("DOMContentLoaded", () => {
+      const reveal = () => document.documentElement.classList.remove("fonts-loading");
+      document.fonts.ready.then(reveal, reveal);
+    }, { once: true });
+  </script>
   <script>
     // Establish the layout and requested panel before the first paint.
     document.documentElement.classList.add("js");
     document.documentElement.dataset.initialPanel =
       ["writing", "about"].includes(location.hash.slice(1)) ? location.hash.slice(1) : "home";
   </script>
-  <link rel="stylesheet" href="style.css?v=20261013-first-paint">
-  <script src="app.js?v=20261013-first-paint" defer></script>
+  <link rel="stylesheet" href="style.css?v=20261013-font-ready">
+  <script src="app.js?v=20261013-font-ready" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#content" data-i18n="skip">본문으로 건너뛰기</a>
@@ -49,7 +59,6 @@
             <span>Taeeun</span><span>Kil<i aria-hidden="true">.</i></span>
           </h1>
 
-          <p class="home-intro" data-i18n="home.intro">AI를 활용해 웹 기능 구현부터 배포와 운영 확인까지 연결하는 개발자 길태은입니다.</p>
           <a class="portfolio-jump" href="#portfolio"><span data-ko="포트폴리오" data-en="Portfolio">포트폴리오</span><span aria-hidden="true">↓</span></a>
           </div>
 
