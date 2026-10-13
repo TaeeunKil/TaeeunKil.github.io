@@ -3,7 +3,8 @@
   src: url("assets/fonts/PretendardVariable.woff2") format("woff2");
   font-style: normal;
   font-weight: 100 900;
-  font-display: swap;
+  /* Keep the first rendered font stable when the download is slow. */
+  font-display: optional;
 }
 
 :root {
@@ -308,7 +309,6 @@ a:focus-visible {
   letter-spacing: -0.095em;
   line-height: 0.82;
   white-space: nowrap;
-  animation: title-in 360ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 .home-panel h1 span {
@@ -1433,6 +1433,9 @@ a:focus-visible {
   visibility: hidden;
   pointer-events: none;
   will-change: opacity, filter, transform;
+}
+
+.js.tabs-ready .panel {
   transition:
     opacity 280ms ease-out,
     filter 420ms ease-out,
@@ -1440,7 +1443,10 @@ a:focus-visible {
     visibility 0s linear 520ms;
 }
 
-.js .panel.is-active {
+.js .panel.is-active,
+.js[data-initial-panel="home"] .home-panel,
+.js[data-initial-panel="writing"] .writing-panel,
+.js[data-initial-panel="about"] .about-panel {
   opacity: 1;
   filter: blur(0);
   transform: translate3d(0, 0, 0);

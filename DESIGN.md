@@ -34,14 +34,14 @@
 
 ## 4. Typography
 
-제목과 본문 모두 저장소에 포함한 Pretendard Variable을 사용한다. 외부 CDN을 호출하지 않으며, 폰트를 불러오지 못한 경우에만 시스템 산세리프로 대체한다.
+제목과 본문 모두 저장소에 포함한 Pretendard Variable을 우선 사용한다. 외부 CDN을 호출하지 않으며, 폰트가 첫 렌더링에 맞춰 준비되지 않으면 해당 페이지에서는 시스템 산세리프를 유지해 뒤늦은 글꼴 교체를 방지한다.
 
 ```css
 @font-face {
   font-family: "Pretendard";
   src: url("assets/fonts/PretendardVariable.woff2") format("woff2");
   font-weight: 100 900;
-  font-display: swap;
+  font-display: optional;
 }
 
 --font: "Pretendard", system-ui, -apple-system, "Segoe UI", sans-serif;

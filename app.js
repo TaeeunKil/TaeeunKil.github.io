@@ -240,6 +240,11 @@ try { savedLanguage = localStorage.getItem("language"); } catch {}
 const initialLanguage = savedLanguage ?? (navigator.language.toLowerCase().startsWith("ko") ? "ko" : "en");
 setLanguage(initialLanguage, { persist: false });
 selectTab(location.hash.slice(1), { updateHistory: false });
+delete document.documentElement.dataset.initialPanel;
+// Enable transitions only after the initial panel has been painted.
+requestAnimationFrame(() => requestAnimationFrame(() => {
+  document.documentElement.classList.add("tabs-ready");
+}));
 loadPosts();
 window.scrollTo(0, 0);
 window.addEventListener("load", () => window.scrollTo(0, 0), { once: true });
