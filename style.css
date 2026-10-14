@@ -1741,3 +1741,43 @@ a:focus-visible {
  .folio-experience article { grid-template-columns:1fr; gap:12px; }
  .folio-intro .folio-lead { font-size:18px!important; }
 }
+
+/* One introduction for the home page. */
+.folio-intro { min-height:calc(100svh - var(--header-height)); padding:56px 0; box-sizing:border-box; }
+.home-panel .folio-intro h1 { font-size:clamp(44px,6vw,72px); line-height:1.15; letter-spacing:-.055em; margin:0 0 22px; white-space:normal; }
+.intro-actions { display:flex; align-items:center; gap:30px; margin-top:30px; }
+.intro-actions>a { display:flex; align-items:center; gap:12px; min-height:44px; font-size:15px; text-decoration:none; border-bottom:1px solid var(--text); }
+.intro-actions .portfolio-jump { margin:0; }
+.folio-intro .folio-github { color:var(--muted); font-size:13px; margin-top:26px; }
+
+.home-hero { grid-template-rows:1fr auto auto; }
+.hero-intro { margin:0; font-size:clamp(16px,1.5vw,22px); line-height:1.6; color:var(--muted); }
+.home-hero .portfolio-jump { margin-top:24px; }
+
+.home-hero { grid-template-rows:1fr auto; }
+.hero-brand { align-self:center; }
+.hero-brand .hero-intro { margin-top:32px; }
+
+/* The introduction is a second typographic headline. */
+.hero-brand .hero-intro {
+  margin-top:clamp(28px,4vh,48px);
+  color:var(--text);
+  font-size:clamp(30px,5.2vw,72px);
+  font-weight:700;
+  letter-spacing:-.055em;
+  line-height:1.16;
+}
+.hero-intro>span { display:block; }
+@media(max-height:650px) and (min-width:700px) {
+ .hero-brand .hero-intro { font-size:clamp(30px,4vw,52px); margin-top:24px; }
+}
+
+/* Optical alignment for the landing typography. */
+.home-hero .hero-brand { transform:translateY(-2vh); }
+.home-panel .hero-brand h1 { letter-spacing:-.065em; margin-left:-.018em; }
+.home-panel .hero-brand h1>span+span { margin-left:.07em; }
+.hero-brand .hero-intro { font-size:clamp(28px,4.7vw,65px); line-height:1.23; margin-top:clamp(30px,4.7vw,65px); letter-spacing:-.045em; }
+.home-hero>.portfolio-jump { justify-self:start; gap:20px; }
+@media(max-height:650px) and (min-width:700px) {
+ .hero-brand .hero-intro { font-size:clamp(28px,3.6vw,47px); margin-top:28px; }
+}

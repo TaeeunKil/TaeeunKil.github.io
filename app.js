@@ -124,7 +124,7 @@ function loadPosts() {
 }
 
 function selectTab(name, { updateHistory = true } = {}) {
-  const isPortfolio = name === 'portfolio';
+  const isPortfolio = name === 'portfolio' || name === 'projects';
   const index = tabNames.indexOf(isPortfolio ? 'home' : name);
   const safeIndex = index === -1 ? 0 : index;
   const activeName = tabNames[safeIndex];
@@ -185,18 +185,19 @@ function selectTab(name, { updateHistory = true } = {}) {
 }
 
 function positionHome(panel, isPortfolio) {
-  const portfolio = document.getElementById('portfolio');
+  const portfolio = document.getElementById(location.hash === '#projects' ? 'projects' : 'portfolio');
   panel.scrollTo({ top: isPortfolio ? portfolio.offsetTop : 0, behavior: 'instant' });
 }
 
 document.querySelector('.portfolio-jump').addEventListener('click', (event) => {
   event.preventDefault();
   const home = document.getElementById('home');
-  const portfolio = document.getElementById('portfolio');
-  home.scrollTo({ top: portfolio.offsetTop, behavior: reduceMotion.matches ? 'instant' : 'smooth' });
+  home.scrollTo({ top: document.getElementById('portfolio').offsetTop, behavior: reduceMotion.matches ? 'instant' : 'smooth' });
   document.getElementById('portfolio-title').focus({ preventScroll: true });
-  if (location.hash !== '#portfolio') history.pushState(null, '', '#portfolio');
+  history.pushState(null, '', '#portfolio');
 });
+
+
 
 tabs.forEach((tab) => {
   tab.addEventListener("click", (event) => {
