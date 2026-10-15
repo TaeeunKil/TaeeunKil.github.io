@@ -1,6 +1,7 @@
 const { test, before, after } = require('node:test');
 const assert = require('node:assert/strict');
 const { chromium } = require('playwright');
+const postCount = require('../data/posts.json').length;
 const base = process.env.BASE_URL || 'http://127.0.0.1:8766/';
 let browser;
 before(async () => {
@@ -20,7 +21,7 @@ test('home defers hidden writing thumbnails and renders all posts on first tab c
   assert.equal(await page.locator('.post-list > .post-row').count(), 0);
   assert.equal(await page.evaluate(() => performance.getEntriesByType('resource').some(r => r.name.includes('giscus.app') || r.name.includes('PretendardVariable'))), false);
   await page.locator('nav [data-tab-link="writing"]').click();
-  await page.waitForFunction(() => document.querySelectorAll('.post-list > .post-row').length === 8);
+  await page.waitForFunction(count => document.querySelectorAll('.post-list > .post-row').length === count, postCount);
   assert.equal(await page.locator('nav [aria-current="page"]').textContent(), '글');
   await page.locator('nav [data-tab-link="writing"]').press('ArrowRight');
   await page.waitForFunction(() => document.querySelector('.about-panel').classList.contains('is-active'));
@@ -51,7 +52,7 @@ test('static content is readable with JavaScript disabled', async () => {
   assert((await page.locator('#post-body').textContent()).length > 100);
   assert(await page.locator('#post-title').isVisible());
   await page.goto(base);
-  assert.equal(await page.locator('.post-row').count(), 8);
+  assert.equal(await page.locator('.post-row').count(), postCount);
   await context.close();
 });
 

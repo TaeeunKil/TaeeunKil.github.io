@@ -1,5 +1,28 @@
 [
   {
+    "id": "rea-game-modding",
+    "number": 9,
+    "date": "2026-10-15",
+    "title": {
+      "ko": "REA란? 코딩 에이전트로 프로그램 내부를 분석하는 방법",
+      "en": "What Is REA? Analyzing Programs with a Coding Agent"
+    },
+    "summary": {
+      "ko": "역공학의 기본 개념부터 REA와 분석 도구의 역할, 실제 사례와 검증 방법까지 정리했다.",
+      "en": "A study of reverse engineering, REA and its analysis backends, with real case studies and verification methods."
+    },
+    "content": {
+      "ko": "posts/2026/rea-game-modding.ko.html"
+    },
+    "tags": [
+      "REA",
+      "Reverse Engineering",
+      "AI",
+      "학습 노트"
+    ],
+    "thumbnail": "https://rea.tools/assets/figures/th04-bullet-ring.svg"
+  },
+  {
     "id": "decision-models-after-jev",
     "number": 8,
     "date": "2026-10-12",
