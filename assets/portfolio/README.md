@@ -22,3 +22,5 @@
 
 - 모아요 마크는 moayo-home.jpg의 왼쪽 위 서비스 마크를 참고해 SVG로 재구성했다. 원본 벡터 파일은 찾지 못했다. 이전에 추출한 moayo-logo.jpg는 서비스 로고로 사용하지 않는다.
 - Jacmel MGCMS는 사용자 확인에 따라 OVION 로고를 함께 사용한다.
+
+- kafrust-mark.svg: 포트폴리오용 메시지 흐름 표식. Kafka 또는 Rust의 공식 로고가 아님.
