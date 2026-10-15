@@ -24,3 +24,4 @@
 - Jacmel MGCMS는 사용자 확인에 따라 OVION 로고를 함께 사용한다.
 
 - kafrust-mark.svg: 포트폴리오용 메시지 흐름 표식. Kafka 또는 Rust의 공식 로고가 아님.
+- awm-mark.svg와 translator-mark.svg: 각 프로젝트의 기록 보관과 자막 기능을 나타내는 포트폴리오용 표식. 공식 로고가 아님.
