@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" role="img" aria-labelledby="title desc">
+  <title id="title">Reading neurons</title>
+  <desc id="desc">A typographic cover for a reading note about neural network interpretability.</desc>
+  <rect width="640" height="400" fill="#eef1e9"/>
+  <rect x="48" y="52" width="48" height="5" fill="#446247"/>
+  <g fill="#203d29" font-family="Arial, sans-serif">
+    <text x="48" y="112" font-size="17" letter-spacing="3">RESEARCH NOTES / 10</text>
+    <text x="44" y="204" font-size="64" font-weight="700">Reading</text>
+    <text x="44" y="274" font-size="64" font-weight="700">neurons.</text>
+    <text x="48" y="348" font-size="19">Goodfire / Interpretability</text>
+  </g>
+</svg>

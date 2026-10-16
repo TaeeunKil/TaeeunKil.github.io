@@ -1,5 +1,23 @@
 [
   {
+    "id": "neural-networks-already-clean",
+    "number": 10,
+    "date": "2026-10-16",
+    "title": {
+      "ko": "신경망은 이미 깔끔할까? 뉴런을 직접 읽자는 Goodfire의 제안",
+      "en": "Are Neural Networks Already Clean? Goodfire's Case for Reading Neurons Directly"
+    },
+    "summary": {
+      "ko": "고양이와 자동차에 반응하는 뉴런부터 해석 비율의 의미까지, Goodfire의 연구 가설과 검증할 질문을 정리했다.",
+      "en": "A reading of Goodfire's research hypothesis, shared neuron patterns, and the limits of interpretability estimates."
+    },
+    "content": {
+      "ko": "posts/2026/neural-networks-already-clean.ko.html"
+    },
+    "tags": ["AI", "Interpretability", "Goodfire", "학습 노트"],
+    "thumbnail": "assets/thumbnails/neural-networks-already-clean.svg"
+  },
+  {
     "id": "rea-game-modding",
     "number": 9,
     "date": "2026-10-15",
