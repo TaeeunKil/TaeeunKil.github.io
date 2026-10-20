@@ -1,5 +1,23 @@
 [
   {
+    "id": "harness2-self-improvement",
+    "number": 11,
+    "date": "2026-10-20",
+    "title": {
+      "ko": "모델은 그대로, 하네스는 개선할 수 있을까? Harness²를 읽고",
+      "en": "Can an Agent Improve Its Harness While the Model Stays the Same?"
+    },
+    "summary": {
+      "ko": "가중치를 고정한 채 에이전트의 하네스를 고치는 Harness²의 구조와 결과, 직접 검증할 실험 계획을 정리했다.",
+      "en": "A study of Harness², its reported results and limitations, and a plan for testing harness-level self-improvement."
+    },
+    "content": {
+      "ko": "posts/2026/harness2-self-improvement.ko.html"
+    },
+    "tags": ["AI", "Agent", "Harness", "Self-Improvement", "학습 노트"],
+    "thumbnail": "assets/thumbnails/harness2-self-improvement.svg"
+  },
+  {
     "id": "neural-networks-already-clean",
     "number": 10,
     "date": "2026-10-16",

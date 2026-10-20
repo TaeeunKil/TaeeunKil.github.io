@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="320" height="200" viewBox="0 0 320 200" role="img" aria-labelledby="title desc">
+  <title id="title">Harness squared research note</title>
+  <desc id="desc">A typographic cover for a note about agent harness self-improvement.</desc>
+  <rect width="320" height="200" fill="#e5e8df"/>
+  <circle cx="278" cy="40" r="9" fill="#ce5737"/>
+  <path d="M28 40H72" stroke="#242623" stroke-width="3"/>
+  <path d="M205 106c19-19 48-19 65 0m0 0-1-15m1 15-16-1M254 143c-19 19-48 19-65 0m0 0 1 15m-1-15 16 1" fill="none" stroke="#81877d" stroke-width="2"/>
+  <circle cx="194" cy="124" r="4" fill="#ce5737"/>
+  <text x="26" y="113" font-family="Arial, sans-serif" font-size="43" font-weight="700" letter-spacing="-2" fill="#242623">Harness²</text>
+  <text x="28" y="151" font-family="Arial, sans-serif" font-size="16" letter-spacing="1" fill="#555951">SELF-IMPROVING AGENTS</text>
+</svg>

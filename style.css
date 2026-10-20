@@ -1082,6 +1082,34 @@ a:focus-visible {
   height: auto;
 }
 
+.post-figure-wide {
+  margin: -0.75rem 0 clamp(2.25rem, 4vw, 3.75rem);
+}
+
+.post-figure-wide img {
+  height: auto;
+  object-fit: contain;
+}
+
+.post-figure-wide figcaption,
+.post-video-figure figcaption {
+  margin-top: 0.75rem;
+  color: var(--muted);
+  font-size: 0.8rem;
+  line-height: 1.7;
+}
+
+.post-video-figure {
+  margin: 0 0 clamp(2.25rem, 4vw, 3.75rem);
+}
+
+.post-video-figure video {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #171716;
+}
+
 .post-gallery {
   display: grid;
   grid-template-columns: repeat(3, 1fr);

@@ -1,0 +1,101 @@
+<aside class="post-context-note" aria-label="글의 출처와 성격">
+  <p class="post-context-kicker">Harness² 논문과 공개 코드를 읽고</p>
+  <p>논문 v1은 2026년 10월 9일 arXiv에 공개됐다. 저자는 Google Cloud AI Research와 Northwestern University 소속이다. 코드는 Google Research GitHub에 있지만 공식 지원 제품은 아니다. 성능 수치는 논문에 실린 값이다. 아래 실험 계획은 아직 실행 전이다.<sup><a href="#reference-1" aria-label="참고문헌 1">[1]</a></sup><sup><a href="#reference-2" aria-label="참고문헌 2">[2]</a></sup></p>
+</aside>
+
+<p class="post-lead">모델을 다시 학습하지 않고도<br>에이전트가 다음 일을 더 잘할 수 있을까?</p>
+
+<p>Harness²는 모델 가중치를 건드리지 않는다. 작업 중 프롬프트를 다듬거나 도구 사용법과 메모리를 고친다. 효과가 있었던 변경은 다음 작업에서도 쓴다.<sup><a href="#reference-1" aria-label="참고문헌 1">[1]</a></sup></p>
+
+<p>논문에서 말하는 자가개선은 모델의 파라미터 학습이 아니다. 같은 모델이 프롬프트와 도구 사용법을 바꾸고 작업 순서를 조정한다. 성능이 올라가도 모델 자체가 학습된 건 아니다.</p>
+
+<h1>모델 대신 하네스를 고친다</h1>
+
+<p>Harness²는 하네스의 여덟 부분을 수정할 수 있게 했다. 시스템 프롬프트와 가드레일이 있고 메모리와 도구 안내도 포함된다. 스킬과 스크립트에 더해 서브에이전트와 미들웨어 플러그인도 바꿀 수 있다.<sup><a href="#reference-1" aria-label="참고문헌 1">[1]</a></sup></p>
+
+<p>문서 작업에서 저장을 자주 빠뜨린다면 저장 여부를 확인하는 절차를 추가할 수 있다. 검색 결과가 엉뚱하다면 검색 도구 사용법이나 결과 검토 순서를 손볼 수 있다. 모델 재학습 없이 바꾸는 건 이런 실행 설정과 작업 절차다.</p>
+
+<p>자가개선 연구는 모델과 하네스부터 데이터나 학습 절차까지 여러 대상을 다룬다.<sup><a href="#reference-3" aria-label="참고문헌 3">[3]</a></sup> 하네스 개선 논문도 방법이 다르다. <a href="https://arxiv.org/abs/2603.28052">Meta-Harness</a>는 실행 기록과 점수를 이용해 하네스 코드를 탐색한다.<sup><a href="#reference-4" aria-label="참고문헌 4">[4]</a></sup> <a href="https://arxiv.org/abs/2606.09498">Self-Harness</a>는 실패에서 약점을 찾아 수정안을 회귀 테스트로 거른다.<sup><a href="#reference-5" aria-label="참고문헌 5">[5]</a></sup> <a href="https://arxiv.org/abs/2609.24972">RRSI</a>는 평가 작업에 과적합하지 않도록 제안과 선택을 제한한다.<sup><a href="#reference-6" aria-label="참고문헌 6">[6]</a></sup> Harness²도 정답 검증기가 없는 작업에서 하네스를 고치는 방법을 다룬다. 이 과정에서 얻은 경험을 다른 작업에 활용하는 방법도 제안한다.<sup><a href="#reference-1" aria-label="참고문헌 1">[1]</a></sup></p>
+
+<h1>정답을 모를 때는 실행 결과를 비교한다</h1>
+
+<p>새 업무에는 자동 채점기나 정답 파일이 없을 수 있다. 논문은 이런 상황에서 수정 전후의 실행을 비교해 하네스를 고친다.<sup><a href="#reference-1" aria-label="참고문헌 1">[1]</a></sup></p>
+
+<ol>
+  <li><strong>기준 실행:</strong> 현재 하네스로 작업을 수행해 궤적과 결과물을 기록한다.</li>
+  <li><strong>후보 제안:</strong> 여러 작업에 적용할 수 있는 일반적인 개선과 현재 분야에 맞춘 개선을 따로 제안한다.</li>
+  <li><strong>후보 실행:</strong> 같은 작업을 후보 하네스로 실행한다. 모델과 환경은 기준 실행에 맞춘다.</li>
+  <li><strong>수정 조합:</strong> 기준 실행과 후보 실행의 차이를 살핀다. 관찰로 뒷받침되는 변경을 합친 뒤 새 하네스로 작업을 다시 수행한다.</li>
+</ol>
+
+<figure class="post-figure post-figure-wide">
+  <img src="assets/posts/harness2-self-improvement/harness2_pipeline.png" alt="작업 중 후보 하네스를 시험하고 수정한다. 작업이 끝나면 근거 있는 경험을 개선 하네스에 기록해 다음 작업에서 활용한다." loading="lazy">
+  <figcaption>현재 작업의 하네스를 고친 뒤 그 경험을 다음 작업에 남기는 흐름이다. 출처: <a href="https://github.com/google-research/harness2/blob/main/assets/harness2_pipeline.png">google-research/harness2 원본 도식</a>. 라이선스는 <a href="https://github.com/google-research/harness2/blob/main/LICENSE">Apache-2.0</a>이다.</figcaption>
+</figure>
+
+<figure class="post-video-figure">
+  <video controls preload="none" playsinline aria-label="Harness² 개요 영상">
+    <source src="https://github.com/user-attachments/assets/76b10548-b14b-4c8f-9aa5-a93662df4d56" type="video/mp4">
+    <a href="https://github.com/user-attachments/assets/76b10548-b14b-4c8f-9aa5-a93662df4d56">Harness² 개요 영상 열기</a>
+  </video>
+  <figcaption>프로젝트 저장소가 공개한 <a href="https://github.com/google-research/harness2#video-overview">Harness² 개요 영상</a>.</figcaption>
+</figure>
+
+<p>비교 결과는 수정 전후에 행동이 달라졌는지 보여준다. 그렇다고 새 결과가 정답이라는 뜻은 아니다. 후보 작성부터 최종 선택까지 모델 판단이 개입한다. k가 1보다 크면 선택기가 요청과 자료를 읽고 후보 결과물 중 하나를 고른다. 외부 정답 검증은 없다. 모델의 공통 편향이나 실행 변동도 비교를 흐릴 수 있다.<sup><a href="#reference-1" aria-label="참고문헌 1">[1]</a></sup></p>
+
+<p>재귀 예산 k를 늘리는 방법은 병렬과 순차 두 가지다. 병렬 방식은 후보 여러 개를 한꺼번에 시험한다. 순차 방식은 수정한 하네스를 다음 단계로 넘기며 이어서 다듬는다. k가 커지면 실행과 편집 호출도 늘어난다. 성능과 함께 추론 비용을 따져야 한다.</p>
+
+<h1>한 작업에서 고치고 다음 작업에 기록한다</h1>
+
+<p>하네스는 현재 작업을 수행하는 중에 한 번 고쳐진다. 작업이 끝나면 채택된 수정과 그 근거를 개선 라이브러리에 기록한다. 기록에는 어떤 상황에서 변경이 도움이 됐는지도 남긴다.<sup><a href="#reference-1" aria-label="참고문헌 1">[1]</a></sup></p>
+
+<p>다음 작업은 이전 작업의 하네스를 그대로 이어받지 않는다. 공통 초기 하네스에서 출발해 라이브러리에서 관련 기록을 찾아 재사용하거나 수정한다. 저장되는 건 만능 설정이 아니라 변경이 통했던 조건과 근거다.</p>
+
+<p>비교는 두 조건으로 나누면 된다. 한쪽은 라이브러리를 유지해 앞 작업의 기록을 활용한다. 다른 쪽은 매 작업 비우고 처음부터 시작한다. 새 업무의 점수 차이로 경험 축적 효과를 살펴볼 수 있다.</p>
+
+<h1>논문은 무엇을 측정했나</h1>
+
+<p>세 벤치마크에서 평가했다. <a href="https://github.com/Tencent/workbuddy-bench">WorkBuddy-Bench</a>는 사무 업무부터 웹 작업과 코딩 과제까지 다룬다. <a href="https://arxiv.org/abs/2605.26329">JobBench</a>는 전문 직무용이다. <a href="https://github.com/harveyai/harvey-labs">Harvey LAB</a>은 법률 업무를 평가한다. 실행 모델은 Gemini 3.5 Flash와 GLM-5였다. 여기에 OpenCode와 Codex를 조합해 네 가지 구성을 만들었다. 하네스 편집은 Claude Opus 4.8이 맡았다. Gemini가 자기 하네스를 직접 고친 실험은 아니다.<sup><a href="#reference-1" aria-label="참고문헌 1">[1]</a></sup><sup><a href="#reference-7" aria-label="참고문헌 7">[7]</a></sup><sup><a href="#reference-8" aria-label="참고문헌 8">[8]</a></sup><sup><a href="#reference-9" aria-label="참고문헌 9">[9]</a></sup></p>
+
+<p>한 번 개선한 뒤 WorkBuddy-Bench 평균은 최대 11.5점 올랐다. JobBench 점수는 최대 4.5점 상승했고 LAB 부분 통과율은 최대 11.8%p 높아졌다. 예를 들면 GLM-5와 OpenCode 조합에서 WorkBuddy-Bench 평균은 64.2에서 75.7로 올랐다. Gemini 3.5 Flash와 OpenCode 조합의 JobBench 점수는 31.5에서 36.0으로 상승했다. GLM-5와 OpenCode를 쓴 LAB에서는 부분 통과율이 59.6%에서 71.4%로 높아졌다.<sup><a href="#reference-1" aria-label="참고문헌 1">[1]</a></sup></p>
+
+<p>세 수치는 각 벤치마크 기준으로 계산됐다. LAB의 11.8은 상대 증가율이 아니라 퍼센트포인트 차이다. 저자들은 작업 순서를 바꿔 세 번 실행했고 평균과 표준편차를 보고했다. 여기에 적은 값은 논문 결과다. 직접 재현한 값은 아니다.</p>
+
+<h1>점수가 오르지 않은 경우도 있다</h1>
+
+<p>논문 부록에는 선택기가 낮은 점수의 결과물을 고른 사례가 있다. 수정 범위를 지나치게 좁혀 성능이 떨어진 경우도 보고됐다. 실행 결과가 흔들리거나 채점 결과가 빠지면 무엇이 회귀를 일으켰는지 가리기 어려웠다.<sup><a href="#reference-1" aria-label="참고문헌 1">[1]</a></sup></p>
+
+<p>재귀 예산을 키우면 후보와 재실행이 늘어 추론 비용도 커진다. 저자들도 실행 비교와 모델 판단만으로 정답이나 다른 작업으로의 전이를 보장할 수 없다고 적었다. 평균 점수만 보지 말자. 비용과 작업별 회귀도 확인해야 한다.</p>
+
+<p>저장소는 실행기의 네트워크 접근을 제한하지 않는다고 경고한다. Codex 실행은 샌드박스 없이 돌아간다. 공개 벤치마크의 답이나 채점 기준이 노출될 수 있다. 재현할 때는 네트워크를 차단하고 실행을 격리해야 한다.<sup><a href="#reference-2" aria-label="참고문헌 2">[2]</a></sup></p>
+
+<h1>직접 확인할 실험 계획</h1>
+
+<p>먼저 k=1에서 같은 작업의 점수가 오르는지 확인한다. 그다음 개선 라이브러리의 기록이 새 작업에도 도움이 되는지 본다. 두 효과를 따로 재야 어느 쪽에서 차이가 났는지 알 수 있다.</p>
+
+<ol>
+  <li><strong>작은 재현:</strong> 공개된 로컬 데모를 실행해 결과 파일과 기록 형식을 확인한다. 이 데모는 결정적 편집기를 쓰므로 설치와 흐름을 점검하는 단계로만 사용한다. 모델 기반 벤치마크의 성능 재현과는 구분한다.</li>
+  <li><strong>기준선 비교:</strong> 한 벤치마크의 작업 묶음을 고정한다. 기본 하네스와 Harness² k=1을 비교하되 모델과 실행기를 고정하고 환경도 같게 맞춘다. 각 작업을 두 조건에 모두 넣어 점수 차이를 계산한다.</li>
+  <li><strong>라이브러리 효과:</strong> Harness² k=1을 개선 라이브러리를 유지하는 조건과 매 작업 초기화하는 조건으로 나눈다. 앞 작업에서 얻은 경험이 보류해 둔 다음 작업의 점수에 영향을 주는지 본다.</li>
+  <li><strong>예산과 모드 비교:</strong> 앞 단계에서 효과가 보이면 k를 키운다. 병렬 방식과 순차 방식을 비교한다. 토큰 사용량과 API 비용을 잰다. 실행 횟수와 소요 시간도 기록한다.</li>
+</ol>
+
+<p>모델 버전과 초기 하네스를 고정한다. 작업 목록과 실행기 및 네트워크 설정도 맞춘다. 순서와 시드를 바꿔 여러 번 실행하고 작업별 점수를 남긴다. 평균과 표준편차도 함께 기록한다. 논문은 작업 순서를 바꿔 세 번 실행했다. 비용이 감당되면 반복 횟수를 늘려 변동 폭을 확인한다.<sup><a href="#reference-1" aria-label="참고문헌 1">[1]</a></sup></p>
+
+<p>최종 점수만으로는 부족하다. 채점 기준별 통과율과 실패 사례를 기록한다. 회귀가 있었는지도 본다. 모델 호출 수와 토큰 사용량을 잰다. 작업 단계 수와 전체 비용도 남긴다. 라이브러리 전이를 보려면 개선에 쓸 작업과 결과 확인용 작업을 나눈다. 에이전트가 확인용 작업의 답이나 루브릭을 읽지 못하게 막는다.</p>
+
+<p>첫 실행은 한 벤치마크에서 기본 하네스와 k=1을 같은 작업에 적용하면 된다. 결과표에는 점수 차이를 기록한다. 비용과 작업별 회귀도 함께 적는다. 이후 새 작업에서 라이브러리를 유지한 조건과 초기화한 조건을 비교하면 기록의 전이 여부를 확인할 수 있다.</p>
+
+<h1>참고문헌</h1>
+
+<ol>
+  <li id="reference-1">Ruiyao Xu 외. <a href="https://arxiv.org/abs/2610.14224">Harness²: Recursive Agent Harnessing for an Open World</a>. arXiv (2026).</li>
+  <li id="reference-2"><a href="https://github.com/google-research/harness2">google-research/harness2</a>. 설치와 실행 안내 및 네트워크 접근과 라이선스 정보.</li>
+  <li id="reference-3">Shuaiqi Liu 외. <a href="https://www.preprints.org/manuscript/202608.0051">The Path to Recursive Self-Improving Agents: Foundation, Framework, and Future Directions</a>. Preprints.org (2026).</li>
+  <li id="reference-4">Yoonho Lee 외. <a href="https://arxiv.org/abs/2603.28052">Meta-Harness: End-to-End Optimization of Model Harnesses</a>. arXiv (2026).</li>
+  <li id="reference-5">Hangfan Zhang 외. <a href="https://arxiv.org/abs/2606.09498">Self-Harness: Harnesses That Improve Themselves</a>. arXiv (2026).</li>
+  <li id="reference-6">Peng Xia 외. <a href="https://arxiv.org/abs/2609.24972">RRSI: Regularized Recursive Self-Improvement of Agent Harnesses</a>. arXiv (2026).</li>
+  <li id="reference-7">Yuetai Li 외. <a href="https://arxiv.org/abs/2605.26329">JobBench: Aligning Agent Work With Human Will</a>. arXiv (2026).</li>
+  <li id="reference-8">Harvey AI. <a href="https://github.com/harveyai/harvey-labs">Harvey LAB: The Legal Agent Benchmark</a>.</li>
+  <li id="reference-9">Tencent. <a href="https://arxiv.org/abs/2607.20911">WorkBuddy Bench: A Multi-Domain Coding-Agent Benchmark with Contamination-Resistant Task Construction</a>. arXiv (2026).</li>
+</ol>
