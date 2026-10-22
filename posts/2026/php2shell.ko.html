@@ -1,0 +1,63 @@
+<aside class="post-context-note" aria-label="글의 출처와 성격">
+  <p class="post-context-kicker">PHP 공식 공지와 취약점 권고문을 읽고 정리했다</p>
+  <p>정리 시점은 2026년 10월 22일이다. PHP 엔진의 취약점 두 건과 공개 과정에서 드러난 수정 지연을 다룬다. 실제 서버에서 취약점을 재현한 글은 아니다.<sup><a href="#reference-1" aria-label="참고문헌 1">[1]</a></sup><sup><a href="#reference-4" aria-label="참고문헌 4">[4]</a></sup></p>
+</aside>
+
+<p class="post-lead">PHP 요청 경계에서 생긴 메모리 오류가<br>원격 코드 실행으로 이어졌다.</p>
+
+<p>취약점은 두 건이었다. 둘 다 CVSS v4.0 점수는 9.2였다. 인증하지 않은 공격자가 웹 요청만으로 서버에서 코드를 실행할 수 있었다. 원래 공개 시각은 10월 22일 밤 11시였다. 취약점 번호가 먼저 퍼지자 PHP 프로젝트는 공개를 하루 앞당겼다.<sup><a href="#reference-1" aria-label="참고문헌 1">[1]</a></sup><sup><a href="#reference-4" aria-label="참고문헌 4">[4]</a></sup></p>
+
+<p>PHP 취약점이라는 말은 워드프레스 플러그인 문제처럼 들릴 수 있다. 이번 결함은 특정 CMS가 아니라 PHP 엔진에 있었다. 웹에서 PHP를 실행하는 서버가 영향을 받았다.</p>
+
+<h1>요청이 끝나도 작업자 프로세스는 남는다</h1>
+
+<p>PHP 웹 서버는 보통 작업자 프로세스를 여러 요청에 재사용한다. 요청 하나가 끝나면 그 요청을 위해 쓰던 메모리를 정리한다. 다음 요청은 같은 작업자에서 처리될 수 있다. 이 경계에서 이전 요청의 상태가 남으면 문제가 된다.</p>
+
+<p><code>CVE-2026-109618</code>은 메모리가 부족할 때 요청 처리를 중단하는 과정에서 생겼다. PHP는 메모리 부족을 만나면 실행 흐름을 빠져나오기도 한다. 이때 요청 데이터가 완전히 준비되지 않은 상태로 남을 수 있다. 정리 코드가 그 데이터를 정상 값처럼 읽으면 이미 해제됐거나 초기화되지 않은 메모리를 다루게 된다. 공격자는 특정 입력으로 이 경로를 유도해 메모리를 훼손하고 코드를 실행할 수 있었다.<sup><a href="#reference-2" aria-label="참고문헌 2">[2]</a></sup></p>
+
+<p><code>CVE-2026-109619</code>은 요청 메모리를 가리키는 전역 상태가 작업자에 남는 문제였다. 요청이 끝나며 메모리는 해제됐지만 전역 변수는 예전 주소를 계속 가리킬 수 있었다. 같은 작업자가 다음 요청을 처리할 때 PHP가 이 값을 초기화보다 먼저 사용하면 해제된 메모리에 접근한다. 세션과 오류 처리처럼 요청 시작 초기에 실행되는 동작이 이 상태를 읽을 수 있었다.<sup><a href="#reference-3" aria-label="참고문헌 3">[3]</a></sup></p>
+
+<p>두 취약점 모두 메모리를 잘못 다룬다는 공통점은 있지만 공격 조건까지 같지는 않다. PHP 권고문은 공격자가 같은 작업자에게 후속 요청을 보내는 조건과 실행 환경의 차이를 설명한다. CVSS 9.2는 심각도를 나타낸다. 모든 PHP 서버에서 같은 요청 한 번으로 공격이 성공한다는 뜻은 아니다.</p>
+
+<h1>워드프레스 문제가 아니라 PHP 엔진 문제</h1>
+
+<p>Wiz는 공개 당시 최신 컨테이너 이미지를 대상으로 워드프레스와 드루팔 그리고 줌라에서 인증 없는 원격 코드 실행을 시연했다. CMS의 코드에서 취약점을 찾은 건 아니다. 취약한 지점은 PHP 엔진이므로 다른 PHP 애플리케이션도 조건에 따라 영향을 받을 수 있다. Wiz는 PHP 작업자 메모리에서 민감한 데이터를 읽는 경로도 별도로 시연했다.<sup><a href="#reference-5" aria-label="참고문헌 5">[5]</a></sup></p>
+
+<p>PHP 공식 공지는 웹 요청을 처리하는 모든 PHP 설치를 위험 범위에 넣었다. 다만 확인된 공격 경로는 실행 방식에 따라 달랐다. Apache의 <code>mod_php</code>에서는 애플리케이션 코드가 시작되기 전 요청 처리 단계에서 공격이 가능했다. PHP-FPM은 시작 단계가 실패하면 해당 작업자를 종료한다. 이 차이 때문에 같은 경로가 그대로 이어지지는 않는다. PHP-FPM에서도 다른 조건을 이용한 공격 경로가 확인됐지만 애플리케이션 동작이나 설정에 따라 달라진다.<sup><a href="#reference-1" aria-label="참고문헌 1">[1]</a></sup><sup><a href="#reference-2" aria-label="참고문헌 2">[2]</a></sup><sup><a href="#reference-3" aria-label="참고문헌 3">[3]</a></sup></p>
+
+<h1>오래된 코드와 늦어진 수정</h1>
+
+<p>PHP Foundation의 회고에 따르면 OOM 문제의 첫 단서는 2024년 외부 보안 감사에서 나왔다. 수정 방법을 고르는 일은 쉽지 않았다. 한 방법은 하위 호환성을 깨뜨릴 수 있었다. 다른 방법은 서비스 거부 공격의 여지를 만들거나 많은 확장 모듈의 변경을 요구했다. 작은 보안팀은 합의제로 결정을 내렸고 수정 작업은 여러 달 멈췄다 다시 시작됐다. 재단은 이를 구조적 실패라고 인정했다.<sup><a href="#reference-4" aria-label="참고문헌 4">[4]</a></sup></p>
+
+<p>Wiz는 취약 코드가 10년 넘게 존재했다고 썼다. 그렇다고 PHP 개발자들이 이 취약점을 10년 동안 알고도 방치했다고 단정할 수는 없다. 재단이 밝힌 첫 단서는 2024년 감사에서 나왔다. 오래된 코드였다는 사실과 그 위험을 알고 있던 기간은 구분해야 한다.<sup><a href="#reference-4" aria-label="참고문헌 4">[4]</a></sup><sup><a href="#reference-5" aria-label="참고문헌 5">[5]</a></sup></p>
+
+<p>Calif와 OpenAI는 2026년 8월 11일 같은 근본 원인을 각각 보고했다. Wiz는 추가 공격 경로를 찾았다. Wiz는 연구 과정에서 AI 모델이 취약점 발견과 공격 코드 작성 및 패치 검증에 기여했다고 밝혔다. PHP Foundation은 AI가 보고서를 분류하고 재현하는 데 도움을 줬다고 썼다. 보고서를 판단하고 패치를 검토한 건 사람이었다. 이번 발견을 특정 AI 하나의 성과로 부르면 여러 팀의 조사와 검증을 빠뜨리게 된다.<sup><a href="#reference-4" aria-label="참고문헌 4">[4]</a></sup><sup><a href="#reference-5" aria-label="참고문헌 5">[5]</a></sup></p>
+
+<p>공개 일정도 계획대로 가지 못했다. 취약점 번호가 10월 20일 온라인에 돌기 시작했다. PHP 프로젝트는 처음 발표했던 10월 22일 14시 UTC에서 10월 21일 14시 UTC로 일정을 바꿨다. 한국 시간으로는 21일 밤 11시다. 공개 전에 Calif가 개념 증명 영상을 잘못 게시했고 복사본이 퍼졌다. PHP Foundation은 공개 당시 기능하는 공격 코드를 확인하지 못했다고 밝혔다. 이 말은 이후 공격 시도가 없었다는 뜻은 아니다.<sup><a href="#reference-4" aria-label="참고문헌 4">[4]</a></sup></p>
+
+<h1>확인할 버전</h1>
+
+<p>PHP 프로젝트가 공개한 수정 버전은 다음과 같다.</p>
+
+<ul>
+  <li>PHP 8.5는 8.5.12 이상</li>
+  <li>PHP 8.4는 8.4.27 이상</li>
+  <li>PHP 8.3은 8.3.36 이상</li>
+  <li>PHP 8.2는 8.2.35 이상</li>
+</ul>
+
+<p>이 버전보다 낮은 PHP로 웹 요청을 처리한다면 패치 적용 여부를 확인해야 한다. PHP 8.1 이하 버전은 업스트림 지원이 끝났다. 배포판이나 장기 지원 업체가 보안 수정을 별도로 백포트했을 수 있으므로 운영체제 패키지 공지도 살펴야 한다. CLI의 <code>php -v</code>만 확인하면 실제 웹 요청을 처리하는 PHP-FPM이나 Apache 모듈의 버전을 놓칠 수 있다.<sup><a href="#reference-1" aria-label="참고문헌 1">[1]</a></sup><sup><a href="#reference-2" aria-label="참고문헌 2">[2]</a></sup></p>
+
+<p>완전한 조치는 수정된 PHP로 업데이트하는 것이다. WAF 규칙이나 설정 변경은 일부 경로의 위험을 줄일 수 있지만 모든 공격 경로를 막지는 못한다. 패치 적용 뒤에는 오래된 PHP 작업자가 계속 요청을 받지 않는지도 확인해야 한다.<sup><a href="#reference-2" aria-label="참고문헌 2">[2]</a></sup><sup><a href="#reference-3" aria-label="참고문헌 3">[3]</a></sup></p>
+
+<p>PHP Foundation의 회고에서 눈에 띄는 건 취약점과 함께 수정이 오래 멈춰 있던 이유다. 위험을 발견한 뒤 호환성 문제와 보안 사이에서 결정을 내리려면 코드를 깊이 아는 개발자와 결정 구조가 필요하다. 재단은 그 인력과 절차를 보강하겠다고 했다. 패치가 나왔다는 소식만큼 이 약속이 실제로 이어지는지도 지켜볼 일이다.<sup><a href="#reference-4" aria-label="참고문헌 4">[4]</a></sup></p>
+
+<h1>참고문헌</h1>
+
+<ol>
+  <li id="reference-1"><a href="https://www.php.net/archive/2026.php#2026-10-21-5">PHP 공식 보안 공지</a>. PHP News Archive (2026).</li>
+  <li id="reference-2"><a href="https://github.com/php/php-src/security/advisories/GHSA-w8hw-w9fx-j79w">CVE-2026-109618: RCE via OOM corruption</a>. PHP GitHub Security Advisory (2026).</li>
+  <li id="reference-3"><a href="https://github.com/php/php-src/security/advisories/GHSA-6wmf-4rv5-p3rp">CVE-2026-109619: RCE via stale global state</a>. PHP GitHub Security Advisory (2026).</li>
+  <li id="reference-4"><a href="https://thephp.foundation/blog/2026/10/21/todays-php-security-release-and-how-were-strengthening-php-security/">Today's PHP Security Release, and How We're Strengthening PHP Security</a>. The PHP Foundation (2026).</li>
+  <li id="reference-5"><a href="https://www.wiz.io/blog/php2shell-php-rce">PHP2Shell: AI uncovers critical RCE vulnerabilities affecting 70% of the Internet</a>. Wiz Research (2026).</li>
+</ol>

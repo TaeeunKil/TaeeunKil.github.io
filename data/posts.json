@@ -1,5 +1,23 @@
 [
   {
+    "id": "php2shell",
+    "number": 12,
+    "date": "2026-10-22",
+    "title": {
+      "ko": "PHP2Shell: PHP 요청 경계에서 생긴 두 취약점",
+      "en": "PHP2Shell: Two Vulnerabilities at the PHP Request Boundary"
+    },
+    "summary": {
+      "ko": "PHP 요청 경계에서 발견된 두 원격 코드 실행 취약점과 앞당겨진 공개 과정 및 수정 지연의 배경을 정리했다.",
+      "en": "A look at two PHP request-lifecycle RCE vulnerabilities, the accelerated disclosure, and why the fix took time."
+    },
+    "content": {
+      "ko": "posts/2026/php2shell.ko.html"
+    },
+    "tags": ["PHP", "Security", "CVE", "학습 노트"],
+    "thumbnail": "assets/thumbnails/php2shell.svg"
+  },
+  {
     "id": "harness2-self-improvement",
     "number": 11,
     "date": "2026-10-20",
