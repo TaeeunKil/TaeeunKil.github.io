@@ -1,5 +1,23 @@
 [
   {
+    "id": "gitlab-regex-overflow",
+    "number": 13,
+    "date": "2026-10-22",
+    "title": {
+      "ko": "GitLab 정규식 오버플로가 인증 없는 RCE로 이어진 과정",
+      "en": "How a GitLab Regex Overflow Led to Unauthenticated RCE"
+    },
+    "summary": {
+      "ko": "CVE-2026-110264의 Onigmo 정수 오버플로와 영향 버전 그리고 앞서 공개된 GitLab 정규식 취약점과의 차이를 정리했다.",
+      "en": "A look at the Onigmo integer overflow behind CVE-2026-110264, affected versions, and how it differs from an earlier GitLab regex flaw."
+    },
+    "content": {
+      "ko": "posts/2026/gitlab-regex-overflow.ko.html"
+    },
+    "tags": ["GitLab", "Security", "CVE", "학습 노트"],
+    "thumbnail": "assets/thumbnails/gitlab-regex-overflow.svg"
+  },
+  {
     "id": "php2shell",
     "number": 12,
     "date": "2026-10-22",

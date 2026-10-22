@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="ko" data-post-id="gitlab-regex-overflow">
+<head>
+  <base href="../../">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="CVE-2026-110264의 Onigmo 정수 오버플로와 영향 버전 그리고 앞서 공개된 GitLab 정규식 취약점과의 차이를 정리했다.">
+  <meta name="theme-color" content="#f2f1ed">
+  <title>GitLab 정규식 오버플로가 인증 없는 RCE로 이어진 과정 — TaeeunKil</title>
+  <link rel="preload" href="assets/fonts/PretendardSite.woff2?v=d9ef907141" fetchpriority="high" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="assets/fonts/fonts.css?v=20261013-performance">
+  <style>html.fonts-loading body { visibility: hidden; }</style>
+  <script>
+    // Reveal the designed typeface only after fonts used by the page are ready.
+    document.documentElement.classList.add("fonts-loading");
+    document.addEventListener("DOMContentLoaded", () => {
+      const reveal = () => document.documentElement.classList.remove("fonts-loading");
+      Promise.resolve(window.pageReady).then(() => document.fonts.ready).then(reveal, reveal);
+    }, { once: true });
+  </script>
+  <link rel="stylesheet" href="style.css?v=20261013-dialog-scrollbars">
+  <script src="post.js?v=20261013-performance" defer></script>
+  <link rel="canonical" href="https://taeeunkil.github.io/writing/gitlab-regex-overflow/">
+</head>
+<body class="post-page">
+  <a class="skip-link" href="#post-content" data-post-copy="skip">본문으로 건너뛰기</a>
+
+  <main class="post-shell" id="post-content">
+    <div class="post-toolbar">
+      <a class="post-back" href="index.html#writing" data-post-copy="back">← 글 목록</a>
+      <div class="language-switch" role="group" aria-label="언어 선택" data-post-aria="languageLabel">
+        <button type="button" data-language="ko" aria-pressed="true">KR</button><span aria-hidden="true">/</span><button type="button" data-language="en" aria-pressed="false">EN</button>
+      </div>
+    </div>
+
+    <article class="post-article" aria-live="polite">
+      <header class="post-header">
+        <p class="post-kicker">Writing / <span id="post-number">013</span></p>
+        <h1 id="post-title">GitLab 정규식 오버플로가 인증 없는 RCE로 이어진 과정</h1>
+        <div class="post-meta"><time id="post-date" datetime="2026-10-22">2026.10.22</time><span id="post-tags">GitLab · Security · CVE · 학습 노트</span></div>
+        <p class="post-summary" id="post-summary">CVE-2026-110264의 Onigmo 정수 오버플로와 영향 버전 그리고 앞서 공개된 GitLab 정규식 취약점과의 차이를 정리했다.</p>
+      </header>
+      <p id="post-load-error" role="alert" hidden>글을 불러오지 못했습니다. 잠시 후 다시 시도해 주세요. / Could not load the article. Please try again.</p>
+      <div class="post-body" id="post-body"><aside class="post-context-note" aria-label="글의 출처와 성격">
+  <p class="post-context-kicker">GitLab 공식 공지와 Ruby 수정 내용을 바탕으로 정리했다</p>
+  <p>2026년 10월 22일 기준으로 CVE-2026-110264의 원인과 영향 버전을 정리했다.<sup><a href="writing/gitlab-regex-overflow/#reference-1" aria-label="참고문헌 1">[1]</a></sup></p>
+</aside>
+
+<p class="post-lead">정규식 오버플로가 GitLab 서버의<br>코드 실행으로 이어질 수 있었다.</p>
+
+<p>GitLab은 10월 21일 CE와 EE를 위한 긴급 보안 업데이트를 공개했다. 가장 심각한 문제는 CVE-2026-110264다. 정규식을 컴파일하는 과정에서 정수 오버플로가 발생해 특정 조건에서 인증하지 않은 공격자가 서버에서 코드를 실행할 수 있었다.<sup><a href="writing/gitlab-regex-overflow/#reference-1" aria-label="참고문헌 1">[1]</a></sup></p>
+
+<p>CVSS 점수는 10.0이다. 네트워크를 통해 공격할 수 있고 사전 권한이나 사용자 동작이 필요 없다고 평가됐다. 다만 GitLab은 악용에 “특정 조건”이 필요하다고 밝혔다. 실제 노출 여부는 설치 환경과 해당 조건을 함께 확인해야 한다.</p>
+
+<p>같은 시기 공개된 PHP 취약점과 영향 대상이 다르다. 여기서 다루는 문제는 GitLab 서버에 포함된 Ruby 정규식 처리 코드에서 발생했다.</p>
+
+<h1>정규식의 번호가 범위를 넘었다</h1>
+
+<p>GitLab은 Ruby의 정규식 엔진인 Onigmo를 사용한다. Onigmo는 정규식 안의 반복과 특정 확인 작업에 내부 번호를 붙인다. 이 번호는 부호 있는 16비트 값으로 저장되지만 번호를 세는 쪽은 더 큰 정수형을 썼다. 반복 항목이 32,767개를 넘으면 번호가 음수로 돌아설 수 있었다.<sup><a href="writing/gitlab-regex-overflow/#reference-2" aria-label="참고문헌 2">[2]</a></sup><sup><a href="writing/gitlab-regex-overflow/#reference-3" aria-label="참고문헌 3">[3]</a></sup></p>
+
+<p>정규식을 실제로 검사할 때 엔진은 이 번호를 반복 상태를 찾는 데 사용한다. 잘못된 음수 번호가 들어오면 메모리의 엉뚱한 위치에 쓰기가 발생할 수 있다. GitLab은 이 오류가 특정 조건에서 서버 코드 실행으로 이어질 수 있다고 밝혔다.</p>
+
+<p>수정은 범위를 넘긴 패턴을 컴파일 단계에서 거부하는 방식이다. Ruby 정규식 엔진은 이런 패턴에 <code>RegexpError</code>를 반환한다. GitLab은 이 수정 사항을 제품에 포함된 Ruby 3.3과 3.4 그리고 4.0 계열로 옮겼다.<sup><a href="writing/gitlab-regex-overflow/#reference-2" aria-label="참고문헌 2">[2]</a></sup></p>
+
+<h1>정규식은 문서를 그릴 때도 실행된다</h1>
+
+<p>GitLab 보안팀의 공개 탐지 자료는 이번 취약점이 Org-mode 문서 렌더링 경로와 관련 있다고 설명한다. GitLab이 <code>.org</code> 파일을 화면에 표시할 때 Ruby 정규식 엔진을 사용한다.<sup><a href="writing/gitlab-regex-overflow/#reference-4" aria-label="참고문헌 4">[4]</a></sup></p>
+
+<p>GitLab은 잠재적 시도를 찾도록 두 가지 탐지 자료도 공개했다. 하나는 Onigmo를 거치는 워커의 네이티브 충돌을 찾는다. 다른 하나는 Org-mode 렌더링 오류가 짧은 시간에 반복되는 상황을 찾는다. 둘 다 보조 신호다. 성공한 공격은 충돌을 남기지 않을 수도 있다. 로그에서 신호를 찾지 못했다고 침해가 없었다고 단정할 수는 없다.<sup><a href="writing/gitlab-regex-overflow/#reference-4" aria-label="참고문헌 4">[4]</a></sup><sup><a href="writing/gitlab-regex-overflow/#reference-5" aria-label="참고문헌 5">[5]</a></sup></p>
+
+<p>GitLab의 패치 공지는 구체적인 요청 예시를 공개하지 않았다. 공개된 탐지 자료는 취약점의 원인과 문서 렌더링 경로를 설명한다.</p>
+
+<h1>10월 12일 취약점과 원인이 다르다</h1>
+
+<p>10월 12일에도 정규식 처리와 관련된 CVSS 10.0 취약점이 공개됐다. CVE-2026-97229는 CI/CD 설정의 정규식 처리 경로에서 발생했다. CVE-2026-110264는 Org-mode 문서 렌더링 경로에서 발견됐다. 둘 다 Ruby의 Onigmo에 닿지만 입력 경로와 오류는 다르다.<sup><a href="writing/gitlab-regex-overflow/#reference-6" aria-label="참고문헌 6">[6]</a></sup></p>
+
+<p>10월 12일 패치 버전으로 올린 관리자도 이번 수정 버전을 확인해야 한다. 예를 들어 19.4.2를 사용한다면 19.4.3으로 업데이트해야 한다.</p>
+
+<h1>영향 버전과 수정 버전</h1>
+
+<p>GitLab은 CE와 EE의 7.0부터 아래 수정 버전 이전까지 영향을 받는다고 안내했다.</p>
+
+<ul>
+  <li>19.5는 19.5.1 이상</li>
+  <li>19.4는 19.4.3 이상</li>
+  <li>19.3은 19.3.6 이상</li>
+  <li>19.2는 19.2.9 이상</li>
+  <li>19.1은 19.1.9 이상</li>
+  <li>19.0은 19.0.10 이상</li>
+  <li>7.0부터 18.11 계열은 18.11.13 이상</li>
+</ul>
+
+<p>GitLab.com은 이미 수정 버전을 사용 중이다. GitLab Dedicated도 내부 버전 19.3.5-internal0 또는 19.4.2-internal0 이상이면 조치할 필요가 없다고 밝혔다. 자체 운영 인스턴스는 배포 방식과 관계없이 수정 버전을 적용해야 한다.<sup><a href="writing/gitlab-regex-overflow/#reference-1" aria-label="참고문헌 1">[1]</a></sup></p>
+
+<p>업데이트 일정에는 데이터베이스 마이그레이션도 고려해야 한다. 19.3.6과 19.4.3은 일반 마이그레이션을 포함한다. 단일 노드 설치는 마이그레이션이 끝날 때까지 서비스 중단이 필요하다. 다중 노드는 정해진 절차를 따르면 무중단 업데이트가 가능하다.<sup><a href="writing/gitlab-regex-overflow/#reference-1" aria-label="참고문헌 1">[1]</a></sup></p>
+
+<h1>같은 패치에 포함된 나머지 취약점</h1>
+
+<p>이번 릴리스는 보안 문제 12건을 수정했다. CVE-2026-110264 외에도 OmniAuth SAML과 LDAP 자동 연결 설정에서 계정 탈취로 이어질 수 있는 문제와 OAuth/OIDC 캐시를 오염시켜 로그인 흐름을 바꿀 수 있는 문제가 포함됐다. 나머지는 GraphQL 권한 범위와 멤버십 잠금 문제, 내부 자격 증명 및 비공개 프로젝트 정보 노출, 병합 승인과 AI 기능 권한 문제 등이다.<sup><a href="writing/gitlab-regex-overflow/#reference-1" aria-label="참고문헌 1">[1]</a></sup></p>
+
+<p>GitLab의 패치 공지에는 CVE-2026-110264가 실제 공격에 사용됐는지에 대한 언급이 없다. 현재 확인된 건 취약점이 보고됐고 GitLab이 즉시 업데이트를 권고했다는 점까지다.</p>
+
+<h1>참고문헌</h1>
+
+<ol>
+  <li id="reference-1"><a href="https://docs.gitlab.com/releases/patches/patch-release-gitlab-19-5-1-released/">GitLab Critical Patch Release: 19.5.1, 19.4.3, 19.3.6, 19.2.9, 19.1.9, 19.0.10, 18.11.13</a>. GitLab Docs (2026).</li>
+  <li id="reference-2"><a href="https://gitlab.com/gitlab-org/build/CNG/-/merge_requests/3164">Add Ruby regexp repeat ID overflow patch for 3.3, 3.4 and 4.0</a>. GitLab CNG Merge Request (2026).</li>
+  <li id="reference-3"><a href="https://github.com/ruby/ruby/pull/16801">Reject overflowed repeat/null-check IDs in huge regexps</a>. ruby/ruby Pull Request (2026).</li>
+  <li id="reference-4"><a href="https://gitlab.com/gitlab-security-oss/tldr/-/blob/main/Detections/platforms/GitLab/Vulnerability%20Detections/onigmo_native_worker_crash.md">Onigmo native worker crash</a>. GitLab Security TLDR (2026).</li>
+  <li id="reference-5"><a href="https://gitlab.com/gitlab-security-oss/tldr/-/blob/main/Detections/platforms/GitLab/Vulnerability%20Detections/org_mode_render_error_burst.md">Org-mode render error burst</a>. GitLab Security TLDR (2026).</li>
+  <li id="reference-6"><a href="https://docs.gitlab.com/releases/patches/patch-release-gitlab-19-4-2-released/">GitLab Critical Patch Release: 19.4.2, 19.3.5, 19.2.8</a>. GitLab Docs (2026).</li>
+</ol>
+</div>
+    </article>
+
+    <section class="comments-shell" aria-labelledby="comments-title">
+      <div class="comments-heading">
+        <p>Discussion / 01</p>
+        <h2 id="comments-title" data-post-copy="comments">댓글</h2>
+      </div>
+      <div class="giscus" id="giscus-comments"></div>
+    </section>
+
+    <a class="post-end" href="index.html#writing" data-post-copy="back">← 글 목록</a>
+  </main>
+<script id="post-data" type="application/json">{"id": "gitlab-regex-overflow", "number": 13, "date": "2026-10-22", "title": {"ko": "GitLab 정규식 오버플로가 인증 없는 RCE로 이어진 과정", "en": "How a GitLab Regex Overflow Led to Unauthenticated RCE"}, "summary": {"ko": "CVE-2026-110264의 Onigmo 정수 오버플로와 영향 버전 그리고 앞서 공개된 GitLab 정규식 취약점과의 차이를 정리했다.", "en": "A look at the Onigmo integer overflow behind CVE-2026-110264, affected versions, and how it differs from an earlier GitLab regex flaw."}, "content": {"ko": "writing/gitlab-regex-overflow/body.ko.html"}, "tags": ["GitLab", "Security", "CVE", "학습 노트"], "thumbnail": "assets/thumbnails/gitlab-regex-overflow.svg"}</script>
+</body>
+</html>

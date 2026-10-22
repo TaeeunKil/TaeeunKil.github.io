@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="400" viewBox="0 0 640 400" role="img" aria-labelledby="title desc">
+  <title id="title">GitLab regex overflow</title>
+  <desc id="desc">A typographic cover for a note about GitLab CVE-2026-110264.</desc>
+  <rect width="640" height="400" fill="#e5e8df"/>
+  <path d="M48 54H116" stroke="#ce5737" stroke-width="6"/>
+  <g fill="#242623" font-family="Arial, sans-serif">
+    <text x="48" y="112" font-size="18" letter-spacing="3">SECURITY NOTES / 13</text>
+    <text x="42" y="222" font-size="72" font-weight="700" letter-spacing="-4">Regex → RCE</text>
+    <text x="48" y="282" font-size="22" letter-spacing="1">GITLAB / INTEGER OVERFLOW</text>
+  </g>
+  <path d="M460 318c32-34 74-34 106 0" fill="none" stroke="#77796f" stroke-width="3"/>
+  <circle cx="513" cy="318" r="7" fill="#ce5737"/>
+</svg>
