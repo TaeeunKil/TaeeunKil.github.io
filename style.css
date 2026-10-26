@@ -548,14 +548,14 @@ a:focus-visible {
 }
 
 .post-body {
-  width: min(100%, 47rem);
+  width: min(100%, 54rem);
   margin: clamp(2.5rem, 4vw, 4rem) auto 0;
   font-size: clamp(1.03rem, 1.5vw, 1.17rem);
-  line-height: 1.95;
+  line-height: 1.85;
 }
 
 .post-body > p {
-  margin: 0 0 clamp(2.25rem, 4vw, 3.75rem);
+  margin: 0 0 clamp(1.75rem, 3vw, 2.5rem);
 }
 
 .post-body > table {
