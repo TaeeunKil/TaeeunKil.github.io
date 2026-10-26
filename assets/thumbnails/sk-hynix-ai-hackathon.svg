@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="320" height="200" viewBox="0 0 320 200" role="img" aria-labelledby="title desc">
+  <title id="title">AI hackathon assessment retrospective</title>
+  <desc id="desc">A keyboard and a table representing an AI assessment retrospective.</desc>
+  <rect width="320" height="200" fill="#e5e8df"/>
+  <path d="M28 40H74" stroke="#242623" stroke-width="3"/>
+  <circle cx="278" cy="40" r="9" fill="#ce5737"/>
+  <g fill="none" stroke="#73796f" stroke-width="2">
+    <rect x="32" y="74" width="119" height="62" rx="7"/>
+    <path d="M46 91h13m8 0h13m8 0h13m8 0h13m8 0h10M46 108h13m8 0h13m8 0h13m8 0h13m8 0h10M64 125h53"/>
+    <path d="M178 81h108v69H178zM178 104h108M213 81v69M249 81v69"/>
+  </g>
+  <path d="M156 105h14m-5-5 5 5-5 5" fill="none" stroke="#ce5737" stroke-width="2"/>
+  <text x="28" y="174" font-family="Arial, sans-serif" font-size="13" letter-spacing="1.5" fill="#555951">SK HYNIX AI HACKATHON / ROUND 01</text>
+</svg>
