@@ -57,3 +57,5 @@
 - 구성요소: Python >=3.11, mcp==2.3.0, Starlette Route/Request/Response 및 ASGI 미들웨어, stateless Streamable HTTP, 표준 imaplib/email/ssl을 지정 커밋에서 확인. Vercel/Supabase는 플랫폼/서비스로 분류.
 - KST 08:00–22:00 매일 30분 dot 조회와 중요 메일만 기존 대화 알림은 전달된 승인 운영 기록. 스케줄을 생성하거나 수정하지 않음. 영속 큐/체크포인트/겹침 조회/중복 제거는 현재 서버 구현으로 주장하지 않음.
 - 공식 근거 링크는 문서 각 비교 항목에 배치. Auth0 무료 플랜 존재와 당시 비용 우려를 구분. Mailopoly watch/webhook 기능과 일반 ChatGPT 자동 wake를 구분.
+
+- mail-mcp-usage-redacted.png: 사용자가 제공한 실제 MCP 조회 대화 캡처를 바탕으로 이미지 편집 도구로 시험 일시·준비 안내를 불투명하게 가린 편집본. 원본과 출력 크기는 다르며 보이는 질문·MCP 표시·첨부 수와 바이트 수를 원본과 대조함. 원본 캡처는 저장소에 포함하지 않음.
