@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="920" height="472" viewBox="0 0 920 472" role="img" aria-labelledby="database-clustering-active-standby-title database-clustering-active-standby-desc">
+  <title id="database-clustering-active-standby-title">Active-Standby 데이터베이스 클러스터의 복제와 장애 조치</title>
+  <desc id="database-clustering-active-standby-desc">애플리케이션은 서비스 엔드포인트를 통해 Primary에 연결한다. Primary는 Replica로 데이터를 복제하고, 장애가 감지되면 Replica가 승격될 수 있다.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#918d83"/></marker>
+    <marker id="arrow-accent" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#e74b2b"/></marker>
+    <marker id="arrow-link" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#bf3b21"/></marker>
+  </defs>
+  <rect width="920" height="470" fill="#f2f1ed"/>
+  <text x="40" y="44" fill="#bf3b21" font-family="Pretendard, system-ui, sans-serif" font-size="16" font-weight="700">HIGH AVAILABILITY</text>
+  <text x="40" y="84" fill="#171716" font-family="Pretendard, system-ui, sans-serif" font-size="28" font-weight="700">Standby는 기다리고, 복제는 계속된다</text>
+  <text x="540" y="120" fill="#6d6b66" font-family="Pretendard, system-ui, sans-serif" font-size="16" font-weight="600">정상 운영 상태</text>
+
+  <!-- Connections are behind the component nodes. -->
+  <path d="M208 232 H272" fill="none" stroke="#918d83" stroke-width="2" marker-end="url(#arrow)"/>
+  <path d="M456 232 H492 Q500 232 500 224 V188 Q500 180 508 180 H532" fill="none" stroke="#918d83" stroke-width="2" marker-end="url(#arrow)"/>
+  <path d="M690 224 V264" fill="none" stroke="#e74b2b" stroke-width="2" marker-end="url(#arrow-accent)"/>
+  <rect x="704" y="232" width="108" height="24" fill="#f2f1ed"/>
+  <text x="712" y="248" fill="#6d6b66" font-family="Pretendard, system-ui, sans-serif" font-size="16">데이터 복제</text>
+
+  <rect x="48" y="192" width="160" height="80" fill="#ebe3db" stroke="#d6d4ce" stroke-width="1.5"/>
+  <text x="68" y="224" fill="#171716" font-family="Pretendard, system-ui, sans-serif" font-size="20" font-weight="700">애플리케이션</text>
+  <text x="68" y="252" fill="#6d6b66" font-family="Pretendard, system-ui, sans-serif" font-size="16">요청</text>
+
+  <rect x="280" y="192" width="176" height="80" fill="#f2f1ed" stroke="#171716" stroke-width="1.5"/>
+  <text x="300" y="224" fill="#171716" font-family="Pretendard, system-ui, sans-serif" font-size="20" font-weight="700">서비스 경로</text>
+  <text x="300" y="252" fill="#6d6b66" font-family="Pretendard, system-ui, sans-serif" font-size="16">VIP / 프록시 등</text>
+
+  <rect x="540" y="136" width="300" height="88" fill="#ebe3db" stroke="#e74b2b" stroke-width="2"/>
+  <circle cx="568" cy="180" r="8" fill="#e74b2b"/>
+  <text x="588" y="176" fill="#171716" font-family="Pretendard, system-ui, sans-serif" font-size="20" font-weight="700">Primary</text>
+  <text x="588" y="200" fill="#6d6b66" font-family="Pretendard, system-ui, sans-serif" font-size="16">Active · 읽기와 쓰기</text>
+
+  <rect x="540" y="272" width="300" height="88" fill="#f2f1ed" stroke="#b5b1a7" stroke-width="1.5"/>
+  <circle cx="568" cy="316" r="8" fill="#b5b1a7"/>
+  <text x="588" y="312" fill="#171716" font-family="Pretendard, system-ui, sans-serif" font-size="20" font-weight="700">Replica</text>
+  <text x="588" y="336" fill="#6d6b66" font-family="Pretendard, system-ui, sans-serif" font-size="16">Standby · 복제본</text>
+
+  <path d="M40 392 H880" stroke="#d6d4ce" stroke-width="1"/>
+  <text x="40" y="424" fill="#171716" font-family="Pretendard, system-ui, sans-serif" font-size="16" font-weight="600">장애 조치</text>
+  <text x="128" y="424" fill="#6d6b66" font-family="Pretendard, system-ui, sans-serif" font-size="16">감지·쓰기 차단 → Replica 승격 → 서비스 경로 전환 → 클라이언트 재접속</text>
+  <text x="40" y="448" fill="#6d6b66" font-family="Pretendard, system-ui, sans-serif" font-size="16">전환 시간과 데이터 유실 가능성은 복제 방식과 설정에 따라 달라집니다.</text>
+</svg>

@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1040" height="972" viewBox="0 0 1040 972" role="img" aria-labelledby="tls13-certificate-validation-title tls13-certificate-validation-desc">
+  <title id="tls13-certificate-validation-title">TLS 1.3 서버 인증서 검증과 키 합의</title>
+  <desc id="tls13-certificate-validation-desc">브라우저와 서버가 TLS 1.3 핸드셰이크를 주고받는다. 브라우저는 서버 인증서 체인, 호스트명, 유효기간, 서명을 확인하고 검증에 성공한 연결에서 암호화된 HTTP를 주고받는다.</desc>
+  <defs>
+    <marker id="tls13-certificate-validation-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+      <path d="M0 0 L8 4 L0 8Z" fill="#918d83"/>
+    </marker>
+    <marker id="tls13-certificate-validation-arrow-accent" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+      <path d="M0 0 L8 4 L0 8Z" fill="#e74b2b"/>
+    </marker>
+  </defs>
+  <rect width="1040" height="972" fill="#f2f1ed"/>
+  <text x="40" y="44" fill="#bf3b21" font-family="Pretendard, system-ui, sans-serif" font-size="16" font-weight="700">TLS 1.3 / CERTIFICATE AUTHENTICATION</text>
+  <text x="40" y="84" fill="#171716" font-family="Pretendard, system-ui, sans-serif" font-size="28" font-weight="700">인증서는 신원을, key_share는 연결 키를 만든다</text>
+
+  <!-- Combined fragment: draw before messages and labels. -->
+  <rect x="96" y="608" width="848" height="188" rx="4" fill="#ebe3db" fill-opacity="0.24" stroke="#b5b1a7" stroke-width="1.5"/>
+  <rect x="96" y="608" width="56" height="24" rx="2" fill="#f2f1ed" stroke="#b5b1a7" stroke-width="1"/>
+  <text x="124" y="625" fill="#6d6b66" font-family="ui-monospace, monospace" font-size="14" font-weight="700" text-anchor="middle" letter-spacing="1.5">ALT</text>
+  <path d="M104 704 H936" fill="none" stroke="#b5b1a7" stroke-width="1" stroke-dasharray="4 4"/>
+
+  <!-- Lifelines and activation intervals. -->
+  <path d="M208 176 V924 M832 176 V924" fill="none" stroke="#b5b1a7" stroke-width="1.5" stroke-dasharray="4 8"/>
+  <rect x="204" y="220" width="8" height="700" fill="#ebe3db" stroke="#918d83" stroke-width="1"/>
+  <rect x="828" y="220" width="8" height="700" fill="#ebe3db" stroke="#918d83" stroke-width="1"/>
+
+  <!-- TLS 1.3 full handshake messages. -->
+  <path d="M208 236 H832" fill="none" stroke="#918d83" stroke-width="2" marker-end="url(#tls13-certificate-validation-arrow)"/>
+  <rect x="330" y="198" width="380" height="28" fill="#f2f1ed"/>
+  <text x="520" y="218" fill="#171716" font-family="Pretendard, system-ui, sans-serif" font-size="16" text-anchor="middle">ClientHello · SNI / ALPN / key_share</text>
+
+  <path d="M832 292 H208" fill="none" stroke="#918d83" stroke-width="2" stroke-dasharray="6 6" marker-end="url(#tls13-certificate-validation-arrow)"/>
+  <rect x="340" y="254" width="360" height="28" fill="#f2f1ed"/>
+  <text x="520" y="274" fill="#171716" font-family="Pretendard, system-ui, sans-serif" font-size="16" text-anchor="middle">ServerHello · 선택한 key_share</text>
+
+  <path d="M832 356 H208" fill="none" stroke="#918d83" stroke-width="2" stroke-dasharray="6 6" marker-end="url(#tls13-certificate-validation-arrow)"/>
+  <rect x="300" y="318" width="440" height="28" fill="#f2f1ed"/>
+  <text x="520" y="338" fill="#171716" font-family="Pretendard, system-ui, sans-serif" font-size="16" text-anchor="middle">EncryptedExtensions · Certificate 체인</text>
+
+  <path d="M832 412 H208" fill="none" stroke="#918d83" stroke-width="2" stroke-dasharray="6 6" marker-end="url(#tls13-certificate-validation-arrow)"/>
+  <rect x="300" y="374" width="440" height="28" fill="#f2f1ed"/>
+  <text x="520" y="394" fill="#171716" font-family="Pretendard, system-ui, sans-serif" font-size="16" text-anchor="middle">CertificateVerify · handshake transcript 서명</text>
+
+  <path d="M832 468 H208" fill="none" stroke="#918d83" stroke-width="2" stroke-dasharray="6 6" marker-end="url(#tls13-certificate-validation-arrow)"/>
+  <rect x="376" y="430" width="288" height="28" fill="#f2f1ed"/>
+  <text x="520" y="450" fill="#171716" font-family="Pretendard, system-ui, sans-serif" font-size="16" text-anchor="middle">Server Finished · 핸드셰이크 확인</text>
+
+  <!-- Local browser validation and key derivation are annotations, not wire messages. -->
+  <rect x="96" y="500" width="848" height="88" fill="#ebe3db" fill-opacity="0.52" stroke="#d6d4ce" stroke-width="1"/>
+  <text x="120" y="528" fill="#171716" font-family="Pretendard, system-ui, sans-serif" font-size="18" font-weight="700">브라우저 안에서 확인</text>
+  <text x="120" y="552" fill="#6d6b66" font-family="Pretendard, system-ui, sans-serif" font-size="16">신뢰하는 CA까지의 체인 · URL 호스트명과 인증서 SAN · 유효기간과 용도</text>
+  <text x="120" y="576" fill="#6d6b66" font-family="Pretendard, system-ui, sans-serif" font-size="16">인증서 공개키로 CertificateVerify 서명을 검증한다. key_share는 별도로 공유 비밀을 합의한다.</text>
+
+  <!-- Successful and failed certificate validation paths. -->
+  <text x="120" y="650" fill="#171716" font-family="Pretendard, system-ui, sans-serif" font-size="16" font-weight="600">[인증서·호스트명·서명 검증 성공]</text>
+  <path d="M208 684 H832" fill="none" stroke="#e74b2b" stroke-width="2.5" marker-end="url(#tls13-certificate-validation-arrow-accent)"/>
+  <rect x="432" y="646" width="176" height="28" fill="#f2f1ed"/>
+  <text x="520" y="666" fill="#bf3b21" font-family="Pretendard, system-ui, sans-serif" font-size="16" font-weight="700" text-anchor="middle">Client Finished</text>
+
+  <text x="120" y="738" fill="#6d6b66" font-family="Pretendard, system-ui, sans-serif" font-size="16" font-weight="600">[검증 실패]</text>
+  <path d="M208 772 H832" fill="none" stroke="#918d83" stroke-width="2" marker-end="url(#tls13-certificate-validation-arrow)"/>
+  <rect x="378" y="734" width="284" height="28" fill="#f2f1ed"/>
+  <text x="520" y="754" fill="#6d6b66" font-family="Pretendard, system-ui, sans-serif" font-size="16" text-anchor="middle">TLS alert · 핸드셰이크 중단</text>
+
+  <!-- Application data is protected only on the successful path. -->
+  <path d="M208 856 H832" fill="none" stroke="#918d83" stroke-width="2" marker-end="url(#tls13-certificate-validation-arrow)"/>
+  <rect x="344" y="818" width="352" height="28" fill="#f2f1ed"/>
+  <text x="520" y="838" fill="#171716" font-family="Pretendard, system-ui, sans-serif" font-size="16" text-anchor="middle">암호화된 HTTP 요청 · 방향별 대칭 traffic key</text>
+
+  <path d="M832 900 H208" fill="none" stroke="#918d83" stroke-width="2" stroke-dasharray="6 6" marker-end="url(#tls13-certificate-validation-arrow)"/>
+  <rect x="344" y="862" width="352" height="28" fill="#f2f1ed"/>
+  <text x="520" y="882" fill="#171716" font-family="Pretendard, system-ui, sans-serif" font-size="16" text-anchor="middle">암호화된 HTTP 응답 · 방향별 대칭 traffic key</text>
+
+  <!-- Actors sit above their lifelines. -->
+  <rect x="96" y="120" width="224" height="56" fill="#ebe3db" stroke="#e74b2b" stroke-width="2"/>
+  <text x="208" y="155" fill="#171716" font-family="Pretendard, system-ui, sans-serif" font-size="18" font-weight="700" text-anchor="middle">브라우저</text>
+  <rect x="720" y="120" width="224" height="56" fill="#f2f1ed" stroke="#b5b1a7" stroke-width="1.5"/>
+  <text x="832" y="155" fill="#171716" font-family="Pretendard, system-ui, sans-serif" font-size="18" font-weight="700" text-anchor="middle">HTTPS 서버</text>
+
+  <text x="40" y="948" fill="#6d6b66" font-family="Pretendard, system-ui, sans-serif" font-size="15">인증서 기반 TLS 1.3 전체 핸드셰이크 예시. 세션 재개(PSK), 0-RTT, 클라이언트 인증은 생략했다.</text>
+</svg>

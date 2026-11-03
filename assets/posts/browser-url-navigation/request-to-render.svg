@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="920" height="852" viewBox="0 0 920 852" role="img" aria-labelledby="browser-flow-title browser-flow-desc">
+  <title id="browser-flow-title">URL 입력부터 브라우저 렌더링까지의 순서</title>
+  <desc id="browser-flow-desc">브라우저가 로컬 정보를 확인하고 필요하면 DNS를 조회한다. 서버와 연결해 HTTP 응답과 리소스를 받은 뒤 HTML과 CSS를 해석해 화면을 그린다.</desc>
+  <defs>
+    <marker id="browser-flow-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8Z" fill="#918d83"/></marker>
+    <marker id="browser-flow-arrow-accent" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8Z" fill="#e74b2b"/></marker>
+    <marker id="browser-flow-arrow-link" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8Z" fill="#bf3b21"/></marker>
+  </defs>
+  <rect width="920" height="792" fill="#f2f1ed"/>
+  <text x="40" y="44" fill="#bf3b21" font-family="Pretendard, system-ui, sans-serif" font-size="16" font-weight="700">BROWSER NAVIGATION</text>
+  <text x="40" y="84" fill="#171716" font-family="Pretendard, system-ui, sans-serif" font-size="28" font-weight="700">주소창부터 첫 화면까지</text>
+
+  <!-- Optional DNS query and repeated asset requests. -->
+  <rect x="152" y="232" width="320" height="144" fill="#ebe3db" fill-opacity="0.28" stroke="#b5b1a7" stroke-width="1"/>
+  <rect x="152" y="232" width="40" height="24" fill="#f2f1ed" stroke="#b5b1a7" stroke-width="1"/>
+  <text x="172" y="248" fill="#6d6b66" font-family="Pretendard, system-ui, sans-serif" font-size="16" font-weight="700" text-anchor="middle">OPT</text>
+  <text x="204" y="272" fill="#6d6b66" font-family="Pretendard, system-ui, sans-serif" font-size="16">DNS 캐시에 답이 없을 때</text>
+  <rect x="156" y="568" width="600" height="160" fill="#ebe3db" fill-opacity="0.28" stroke="#b5b1a7" stroke-width="1"/>
+  <rect x="156" y="568" width="48" height="24" fill="#f2f1ed" stroke="#b5b1a7" stroke-width="1"/>
+  <text x="180" y="584" fill="#6d6b66" font-family="Pretendard, system-ui, sans-serif" font-size="16" font-weight="700" text-anchor="middle">LOOP</text>
+  <text x="216" y="612" fill="#6d6b66" font-family="Pretendard, system-ui, sans-serif" font-size="16">HTML이 참조하는 리소스마다</text>
+
+  <!-- Lifelines and activation bars. -->
+  <path d="M168 160 V748 M456 160 V552 M744 160 V744" fill="none" stroke="#b5b1a7" stroke-width="1.5" stroke-dasharray="4 8"/>
+  <rect x="164" y="292" width="8" height="56" fill="#ebe3db" stroke="#918d83" stroke-width="1"/>
+  <rect x="452" y="292" width="8" height="56" fill="#ebe3db" stroke="#918d83" stroke-width="1"/>
+  <rect x="740" y="408" width="8" height="152" fill="#ebe3db" stroke="#918d83" stroke-width="1"/>
+  <rect x="164" y="656" width="8" height="56" fill="#ebe3db" stroke="#918d83" stroke-width="1"/>
+  <rect x="740" y="656" width="8" height="56" fill="#ebe3db" stroke="#918d83" stroke-width="1"/>
+
+  <!-- DNS request and return. -->
+  <path d="M168 304 H456" fill="none" stroke="#918d83" stroke-width="2" marker-end="url(#browser-flow-arrow)"/>
+  <path d="M456 344 H168" fill="none" stroke="#918d83" stroke-width="2" stroke-dasharray="4 8" marker-end="url(#browser-flow-arrow)"/>
+  <rect x="260" y="276" width="112" height="20" fill="#f2f1ed"/>
+  <text x="316" y="292" fill="#171716" font-family="Pretendard, system-ui, sans-serif" font-size="16" text-anchor="middle">도메인 조회</text>
+  <rect x="276" y="316" width="80" height="20" fill="#f2f1ed"/>
+  <text x="316" y="332" fill="#6d6b66" font-family="Pretendard, system-ui, sans-serif" font-size="16" text-anchor="middle">IP 주소</text>
+
+  <!-- Connection setup, HTTPS request, and server response. -->
+  <path d="M168 424 H744" fill="none" stroke="#918d83" stroke-width="2" marker-end="url(#browser-flow-arrow)"/>
+  <path d="M744 464 H168" fill="none" stroke="#918d83" stroke-width="2" stroke-dasharray="4 8" marker-end="url(#browser-flow-arrow)"/>
+  <path d="M168 508 H744" fill="none" stroke="#918d83" stroke-width="2" marker-end="url(#browser-flow-arrow)"/>
+  <path d="M744 548 H168" fill="none" stroke="#e74b2b" stroke-width="2" marker-end="url(#browser-flow-arrow-accent)"/>
+  <rect x="216" y="392" width="480" height="24" fill="#f2f1ed"/>
+  <text x="456" y="412" fill="#171716" font-family="Pretendard, system-ui, sans-serif" font-size="16" text-anchor="middle">TCP + TLS (HTTP/1.1·2) 또는 QUIC + TLS 1.3 (HTTP/3)</text>
+  <rect x="328" y="432" width="256" height="24" fill="#f2f1ed"/>
+  <text x="456" y="452" fill="#6d6b66" font-family="Pretendard, system-ui, sans-serif" font-size="16" text-anchor="middle">TLS 서버 메시지 · 인증서 체인</text>
+  <rect x="376" y="476" width="160" height="24" fill="#f2f1ed"/>
+  <text x="456" y="496" fill="#171716" font-family="Pretendard, system-ui, sans-serif" font-size="16" text-anchor="middle">HTTPS 요청</text>
+  <rect x="376" y="516" width="160" height="24" fill="#f2f1ed"/>
+  <text x="456" y="536" fill="#bf3b21" font-family="Pretendard, system-ui, sans-serif" font-size="16" font-weight="700" text-anchor="middle">HTML 응답</text>
+
+  <!-- Repeated resource requests. -->
+  <path d="M168 660 H744" fill="none" stroke="#918d83" stroke-width="2" marker-end="url(#browser-flow-arrow)"/>
+  <path d="M744 704 H168" fill="none" stroke="#918d83" stroke-width="2" stroke-dasharray="4 8" marker-end="url(#browser-flow-arrow)"/>
+  <rect x="328" y="628" width="256" height="24" fill="#f2f1ed"/>
+  <text x="456" y="648" fill="#171716" font-family="Pretendard, system-ui, sans-serif" font-size="16" text-anchor="middle">CSS · JavaScript · 이미지 요청</text>
+  <rect x="372" y="672" width="168" height="24" fill="#f2f1ed"/>
+  <text x="456" y="692" fill="#6d6b66" font-family="Pretendard, system-ui, sans-serif" font-size="16" text-anchor="middle">리소스 응답</text>
+
+  <!-- Actors. -->
+  <rect x="88" y="104" width="160" height="56" fill="#ebe3db" stroke="#e74b2b" stroke-width="2"/>
+  <text x="168" y="140" fill="#171716" font-family="Pretendard, system-ui, sans-serif" font-size="16" font-weight="700" text-anchor="middle">브라우저</text>
+  <rect x="364" y="104" width="184" height="56" fill="#f2f1ed" stroke="#b5b1a7" stroke-width="2"/>
+  <text x="456" y="140" fill="#171716" font-family="Pretendard, system-ui, sans-serif" font-size="16" font-weight="700" text-anchor="middle">DNS 리졸버</text>
+  <rect x="664" y="104" width="160" height="56" fill="#f2f1ed" stroke="#b5b1a7" stroke-width="2"/>
+  <text x="744" y="140" fill="#171716" font-family="Pretendard, system-ui, sans-serif" font-size="16" font-weight="700" text-anchor="middle">웹 서버</text>
+
+  <rect x="40" y="176" width="320" height="48" fill="#f2f1ed" stroke="#d6d4ce" stroke-width="1"/>
+  <text x="56" y="196" fill="#171716" font-family="Pretendard, system-ui, sans-serif" font-size="16" font-weight="700">URL 해석</text>
+  <text x="56" y="216" fill="#6d6b66" font-family="Pretendard, system-ui, sans-serif" font-size="16">브라우저·OS 캐시와 hosts 확인</text>
+
+  <!-- Render pipeline: DOM and CSSOM feed the render tree. -->
+  <text x="40" y="796" fill="#171716" font-family="Pretendard, system-ui, sans-serif" font-size="16" font-weight="700">렌더링</text>
+  <path d="M272 792 H296 M428 792 H472 M568 792 H624 M688 792 H736" fill="none" stroke="#918d83" stroke-width="2" marker-end="url(#browser-flow-arrow)"/>
+  <text x="216" y="796" fill="#171716" font-family="Pretendard, system-ui, sans-serif" font-size="16" text-anchor="middle">HTML + CSS</text>
+  <text x="360" y="796" fill="#171716" font-family="Pretendard, system-ui, sans-serif" font-size="16" text-anchor="middle">DOM + CSSOM</text>
+  <text x="520" y="796" fill="#171716" font-family="Pretendard, system-ui, sans-serif" font-size="16" text-anchor="middle">Render tree</text>
+  <text x="656" y="796" fill="#171716" font-family="Pretendard, system-ui, sans-serif" font-size="16" text-anchor="middle">Layout</text>
+  <text x="816" y="796" fill="#171716" font-family="Pretendard, system-ui, sans-serif" font-size="16" text-anchor="middle">Paint / composite</text>
+  <text x="40" y="836" fill="#6d6b66" font-family="Pretendard, system-ui, sans-serif" font-size="16">캐시, 연결 재사용, HTTP 버전에 따라 일부 단계는 생략되거나 겹쳐 진행될 수 있습니다.</text>
+</svg>

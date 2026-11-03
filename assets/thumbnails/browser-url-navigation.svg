@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="400" viewBox="0 0 640 400" role="img" aria-labelledby="browser-url-thumbnail-title browser-url-thumbnail-desc">
+  <title id="browser-url-thumbnail-title">브라우저 URL 탐색 썸네일</title>
+  <desc id="browser-url-thumbnail-desc">URL 입력 뒤 서버 응답을 받아 페이지를 그리는 브라우저를 나타낸 그림</desc>
+  <rect width="640" height="400" fill="#f2f1ed"/>
+  <text x="40" y="56" fill="#bf3b21" font-family="Pretendard, system-ui, sans-serif" font-size="16" font-weight="700">BROWSER / 02</text>
+  <text x="40" y="152" fill="#171716" font-family="Pretendard, system-ui, sans-serif" font-size="52" font-weight="700">URL에서</text>
+  <text x="40" y="216" fill="#171716" font-family="Pretendard, system-ui, sans-serif" font-size="52" font-weight="700">화면까지</text>
+  <text x="40" y="260" fill="#6d6b66" font-family="Pretendard, system-ui, sans-serif" font-size="20" font-weight="400">브라우저의 페이지 로딩</text>
+  <path d="M40 300 H100" stroke="#e74b2b" stroke-width="4"/>
+  <rect x="384" y="92" width="220" height="200" fill="none" stroke="#171716" stroke-width="2"/>
+  <path d="M384 132 H604" stroke="#d6d4ce" stroke-width="1.5"/>
+  <circle cx="404" cy="112" r="4" fill="#b5b1a7"/>
+  <circle cx="420" cy="112" r="4" fill="#b5b1a7"/>
+  <circle cx="436" cy="112" r="4" fill="#e74b2b"/>
+  <rect x="404" y="144" width="180" height="28" fill="#ebe3db"/>
+  <text x="416" y="164" fill="#6d6b66" font-family="Pretendard, system-ui, sans-serif" font-size="12">https://example.com</text>
+  <rect x="404" y="188" width="72" height="80" fill="#ebe3db"/>
+  <path d="M496 196 H584 M496 212 H572 M496 228 H580 M496 252 H556" stroke="#b5b1a7" stroke-width="2"/>
+  <path d="M40 348 H600" stroke="#d6d4ce" stroke-width="1"/>
+  <text x="40" y="380" fill="#6d6b66" font-family="Pretendard, system-ui, sans-serif" font-size="16">DNS · 연결 · HTTP · 렌더링</text>
+</svg>

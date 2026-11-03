@@ -1,0 +1,78 @@
+<style>
+.systems-figure { margin: 3.5rem 0; padding: 1.5rem 0 1rem; border-top: 1px solid #d6d4ce; }
+.systems-figure img { display: block; width: 100%; height: auto; }
+.systems-figure .figure-scroll { overflow-x: auto; overscroll-behavior-inline: contain; }
+.systems-figure .figure-scroll img { width: 100%; min-width: 640px; max-width: none; }
+.systems-figure figcaption { margin-top: 1rem; max-width: 68ch; color: var(--muted); font-size: .875rem; line-height: 1.7; }
+.systems-figure a { text-decoration-thickness: 1px; text-underline-offset: .18em; }
+.systems-note { color: var(--muted); font-size: .9rem; }
+.systems-sources { padding-left: 1.25rem; }
+.systems-sources li + li { margin-top: .5rem; }
+@media print { .systems-figure { break-inside: avoid; } }
+</style>
+
+<p class="post-lead">데이터베이스 서버 한 대가 멈춰도 서비스를 이어가려면 여러 노드를 함께 운영해야 한다. 이때 자주 나오는 말이 복제와 클러스터링이다. 둘은 서로 반대되는 선택지가 아니다.</p>
+
+<p>복제는 데이터를 다른 서버에도 유지하는 방법이다. 클러스터는 여러 노드를 조정해 하나의 서비스처럼 운영하는 구조를 가리킨다. 클러스터가 복제를 이용할 수 있고, 복제본이 있다고 해서 자동 장애 조치까지 갖춘 것은 아니다.</p>
+
+<h2>복제와 클러스터링은 다른 질문에 답한다</h2>
+
+<p>Primary에서 바뀐 데이터를 Replica로 전달하는 것이 복제다. 한 대만 쓰기를 받고 복제본은 읽기나 장애 복구에 쓰는 구성이 흔하지만, 복제 제품과 설정에 따라 동기화 시점과 허용되는 읽기·쓰기 방식은 다르다.</p>
+
+<p>클러스터링은 노드가 어떤 역할을 맡고, 장애를 어떻게 판별하며, 클라이언트 요청을 어디로 보낼지까지 포함해 운영 방식을 설계한다. 복제, 공유 스토리지, 데이터 파티셔닝 가운데 무엇을 쓰는지도 제품마다 다르다.</p>
+
+<h2>Active-Standby: 평소에는 한 노드가 쓰기를 맡는다</h2>
+
+<p>가장 익숙한 고가용성 구성은 Primary가 요청을 처리하고 Standby가 변경 기록을 따라가는 형태다. Primary가 장애를 일으키면 관리 시스템이 이를 감지하고, 기존 Primary의 쓰기를 막은 뒤 Standby를 승격한다. 마지막으로 서비스 주소를 새 Primary로 돌리고 클라이언트가 다시 연결한다.</p>
+
+<figure class="systems-figure">
+  <div class="figure-scroll" tabindex="0" role="region" aria-label="Active-Standby 구성도. 좁은 화면에서는 가로로 스크롤할 수 있습니다.">
+    <img src="assets/posts/database-clustering/active-standby.svg" alt="애플리케이션이 서비스 경로를 통해 Primary에 연결하고, Primary가 Replica로 데이터를 복제하는 구성. 장애가 나면 Replica 승격과 서비스 경로 전환이 필요하다." width="920" height="472" loading="lazy" decoding="async">
+  </div>
+  <figcaption>Active-Standby의 개념도다. Replica를 승격해도 클라이언트 재연결이 필요할 수 있으며 전환 시간과 데이터 유실 가능성은 복제 설정과 장애 조치 도구에 따라 달라진다.</figcaption>
+</figure>
+
+<p>이 그림과 비슷한 특정 구현으로 AWS RDS Multi-AZ가 있다. 아래 원본은 AWS가 설명하는 배포 구성이다. 클러스터라는 이름을 붙였다고 모든 제품의 구조와 동작이 같아지는 것은 아니다.</p>
+
+<figure class="systems-figure">
+  <div class="figure-scroll" tabindex="0" role="region" aria-label="AWS RDS Multi-AZ 배포도. 좁은 화면에서는 가로로 스크롤할 수 있습니다.">
+    <img src="https://d1.awsstatic.com/asset-repository/multi-az-deployments.bda9d7bf45a74103d0331a985baf2c5fb838a0fa.png" alt="AWS RDS Multi-AZ의 기본 데이터베이스 인스턴스와 대기 인스턴스 배치도" loading="lazy" decoding="async">
+  </div>
+  <figcaption>AWS RDS Multi-AZ 배포도. 그림과 설명은 <a href="https://aws.amazon.com/rds/features/multi-az/" target="_blank" rel="noopener noreferrer">AWS 공식 문서</a>에 있다.</figcaption>
+</figure>
+
+<p>장애 조치가 “즉시” 끝난다고 약속하기는 어렵다. 감지에 시간이 걸리고, 이전 Primary가 실제로 멈췄는지 확인해야 하며, 승격과 라우팅 변경 뒤에는 클라이언트 연결도 복구돼야 한다. 진행 중이던 트랜잭션은 실패할 수 있다. 비동기 복제라면 마지막 변경 일부가 아직 Standby에 도착하지 않았을 수도 있다.</p>
+
+<p>설계할 때는 서비스 복구에 허용할 시간인 RTO와, 복구 시 잃어도 되는 데이터 범위인 RPO를 함께 정해야 한다. 장애 감지, 승격, 라우팅, 재접속이 각각 얼마나 걸리는지와 복제 방식이 이 값에 영향을 준다.</p>
+
+<h2>Active-Active: 여러 노드가 요청을 처리한다</h2>
+
+<p>Active-Active는 둘 이상의 노드가 동시에 요청을 처리하는 방식이다. 하지만 모든 노드가 같은 데이터를 독립적으로 쓰면서 충돌 없이 동작한다는 뜻은 아니다. 어떤 데이터는 특정 노드가 맡거나, 변경을 조정하는 규칙을 두거나, 데이터를 파티션으로 나눠 처리할 수 있다.</p>
+
+<p>MySQL NDB Cluster 문서는 SQL 노드와 데이터 노드 그리고 관리 노드를 구분한다. 데이터 노드는 파티션과 복제본을 노드 그룹에 나눠 저장한다. 이는 NDB Cluster의 구체적인 구조라서 모든 데이터베이스 클러스터에 그대로 적용되는 것은 아니다. 노드 그룹의 자세한 구성은 <a href="https://dev.mysql.com/doc/refman/8.0/en/mysql-cluster-nodes-groups.html" target="_blank" rel="noopener noreferrer">MySQL 공식 문서</a>에서 확인할 수 있다.</p>
+
+<h2>장애 조치에서 빠뜨리기 쉬운 것</h2>
+
+<p>노드 사이의 통신만 끊기면 양쪽이 모두 살아 있는데도 서로를 장애로 오인할 수 있다. 양쪽이 모두 쓰기를 받으면 데이터가 갈라지는 Split-Brain이 발생한다. 과반수 투표를 쓰는 Quorum은 누가 리더가 될지 결정하는 데 도움을 주지만, 이전 Primary가 계속 쓰는 일을 막는 fencing 같은 보호도 필요하다.</p>
+
+<p>클라이언트가 새 Primary를 찾는 경로도 제품에 따라 다르다. VIP를 옮기거나 DNS를 갱신할 수 있고, 프록시나 관리형 서비스 엔드포인트를 쓸 수도 있다. 주소를 바꾼 뒤에도 이미 열린 연결은 끊어질 수 있으므로 클라이언트의 재시도와 연결 복구가 장애 조치 설계에 포함돼야 한다.</p>
+
+<h2>무엇을 선택할지 먼저 정할 기준</h2>
+
+<ul>
+  <li>읽기 부하를 나누거나 다른 장소에 복사본을 보관하려면 복제부터 검토한다. 복제만으로 자동 승격과 요청 경로 변경이 해결되는 것은 아니다.</li>
+  <li>장애 시 자동 복구가 필요하면 단일 쓰기 노드와 Standby, 장애 감지, 승격, 클라이언트 재접속을 함께 설계한다.</li>
+  <li>여러 노드의 동시 쓰기가 필요하다면 충돌 처리, 데이터 소유권, 복제 지연, 일관성 보장을 제품별로 확인한다. Active-Active라는 이름만으로 성능이나 무중단을 보장하지 않는다.</li>
+</ul>
+
+<p>PostgreSQL의 standby는 Primary의 WAL을 적용한다. PostgreSQL 문서는 서버 자체가 Primary 장애를 감지해 Standby에 알리는 시스템까지 제공하지는 않는다고 설명한다. 자동 장애 조치에는 Patroni 같은 별도 관리 계층이나 관리형 서비스 구성이 필요하다. 이전 Primary가 돌아왔을 때 다시 쓰기를 받지 않도록 막는 절차도 확인해야 한다. <a href="https://www.postgresql.org/docs/16/warm-standby-failover.html" target="_blank" rel="noopener noreferrer">PostgreSQL의 failover 문서</a>는 감지 도구와 fencing이 필요한 이유를 다룬다.</p>
+
+<h2>참고 자료</h2>
+
+<ul class="systems-sources">
+  <li><a href="https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZ.Failover.html" target="_blank" rel="noopener noreferrer">AWS RDS Multi-AZ 장애 조치</a></li>
+  <li><a href="https://dev.mysql.com/doc/refman/8.0/en/mysql-cluster-overview.html" target="_blank" rel="noopener noreferrer">MySQL NDB Cluster 개요</a>와 <a href="https://dev.mysql.com/doc/refman/8.0/en/mysql-cluster-nodes-groups.html" target="_blank" rel="noopener noreferrer">노드 그룹·파티션 복제</a></li>
+  <li><a href="https://www.postgresql.org/docs/current/warm-standby.html" target="_blank" rel="noopener noreferrer">PostgreSQL standby와 WAL 전달</a></li>
+</ul>
+
+<p class="systems-note">복제 방식, 노드 역할, 장애 감지 기준은 제품과 설정에 따라 달라진다. 이 글의 그림은 개념을 설명하기 위한 예시이며 특정 제품의 운영 절차를 대신하지 않는다.</p>

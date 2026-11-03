@@ -2,7 +2,7 @@
   {
     "id": "ragflow-agentic-rag",
     "tagSeparator": " / ",
-    "number": 15,
+    "number": 17,
     "date": "2026-11-03",
     "title": {
       "ko": "BM25와 grep으로 FRAMES 91%를 기록한 에이전틱 RAG"
@@ -21,6 +21,47 @@
       "학습 노트"
     ],
     "thumbnail": "assets/thumbnails/ragflow-agentic-rag.svg"
+  },
+  {
+    "id": "browser-url-navigation",
+    "number": 16,
+    "date": "2026-10-29",
+    "title": {
+      "ko": "주소창에 URL을 입력하면 화면은 어떻게 그려질까"
+    },
+    "summary": {
+      "ko": "URL 해석과 DNS, 연결 설정, TLS 인증서 검증, HTTP 응답, 브라우저 렌더링까지의 흐름을 따라간다."
+    },
+    "content": {
+      "ko": "posts/2026/browser-url-navigation.ko.html"
+    },
+    "tags": [
+      "Browser",
+      "Network",
+      "TLS",
+      "Web"
+    ],
+    "thumbnail": "assets/thumbnails/browser-url-navigation.svg"
+  },
+  {
+    "id": "database-clustering",
+    "number": 15,
+    "date": "2026-10-28",
+    "title": {
+      "ko": "데이터베이스 클러스터링은 복제와 어떻게 다를까"
+    },
+    "summary": {
+      "ko": "복제는 데이터를 복사하는 방식이고 클러스터는 노드를 운영하는 구조다. Active-Standby와 Active-Active, 장애 조치의 조건을 살펴본다."
+    },
+    "content": {
+      "ko": "posts/2026/database-clustering.ko.html"
+    },
+    "tags": [
+      "Database",
+      "High Availability",
+      "Replication"
+    ],
+    "thumbnail": "assets/thumbnails/database-clustering.svg"
   },
   {
     "id": "sk-hynix-ai-hackathon-round-1",

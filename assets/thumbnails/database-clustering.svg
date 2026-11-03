@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="400" viewBox="0 0 640 400" role="img" aria-labelledby="database-clustering-thumbnail-title database-clustering-thumbnail-desc">
+  <title id="database-clustering-thumbnail-title">데이터베이스 클러스터링 썸네일</title>
+  <desc id="database-clustering-thumbnail-desc">데이터베이스 클러스터링과 복제, 장애 조치를 나타낸 그림</desc>
+  <rect width="640" height="400" fill="#f2f1ed"/>
+  <text x="40" y="56" fill="#bf3b21" font-family="Pretendard, system-ui, sans-serif" font-size="16" font-weight="700">SYSTEMS / 01</text>
+  <text x="40" y="144" fill="#171716" font-family="Pretendard, system-ui, sans-serif" font-size="48" font-weight="700">데이터베이스</text>
+  <text x="40" y="208" fill="#171716" font-family="Pretendard, system-ui, sans-serif" font-size="48" font-weight="700">클러스터링</text>
+  <text x="40" y="252" fill="#6d6b66" font-family="Pretendard, system-ui, sans-serif" font-size="20" font-weight="400">복제와 장애 조치</text>
+  <path d="M40 292 H100" stroke="#e74b2b" stroke-width="4"/>
+  <path d="M440 168 V224" fill="none" stroke="#918d83" stroke-width="2"/>
+  <path d="M434 216 L440 224 L446 216" fill="none" stroke="#918d83" stroke-width="2"/>
+  <rect x="392" y="96" width="192" height="72" fill="#ebe3db" stroke="#e74b2b" stroke-width="2"/>
+  <circle cx="420" cy="132" r="8" fill="#e74b2b"/>
+  <text x="440" y="128" fill="#171716" font-family="Pretendard, system-ui, sans-serif" font-size="20" font-weight="700">PRIMARY</text>
+  <text x="440" y="152" fill="#6d6b66" font-family="Pretendard, system-ui, sans-serif" font-size="16">active</text>
+  <rect x="392" y="236" width="192" height="72" fill="none" stroke="#b5b1a7" stroke-width="2"/>
+  <circle cx="420" cy="272" r="8" fill="#b5b1a7"/>
+  <text x="440" y="268" fill="#171716" font-family="Pretendard, system-ui, sans-serif" font-size="20" font-weight="700">REPLICA</text>
+  <text x="440" y="292" fill="#6d6b66" font-family="Pretendard, system-ui, sans-serif" font-size="16">standby</text>
+  <path d="M40 348 H600" stroke="#d6d4ce" stroke-width="1"/>
+  <text x="40" y="380" fill="#6d6b66" font-family="Pretendard, system-ui, sans-serif" font-size="16">여러 노드를 하나의 서비스로 운영하는 방법</text>
+</svg>
