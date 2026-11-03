@@ -1,5 +1,28 @@
 [
   {
+    "id": "ragflow-agentic-rag",
+    "tagSeparator": " / ",
+    "number": 15,
+    "date": "2026-11-03",
+    "title": {
+      "ko": "BM25와 grep으로 FRAMES 91%를 기록한 에이전틱 RAG"
+    },
+    "summary": {
+      "ko": "RAGFlow가 보고한 FRAMES 91%와 BrowseComp-Plus 85%의 조건 그리고 주장-근거 트리의 토큰 절감과 지연 시간 변화를 정리했다."
+    },
+    "content": {
+      "ko": "posts/2026/ragflow-agentic-rag.ko.html"
+    },
+    "tags": [
+      "AI",
+      "Agent",
+      "RAG",
+      "Information Retrieval",
+      "학습 노트"
+    ],
+    "thumbnail": "assets/thumbnails/ragflow-agentic-rag.svg"
+  },
+  {
     "id": "sk-hynix-ai-hackathon-round-1",
     "number": 14,
     "date": "2026-10-26",

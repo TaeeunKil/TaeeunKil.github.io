@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="400" viewBox="0 0 640 400" role="img" aria-labelledby="ragflow-thumbnail-title ragflow-thumbnail-desc">
+  <title id="ragflow-thumbnail-title">에이전틱 RAG와 BM25 검색</title>
+  <desc id="ragflow-thumbnail-desc">BM25와 grep으로 문서를 찾고 근거를 읽어 답을 만드는 검색 흐름</desc>
+  <rect width="640" height="400" fill="#f2f1ed"/>
+  <text x="40" y="56" fill="#bf3b21" font-family="Pretendard, system-ui, sans-serif" font-size="16" font-weight="700">RETRIEVAL / 01</text>
+  <text x="40" y="142" fill="#171716" font-family="Pretendard, system-ui, sans-serif" font-size="46" font-weight="700">에이전틱 RAG</text>
+  <text x="40" y="202" fill="#171716" font-family="Pretendard, system-ui, sans-serif" font-size="30" font-weight="700">BM25 + grep</text>
+  <text x="40" y="248" fill="#6d6b66" font-family="Pretendard, system-ui, sans-serif" font-size="20">검색 뒤에 남는 근거의 비용</text>
+  <path d="M40 292 H112" stroke="#e74b2b" stroke-width="4"/>
+  <rect x="412" y="82" width="188" height="62" fill="#ebe3db" stroke="#e74b2b" stroke-width="2"/>
+  <text x="506" y="120" fill="#171716" text-anchor="middle" font-family="Pretendard, system-ui, sans-serif" font-size="20" font-weight="700">검색어</text>
+  <path d="M506 144 V184" fill="none" stroke="#918d83" stroke-width="2"/>
+  <path d="M500 176 L506 184 L512 176" fill="none" stroke="#918d83" stroke-width="2"/>
+  <rect x="412" y="184" width="188" height="62" fill="none" stroke="#b5b1a7" stroke-width="2"/>
+  <text x="506" y="222" fill="#171716" text-anchor="middle" font-family="Pretendard, system-ui, sans-serif" font-size="20" font-weight="700">원문 근거</text>
+  <path d="M506 246 V286 C506 306 490 320 470 320 H438" fill="none" stroke="#918d83" stroke-width="2"/>
+  <path d="M446 314 L438 320 L446 326" fill="none" stroke="#918d83" stroke-width="2"/>
+  <circle cx="420" cy="320" r="7" fill="#e74b2b"/>
+  <path d="M40 348 H600" stroke="#d6d4ce" stroke-width="1"/>
+  <text x="40" y="380" fill="#6d6b66" font-family="Pretendard, system-ui, sans-serif" font-size="16">정확도와 토큰 비용을 따로 살펴본 실험</text>
+</svg>
