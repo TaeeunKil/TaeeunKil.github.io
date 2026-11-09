@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="ko" data-post-id="ai-context-resume-notes">
+<head>
+  <base href="../../">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="여러 AI 작업의 맥락을 관리하는 부담과 재개 메모를 연결하고 연구에서 확인한 효과와 실무 적용 아이디어를 구분했다.">
+  <meta name="theme-color" content="#f2f1ed">
+  <title>AI 여러 개를 돌릴 때 피곤해지는 이유와 재개 메모 — TaeeunKil</title>
+  <link rel="preload" href="assets/fonts/PretendardSite.woff2?v=48492f9aff" fetchpriority="high" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="assets/fonts/fonts.css?v=20261013-performance">
+  <style>html.fonts-loading body { visibility: hidden; }</style>
+  <script>
+    // Reveal the designed typeface only after fonts used by the page are ready.
+    document.documentElement.classList.add("fonts-loading");
+    document.addEventListener("DOMContentLoaded", () => {
+      const reveal = () => document.documentElement.classList.remove("fonts-loading");
+      Promise.resolve(window.pageReady).then(() => document.fonts.ready).then(reveal, reveal);
+    }, { once: true });
+  </script>
+  <link rel="stylesheet" href="style.css?v=20261026-hackathon-reading-layout">
+  <script src="post.js?v=20261013-performance" defer></script>
+  <link rel="canonical" href="https://taeeunkil.github.io/writing/ai-context-resume-notes/">
+</head>
+<body class="post-page">
+  <a class="skip-link" href="writing/ai-context-resume-notes/#post-content" data-post-copy="skip">본문으로 건너뛰기</a>
+
+  <main class="post-shell" id="post-content">
+    <div class="post-toolbar">
+      <a class="post-back" href="index.html#writing" data-post-copy="back">← 글 목록</a>
+      <div class="language-switch" role="group" aria-label="언어 선택" data-post-aria="languageLabel">
+        <button type="button" data-language="ko" aria-pressed="true">KR</button><span aria-hidden="true">/</span><button type="button" data-language="en" aria-pressed="false">EN</button>
+      </div>
+    </div>
+
+    <article class="post-article" aria-live="polite">
+      <header class="post-header">
+        <p class="post-kicker">Writing / <span id="post-number">019</span></p>
+        <h1 id="post-title">AI 여러 개를 돌릴 때 피곤해지는 이유와 재개 메모</h1>
+        <div class="post-meta"><time id="post-date" datetime="2026-11-09">2026.11.09</time><span id="post-tags">AI / Agent / 작업메모 / 학습 노트</span></div>
+        <p class="post-summary" id="post-summary">여러 AI 작업의 맥락을 관리하는 부담과 재개 메모를 연결하고 연구에서 확인한 효과와 실무 적용 아이디어를 구분했다.</p>
+      </header>
+      <p id="post-load-error" role="alert" hidden>글을 불러오지 못했습니다. 잠시 후 다시 시도해 주세요. / Could not load the article. Please try again.</p>
+      <div class="post-body" id="post-body"><p>AI에게 버그 수정을 맡기고 응답을 기다리는 동안 다른 창에서 테스트 작성을 요청한다. 먼저 맡긴 작업이 돌아오면 변경 사항을 읽고 추가 지시를 한다. 그사이 다른 창에서도 검토 요청이 도착한다. 코드를 직접 작성하는 시간은 줄었는데 어느 순간부터 창을 옮겨 다니는 일만으로 피곤해진다.</p>
+
+<p>각 창에는 서로 다른 판단이 남아 있다. 이 변경은 왜 필요했는지, 어떤 가설을 이미 확인했는지, 다음 결과에서 무엇을 봐야 하는지를 기억해야 한다. AI가 작업하는 동안에도 사람이 붙잡고 있는 맥락은 계속 늘어날 수 있다.</p>
+
+<p>Sergey Kuhne의 <a href="https://sergeykuhne.com/blog/fighting-ai-brain-fry">「How I'm fighting the AI Brain Fry」</a>는 이런 상황을 다룬다. 저자는 여러 AI 세션 사이를 오가다가 작업의 시작점과 목적을 놓치는 경험을 설명한다. 대응 방법으로 선택한 것은 Git에 기록을 남기는 작업 큐다.</p>
+
+<p>각 티켓을 저장소의 Markdown 파일로 관리하고 작업 상태를 커밋한다. 에이전트가 조사와 구현을 진행하다가 사람의 판단이 필요해지면 <code>owner inbox</code>에 모은다. 사람은 티켓 하나의 맥락을 읽고 결정을 내린 뒤 다시 큐에 넣는다. 검토 화면도 Git의 기록을 바탕으로 만들어 터미널 대화를 거슬러 읽는 부담을 줄인다.</p>
+
+<p>여기서 눈에 들어오는 부분은 티켓을 다시 큐에 넣는 동작이다. 작업이 끝나지 않았더라도 현재 상태와 후속 요청이 기록돼 있다면 잠시 다른 일에 집중할 여지가 생긴다. 저자도 여전히 피곤하지만 산만하거나 길을 잃는 느낌은 줄었다고 설명한다. 다만 이는 한 사람의 경험담이며 생산성 향상을 측정한 실험은 아니다.</p>
+
+<p>이 글에 달린 <a href="https://news.hada.io/topic?id=36842#cid69497">GeekNews 댓글</a>은 여기에 한 가지를 덧붙인다. 큐에 작업을 돌려놓을 때 어디서 멈췄고 다음에 무엇을 할지 짧게 남기자는 것이다. 댓글이 근거로 든 개념은 <em>ready-to-resume plan</em>, 즉 재개 계획이다.</p>
+
+<p>작업을 바꾼다고 이전 작업에 대한 생각까지 곧바로 사라지지는 않는다. 코드 리뷰를 읽으면서도 조금 전 중단한 버그의 원인이 계속 떠오를 수 있다. Sophie Leroy는 이처럼 이전 작업에 주의가 남아 있는 현상을 <em>attention residue</em>, 주의 잔여라고 설명했다. <a href="https://www.sciencedirect.com/science/article/pii/S0749597809000399">2009년 연구</a>는 미완료 작업에서 주의를 떼기 어렵고 이것이 다음 작업의 성과를 떨어뜨릴 수 있음을 보여준다.</p>
+
+<p>Leroy와 Theresa M. Glomb의 <a href="https://pubsonline.informs.org/doi/10.1287/orsc.2017.1184">2018년 논문</a>은 작업이 중단되는 상황을 더 구체적으로 살펴본다. 작업 A를 하다가 B로 전환했을 때 “나중에 A로 돌아가면 시간이 부족할 것”이라고 예상하면 A에 대한 생각이 남아 B에 집중하기 어려워질 수 있다는 것이다.</p>
+
+<p>연구진은 전환 전에 중단한 작업으로 돌아갈 계획을 짧게 세우는 방법을 검증했다. 네 연구의 결과는 이러한 재개 계획이 주의 잔여와 새 작업의 성과 저하를 완화한다는 가설을 지지했다.</p>
+
+<p>여기서 ‘성과가 좋아진 작업’이 무엇인지 구분할 필요가 있다. 이 연구가 확인한 효과는 주로 <strong>전환해서 새로 맡은 작업 B의 성과</strong>다. 나중에 원래 작업 A로 돌아왔을 때 더 빨리 재개하거나 더 좋은 결과를 냈는지는 해당 연구에서 직접 조사하지 않았다. <a href="https://www.washington.edu/news/2018/01/16/task-interrupted-a-plan-for-returning-helps-you-move-on/">워싱턴대의 연구 소개</a>도 이 한계를 명시한다.</p>
+
+<p>재개 메모는 복귀할 때 참고할 기록이면서 지금 다른 일에 집중하기 위한 준비로도 볼 수 있다. UW Bothell의 설명에 따르면 작업을 전환하기 전에 잠깐 시간을 내어 어디까지 했고 다음에 무엇을 하려 했는지 적는다. 연구자는 이 과정이 중단한 작업에 일시적인 인지적 마무리를 제공한다고 설명한다. <a href="https://www.uwb.edu/news/2019/02/12/task-interrupted">재개 계획에 대한 설명</a></p>
+
+<p>이를 AI 개발 작업에 적용한다면 상태 표시 옆에 다음 행동을 남기는 방식으로 시작할 수 있다.</p>
+
+<pre><code>상태: 로그인 버그 수정 중</code></pre>
+
+<p>이 기록만으로는 다음에 무엇을 확인해야 하는지 알기 어렵다. 아래는 개발 상황에 맞춰 작성한 재개 메모의 예시다.</p>
+
+<pre><code>멈춘 지점: 만료 토큰에서 오류 재현. 캐시 문제는 제외했다.
+다음 행동: refresh 실패 후 로그아웃 처리 경로를 확인한다.
+재개 조건: 에이전트가 실패 테스트와 수정 diff를 제출하면 검토한다.</code></pre>
+
+<p>앞의 두 줄은 현재 위치와 다음 행동을 남긴다. 마지막 줄은 사람이 자리를 비운 동안에도 AI가 작업할 수 있다는 점을 고려해 추가한 항목이다. 무엇이 도착하면 다시 이 티켓을 볼지 정해 둔다.</p>
+
+<p>이 양식은 논문에서 검증한 실험 도구가 아니다. 재개 계획이라는 아이디어를 AI 작업 카드에 적용한 예시다. Git을 써야 한다거나 세 줄을 모두 작성해야 한다는 근거도 없다. 기존 이슈 트래커나 메모에 다음 행동 한 문장을 덧붙이는 것으로 시작할 수 있다.</p>
+
+<p>AI에게 현재 상태와 다음 단계를 정리하게 하는 방법도 생각해 볼 수 있다. 다만 생성된 요약이 자신의 판단과 맞는지는 확인해야 한다. 에이전트가 “구현 완료, 테스트 통과”라고 남겼더라도 사람이 다음에 하려던 일은 예외 처리 검토일 수 있다. 재개 메모에 필요한 것은 그 시점에 자신이 돌아와서 할 행동이다.</p>
+
+<p>이 방식에 기대하는 효과도 나눠서 봐야 한다. 재개 계획이 작업 전환 시 주의 잔여를 줄일 수 있다는 점에는 연구 근거가 있다. 반면 여러 AI 세션을 운영할 때 카드에 메모를 남기면 피로가 줄어드는지, 코드 검토의 질이 좋아지는지는 별도로 확인할 적용 가설이다.</p>
+
+<p>메모가 있어도 검토할 코드가 너무 많거나 어려운 결정이 연달아 쌓이면 피곤할 수 있다. 원문 저자가 큐를 도입한 뒤에도 여전히 지친다고 말한 부분도 이 한계를 보여준다. 맥락을 기록하는 것과 처리해야 할 일의 양을 조절하는 것은 함께 살펴볼 문제다.</p>
+
+<p>직접 적용해 본다면 우선 작업을 전환할 때 다음 행동 한 문장을 남기고 변화를 관찰할 수 있다. 다른 작업을 하면서 이전 일이 계속 떠오르는지, 복귀했을 때 대화 기록을 얼마나 다시 읽는지, 메모를 쓰는 부담은 어느 정도인지 확인하는 것이다. 앞의 관찰은 주의 잔여에 관한 연구와 연결되고 복귀 과정의 변화는 실무에서 추가로 확인할 부분이다.</p>
+
+<p>작업 카드에는 다음 검토에서 내려야 할 판단까지 적어 두면 좋겠다. “인증 수정 검토”보다 “만료 토큰 테스트는 통과했고 다음에는 로그아웃 시 세션 정리를 확인한다”가 돌아올 위치를 더 분명하게 남긴다.</p>
+</div>
+    </article>
+
+    <section class="comments-shell" aria-labelledby="comments-title">
+      <div class="comments-heading">
+        <p>Discussion / 01</p>
+        <h2 id="comments-title" data-post-copy="comments">댓글</h2>
+      </div>
+      <div class="giscus" id="giscus-comments"></div>
+    </section>
+
+    <a class="post-end" href="index.html#writing" data-post-copy="back">← 글 목록</a>
+  </main>
+<script id="post-data" type="application/json">{"id": "ai-context-resume-notes", "number": 19, "date": "2026-11-09", "title": {"ko": "AI 여러 개를 돌릴 때 피곤해지는 이유와 재개 메모"}, "summary": {"ko": "여러 AI 작업의 맥락을 관리하는 부담과 재개 메모를 연결하고 연구에서 확인한 효과와 실무 적용 아이디어를 구분했다."}, "content": {"ko": "writing/ai-context-resume-notes/body.ko.html"}, "tags": ["AI", "Agent", "작업메모", "학습 노트"], "tagSeparator": " / ", "thumbnail": "assets/thumbnails/ai-context-resume-notes.svg"}</script>
+</body>
+</html>

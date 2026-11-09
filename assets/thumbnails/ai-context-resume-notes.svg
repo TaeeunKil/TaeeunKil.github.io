@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="320" height="200" viewBox="0 0 320 200" role="img" aria-labelledby="title desc">
+  <title id="title">AI context and resume notes</title>
+  <desc id="desc">A typographic cover about managing context when switching between AI tasks.</desc>
+  <rect width="320" height="200" fill="#e5e8df"/>
+  <circle cx="278" cy="40" r="9" fill="#ce5737"/>
+  <path d="M28 40H72" stroke="#242623" stroke-width="3"/>
+  <text x="26" y="108" font-family="Arial, sans-serif" font-size="36" font-weight="700" letter-spacing="-1" fill="#242623">Resume notes</text>
+  <text x="28" y="150" font-family="Arial, sans-serif" font-size="15" letter-spacing="1" fill="#555951">AI TASKS / CONTEXT</text>
+</svg>

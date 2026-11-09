@@ -1,5 +1,16 @@
 [
   {
+    "id": "ai-context-resume-notes",
+    "number": 19,
+    "date": "2026-11-09",
+    "title": { "ko": "AI 여러 개를 돌릴 때 피곤해지는 이유와 재개 메모" },
+    "summary": { "ko": "여러 AI 작업의 맥락을 관리하는 부담과 재개 메모를 연결하고 연구에서 확인한 효과와 실무 적용 아이디어를 구분했다." },
+    "content": { "ko": "posts/2026/ai-context-resume-notes.ko.html" },
+    "tags": ["AI", "Agent", "작업메모", "학습 노트"],
+    "tagSeparator": " / ",
+    "thumbnail": "assets/thumbnails/ai-context-resume-notes.svg"
+  },
+  {
     "id": "sk-hynix-ai-hackathon-round-2",
     "number": 18,
     "date": "2026-11-07",
