@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="ko" data-post-id="sk-hynix-ai-hackathon-round-2">
+<head>
+  <base href="../../">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="알고리즘 설명에 대비했던 재응시 과정과 서비스 구조에 관한 질문에 답하지 못한 아쉬움을 돌아봤다.">
+  <meta name="theme-color" content="#f2f1ed">
+  <title>SK하이닉스 AI 해커톤 2차 예선 탈락 회고 — TaeeunKil</title>
+  <link rel="preload" href="assets/fonts/PretendardSite.woff2?v=ccd2fcac60" fetchpriority="high" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="assets/fonts/fonts.css?v=20261013-performance">
+  <style>html.fonts-loading body { visibility: hidden; }</style>
+  <script>
+    // Reveal the designed typeface only after fonts used by the page are ready.
+    document.documentElement.classList.add("fonts-loading");
+    document.addEventListener("DOMContentLoaded", () => {
+      const reveal = () => document.documentElement.classList.remove("fonts-loading");
+      Promise.resolve(window.pageReady).then(() => document.fonts.ready).then(reveal, reveal);
+    }, { once: true });
+  </script>
+  <link rel="stylesheet" href="style.css?v=20261026-hackathon-reading-layout">
+  <script src="post.js?v=20261013-performance" defer></script>
+  <link rel="canonical" href="https://taeeunkil.github.io/writing/sk-hynix-ai-hackathon-round-2/">
+</head>
+<body class="post-page">
+  <a class="skip-link" href="writing/sk-hynix-ai-hackathon-round-2/#post-content" data-post-copy="skip">본문으로 건너뛰기</a>
+
+  <main class="post-shell" id="post-content">
+    <div class="post-toolbar">
+      <a class="post-back" href="index.html#writing" data-post-copy="back">← 글 목록</a>
+      <div class="language-switch" role="group" aria-label="언어 선택" data-post-aria="languageLabel">
+        <button type="button" data-language="ko" aria-pressed="true">KR</button><span aria-hidden="true">/</span><button type="button" data-language="en" aria-pressed="false">EN</button>
+      </div>
+    </div>
+
+    <article class="post-article" aria-live="polite">
+      <header class="post-header">
+        <p class="post-kicker">Writing / <span id="post-number">018</span></p>
+        <h1 id="post-title">SK하이닉스 AI 해커톤 2차 예선 탈락 회고</h1>
+        <div class="post-meta"><time id="post-date" datetime="2026-11-07">2026.11.07</time><span id="post-tags">SK하이닉스 · AI · 해커톤 · 회고</span></div>
+        <p class="post-summary" id="post-summary">알고리즘 설명에 대비했던 재응시 과정과 서비스 구조에 관한 질문에 답하지 못한 아쉬움을 돌아봤다.</p>
+      </header>
+      <p id="post-load-error" role="alert" hidden>글을 불러오지 못했습니다. 잠시 후 다시 시도해 주세요. / Could not load the article. Please try again.</p>
+      <div class="post-body" id="post-body"><p>SK하이닉스 AI 해커톤 2차 예선에서 탈락했다. 1차 예선을 통과한 뒤 2차에 응시했고 시험 중 장애로 재응시까지 했지만 본선에는 진출하지 못했다.</p>
+
+<p>결과를 확인하고 나니 재응시 때 준비했던 내용과 마지막에 답하지 못했던 질문들이 떠올랐다. 알고리즘을 이해하는 데 시간을 썼는데 정작 내가 만든 서비스의 구조를 설명하는 데는 준비가 부족했다.</p>
+
+<figure class="post-figure post-figure-wide">
+  <a href="assets/images/sk-hynix-round-2/result-email.png"><img src="assets/optimized/result-email-993-d1b4173712.webp" alt="SK하이닉스 AI 해커톤 2026 2차 예선 결과 안내 메일. 결선 진출 대상자로 선정되지 않았다는 안내." width="993" height="547" data-original-src="assets/images/sk-hynix-round-2/result-email.png" srcset="assets/optimized/result-email-320-f304f5f76c.webp 320w, assets/optimized/result-email-640-7c099bcf2e.webp 640w, assets/optimized/result-email-960-88efa861de.webp 960w, assets/optimized/result-email-993-d1b4173712.webp 993w" sizes="(max-width: 800px) calc(100vw - 40px), 752px" loading="lazy" decoding="async"></a>
+  <figcaption>SK하이닉스 AI 해커톤 2차 예선 결과 안내.</figcaption>
+</figure>
+
+<h1>이전 시험에서 본 질문을 의식했다</h1>
+
+<p>재응시 과제는 여러 조건을 만족하는 식단을 편성하는 것이었다. 화면 오른쪽에 있는 페르소나들과 채팅하면서 필요한 조건을 알아내고 구현에 반영했다.</p>
+
+<p>이전 시험에서는 알고리즘의 설정값을 바꾸면 결과가 어떻게 달라지는지 묻는 서술형이 있었다. 그 경험 때문에 이번에는 알고리즘 로직을 이해하는 데 신경을 많이 썼다. AI와 대화하면서 식단 편성 방식과 조건이 결과에 어떻게 반영되는지 살펴봤다.</p>
+
+<p>당시에는 이렇게 준비하면 후속 질문에도 답할 수 있을 거라고 생각했다. 돌아보면 이전에 봤던 질문에 맞춰 준비 범위를 좁힌 셈이었다.</p>
+
+<h1>작업은 나눴지만 구현에 시간이 많이 들었다</h1>
+
+<p>구현은 알고리즘 작업과 프론트엔드 및 백엔드 작업으로 나눠 진행했다. 프론트와 백은 따로 분리하지 않고 하나의 AI 세션에 함께 맡겼다. 당시 내가 Luna max라고 부르던 모델을 사용했는데 구현에 생각보다 시간이 많이 걸렸다.</p>
+
+<p>이전 시험에서는 구현을 마친 뒤 테스트까지 진행했다. 이번에는 구현에 시간을 많이 쓴 점이 아쉽다. 다만 프론트와 백을 함께 맡긴 것이 지연의 직접적인 원인이었다고 단정하기는 어렵다. 따로 맡겼다면 연결 과정에서 다른 문제가 생겼을 수도 있다.</p>
+
+<p>다음에는 작업을 몇 개로 나눌지만 정하지 않고 각 작업이 어디까지 맡을지 먼저 정해두고 싶다. 알고리즘이 어떤 입력을 받고 어떤 결과를 반환할지부터 맞춰두면 다른 작업과 연결할 때도 확인할 기준이 생긴다.</p>
+
+<h1>서술형에서는 서비스 구조를 물었다</h1>
+
+<p>마지막 서술형에서는 알고리즘 내부의 로직 외에도 빌드와 실행 구조에 관한 질문이 나왔다. 정확한 원문은 기억나지 않지만 다음 내용이 남아 있다.</p>
+
+<ul>
+  <li>Docker 빌드에 관한 질문</li>
+  <li>알고리즘을 인프로세스로 호출하는 구조에서 외부 프로세스나 마이크로서비스로 분리하지 않은 이유</li>
+  <li>운영자 두 명이 동시에 호출할 때의 처리 방식</li>
+</ul>
+
+<p>이 질문들에 제대로 답하지 못했다.</p>
+
+<p>알고리즘이 식단을 어떻게 만드는지 이해하려고 준비했지만 그 알고리즘을 서비스 안에서 어떻게 실행하고 있는지까지 충분히 살펴보지는 못했다. 왜 같은 프로세스에서 호출하는지 설명하려면 다른 방식과 비교해서 선택 이유를 말할 수 있어야 했다. 두 명이 동시에 호출하는 상황도 실제 구현에서 어떻게 처리되는지 확인했어야 했다.</p>
+
+<p>질문을 받고 나서야 내가 이해했다고 생각한 범위가 어디까지였는지 드러났다.</p>
+
+<h1>다음에는 구현 중에 설명도 해봐야겠다</h1>
+
+<p>서술형 답변이 부족했던 것은 내게 분명히 아쉬운 부분이다. 다만 이것이 공식적인 탈락 사유인지는 알 수 없다. 결과 안내 메일에는 구체적인 평가 내용이 없었다.</p>
+
+<p>다음에 비슷한 과제를 한다면 AI에게 구현을 맡기는 중간에도 구조를 설명해보려고 한다. 요청이 들어온 뒤 어떤 코드를 거쳐 결과가 반환되는지 따라가 보고 동시에 요청이 들어오면 어떻게 되는지도 확인하고 싶다. Docker 빌드와 실행 과정도 직접 확인하면서 설명할 수 있는지 점검해야겠다.</p>
+
+<p>AI에게 이유를 물어보고 답변을 읽는 데서 끝내면 이해한 것처럼 느끼기 쉽다. 코드를 보면서 내 말로 설명해보고 막히는 부분을 다시 확인하는 시간이 필요하다.</p>
+
+<p>이번에는 이전 시험의 경험을 바탕으로 알고리즘 설명에 대비했다. 다음에는 구현 이후 검증할 시간과 내가 선택한 구조를 돌아볼 시간을 따로 남겨두고 싶다.</p>
+</div>
+    </article>
+
+    <section class="comments-shell" aria-labelledby="comments-title">
+      <div class="comments-heading">
+        <p>Discussion / 01</p>
+        <h2 id="comments-title" data-post-copy="comments">댓글</h2>
+      </div>
+      <div class="giscus" id="giscus-comments"></div>
+    </section>
+
+    <a class="post-end" href="index.html#writing" data-post-copy="back">← 글 목록</a>
+  </main>
+<script id="post-data" type="application/json">{"id": "sk-hynix-ai-hackathon-round-2", "number": 18, "date": "2026-11-07", "title": {"ko": "SK하이닉스 AI 해커톤 2차 예선 탈락 회고"}, "summary": {"ko": "알고리즘 설명에 대비했던 재응시 과정과 서비스 구조에 관한 질문에 답하지 못한 아쉬움을 돌아봤다."}, "content": {"ko": "writing/sk-hynix-ai-hackathon-round-2/body.ko.html"}, "tags": ["SK하이닉스", "AI", "해커톤", "회고"], "thumbnail": "assets/optimized/result-email-993-d1b4173712.webp", "thumbnailSrcset": "assets/optimized/result-email-320-f304f5f76c.webp 320w, assets/optimized/result-email-640-7c099bcf2e.webp 640w, assets/optimized/result-email-960-88efa861de.webp 960w, assets/optimized/result-email-993-d1b4173712.webp 993w"}</script>
+</body>
+</html>

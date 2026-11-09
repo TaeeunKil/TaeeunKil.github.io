@@ -1,5 +1,15 @@
 [
   {
+    "id": "sk-hynix-ai-hackathon-round-2",
+    "number": 18,
+    "date": "2026-11-07",
+    "title": { "ko": "SK하이닉스 AI 해커톤 2차 예선 탈락 회고" },
+    "summary": { "ko": "알고리즘 설명에 대비했던 재응시 과정과 서비스 구조에 관한 질문에 답하지 못한 아쉬움을 돌아봤다." },
+    "content": { "ko": "posts/2026/sk-hynix-ai-hackathon-round-2.ko.html" },
+    "tags": ["SK하이닉스", "AI", "해커톤", "회고"],
+    "thumbnail": "assets/images/sk-hynix-round-2/result-email.png"
+  },
+  {
     "id": "ragflow-agentic-rag",
     "tagSeparator": " / ",
     "number": 17,
