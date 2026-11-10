@@ -1,5 +1,16 @@
 [
   {
+    "id": "coding-cost-context",
+    "number": 20,
+    "date": "2026-11-10",
+    "title": { "ko": "코딩은 빨라졌는데 맥락을 따라가는 시간은 늘었다" },
+    "summary": { "ko": "AI로 구현 비용이 내려간 뒤 더 중요해진 문제 정의와 건너뛴 판단의 맥락을 조사하는 데 드는 시간을 돌아봤다." },
+    "content": { "ko": "posts/2026/coding-cost-context.ko.html" },
+    "tags": ["AI", "개발", "요구사항", "회고"],
+    "tagSeparator": " / ",
+    "thumbnail": "assets/thumbnails/coding-cost-context.svg"
+  },
+  {
     "id": "ai-context-resume-notes",
     "number": 19,
     "date": "2026-11-09",
