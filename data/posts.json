@@ -1,5 +1,26 @@
 [
   {
+    "id": "hardware-backed-ssh",
+    "number": 21,
+    "date": "2026-11-11",
+    "title": {
+      "ko": "하드웨어 기반 SSH 적용기를 읽고"
+    },
+    "summary": {
+      "ko": "개인키가 하드웨어 안에 있으면 SSH는 어떻게 인증할까. YubiKey와 TPM, Secure Enclave의 동작과 키 사용 조건을 찾아봤다."
+    },
+    "content": {
+      "ko": "posts/2026/hardware-backed-ssh.ko.html"
+    },
+    "tags": [
+      "SSH",
+      "Security",
+      "학습 노트"
+    ],
+    "tagSeparator": " / ",
+    "thumbnail": "assets/posts/hardware-backed-ssh/yubikey-5c-nfc.jpg"
+  },
+{
     "id": "coding-cost-context",
     "number": 20,
     "date": "2026-11-10",
