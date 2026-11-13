@@ -1,0 +1,90 @@
+<aside class="post-context-note" aria-label="글의 출처와 확인 범위">
+  <p class="post-context-kicker">Wiz 기사와 Apache 공식 보안 공지를 읽고 정리했다</p>
+  <p>2026년 11월 13일 기준의 공개 자료를 바탕으로 썼다. 취약점 재현이나 공격 코드를 실행한 기록은 아니다.</p>
+</aside>
+
+<p><a href="https://www.wiz.io/blog/cve-2026-119618-rce-apache-http-server-vulnerability">Wiz의 Apache HTTP Server 취약점 기사</a>를 읽었다. 인증 없이 원격 코드 실행으로 이어질 수 있다는 내용이다. 운영 중인 서비스에 영향이 있는지 판단하려면 웹 서버의 종류와 버전뿐 아니라 HTTP/2 요청을 실제로 어디에서 처리하는지 확인해야 한다.</p>
+
+<h2>HTTP/2 모듈에서 발생한 동시성 오류</h2>
+
+<p>CVE-2026-119618은 Apache HTTP Server의 <code>mod_http2</code>에 있는 취약점이다. <a href="https://httpd.apache.org/security/vulnerabilities_24.html#CVE-2026-119618">Apache 공식 공지</a>는 <code>assign_headers()</code>에서 공유 자원에 접근하는 실행 흐름 사이의 동기화가 잘못돼 원격 코드 실행으로 이어질 수 있다고 설명한다. 심각도는 Critical이다.</p>
+
+<p>여러 실행 흐름이 같은 데이터를 다룰 때 접근 순서가 보장되지 않으면 실행 시점에 따라 결과가 달라질 수 있다. Wiz는 이번 오류가 힙 메모리 손상을 일으킬 수 있다고 설명한다. 힙은 프로그램이 실행 중 동적으로 할당하는 메모리 영역이다. 메모리 손상을 악용하면 공격자가 웹 서버 프로세스의 권한으로 코드를 실행할 수 있다는 것이다. 공격이 곧바로 관리자 권한 획득을 뜻하지는 않지만 서버 프로세스가 접근할 수 있는 데이터와 자격증명은 영향을 받을 수 있다.</p>
+
+<p>공개 설명만으로 어떤 요청 순서가 실제 공격으로 이어지는지까지 확인할 수는 없다. 아래의 점검은 공격 재현 대신 설치 구성과 요청 경로를 확인하는 방법이다.</p>
+
+<h2>Apache라는 이름보다 제품과 모듈을 확인한다</h2>
+
+<p>공식 공지가 명시한 영향 범위와 수정 버전은 다음과 같다. Apache HTTP Server에 포함된 모듈과 GitHub에서 별도로 배포하는 <code>mod_h2</code>는 버전 체계가 다르다.</p>
+
+<table>
+  <thead><tr><th scope="col">대상</th><th scope="col">영향 버전</th><th scope="col">수정 확인</th></tr></thead>
+  <tbody>
+    <tr><th scope="row">Apache HTTP Server</th><td>2.4.55~2.4.70</td><td>2.4.71에서 수정</td></tr>
+    <tr><th scope="row">별도 mod_h2</th><td>2.0.8~2.0.42</td><td>2.0.42 이후 수정 릴리스 확인</td></tr>
+  </tbody>
+</table>
+
+<p>Wiz 기사의 표는 별도 <code>mod_h2</code>의 2.0.42를 영향 범위와 패치 범위에 모두 넣었다. 같은 기사의 조치 설명은 2.0.42보다 새 버전을 요구한다. Apache 공식 공지도 2.0.42까지 영향받는다고 명시하므로 2.0.42를 안전한 버전으로 판단하면 안 된다. 별도 모듈은 사용하는 배포처의 수정 릴리스를 확인해야 한다.</p>
+
+<p>대상은 Apache HTTP Server의 해당 모듈이다. Apache Tomcat이나 Kafka를 사용한다는 사실만으로 이 취약점에 해당하는 것은 아니다. 반대로 애플리케이션이 Java나 Python으로 작성됐더라도 앞단에 영향받는 Apache HTTP Server가 있다면 별도 점검이 필요하다.</p>
+
+<h2>Nginx가 앞에 있어도 뒤쪽 연결을 살펴봐야 한다</h2>
+
+<p><a href="https://httpd.apache.org/docs/2.4/mod/mod_http2.html">mod_http2 문서</a>에서 <code>h2</code>는 TLS를 사용하는 HTTP/2이고 <code>h2c</code>는 암호화하지 않은 HTTP/2다. 외부 HTTPS 연결에서 HTTP/2를 끄는 것만으로 내부의 h2c 경로까지 사라졌다고 볼 수는 없다.</p>
+
+<p>다음은 요청 경로를 확인할 때 사용할 수 있는 예시다. 특정 운영 환경을 조사한 결과를 나타내는 표는 아니다.</p>
+
+<table>
+  <thead><tr><th scope="col">요청 경로 예시</th><th scope="col">판단할 부분</th></tr></thead>
+  <tbody>
+    <tr><td>Nginx → 애플리케이션</td><td>이 경로에 Apache HTTP Server가 없다면 해당 모듈 취약점의 직접 대상이 아니다.</td></tr>
+    <tr><td>Nginx → Apache HTTP Server</td><td>뒤쪽 Apache의 버전과 모듈 그리고 연결 프로토콜을 확인한다.</td></tr>
+    <tr><td>외부는 HTTP/1.1, 내부는 h2c</td><td>내부 HTTP/2 요청이 영향받는 모듈에 도달할 수 있는지 확인한다.</td></tr>
+  </tbody>
+</table>
+
+<p>응답의 <code>Server</code> 헤더는 앞단 프록시가 보낸 값일 수 있다. 코드 저장소에 <code>httpd</code>라는 문자열이 없는 것도 충분한 근거가 되지 않는다. 실행 중인 컨테이너와 호스트 패키지 그리고 별도로 관리하는 프록시 설정을 함께 봐야 한다. 컨테이너 이미지 이름이 애플리케이션 이름이어도 내부에 웹 서버가 포함돼 있을 수 있다.</p>
+
+<h2>설치 버전과 실제 활성 설정을 확인한다</h2>
+
+<p>다음 명령은 해당 Apache가 실행되는 호스트나 컨테이너 안에서 사용하는 조회 예시다. 운영체제와 설치 방식에 따라 <code>apachectl</code> 대신 <code>apache2ctl</code> 또는 <code>httpd</code>를 사용한다. 설정 접근 권한이 없거나 모듈 로드에 실패했다면 출력이 없다는 이유로 미사용 판정을 내려서는 안 된다.</p>
+
+<pre><code class="language-bash"># 설치 버전
+apachectl -v
+
+# 로드된 모듈: http2_module 포함 여부 확인
+apachectl -M
+
+# 가상 호스트 구성
+apachectl -S
+
+# 배포판별 대표 설정 경로에서 HTTP/2 관련 설정 검색
+grep -RniE 'Protocols|H2Direct|H2Upgrade|LoadModule.*http2' \
+  /etc/apache2 /etc/httpd /usr/local/apache2/conf</code></pre>
+
+<p>모듈이 로드됐다는 사실과 HTTP/2 요청을 처리한다는 사실은 구분해야 한다. 검색 결과에는 주석이나 비활성 설정도 섞일 수 있으므로 실제로 포함되는 설정 파일과 각 가상 호스트의 값을 확인한다. 배포판이 보안 패치를 기존 버전에 반영한 경우에는 버전 문자열과 함께 해당 배포판의 보안 공지도 확인해야 한다.</p>
+
+<h2>패치가 우선이고 HTTP/2 차단은 임시 대응이다</h2>
+
+<p>Apache는 2026년 11월 11일 공개한 HTTP Server 2.4.71에서 문제를 수정했다. 영향받는 설치는 수정 릴리스나 배포판이 제공하는 패치 패키지로 업데이트한다. 컨테이너 환경이라면 Dockerfile만 수정하는 데서 끝내지 않고 새 이미지가 실제 인스턴스에 배포됐는지 확인해야 한다.</p>
+
+<p>즉시 업데이트하기 어렵다면 Wiz는 HTTP/2를 임시로 비활성화하도록 안내한다. <a href="https://httpd.apache.org/docs/2.4/mod/core.html#protocols">Protocols 설정</a>을 HTTP/1.1로 제한하는 예시는 다음과 같다.</p>
+
+<pre><code class="language-apache">Protocols http/1.1</code></pre>
+
+<p>서버 전체 설정뿐 아니라 이를 덮어쓰는 가상 호스트 설정도 확인해야 한다. 설정 문법 검사 후 운영 절차에 따라 적용하고 h2와 h2c 경로가 차단됐는지 검증한다. 이 변경은 HTTP/2에 의존하는 통신에도 영향을 줄 수 있으므로 패치 전까지 사용하는 임시 조치로 다룬다.</p>
+
+<h2>노출 통계와 내 서비스의 영향은 다르다</h2>
+
+<p>Wiz는 조사한 클라우드 환경의 64%에 취약 버전 자원이 있고 51%에는 공개 노출 인스턴스가 있다고 보고했다. 다만 기사 자체가 이 수치는 설정을 반영하지 않았다고 밝힌다. 모든 Apache 설치에서 공격이 가능하다거나 전체 서비스의 64%가 취약하다는 뜻으로 옮기면 의미가 달라진다.</p>
+
+<p>또한 Wiz가 공개된 공격 코드와 실제 악용 보고가 없다고 쓴 시점은 기사 발행일인 11월 11일이다. 이 문장을 현재까지 악용이 없다는 보장으로 사용할 수는 없다. 영향 판정에는 실행 중인 제품과 패치 상태 그리고 HTTP/2 요청 도달 가능성에 대한 근거가 필요하다. 그중 확인하지 못한 항목이 남아 있다면 판정도 미확인으로 남겨야 한다.</p>
+
+<h2>참고 자료</h2>
+<ul>
+  <li><a href="https://www.wiz.io/blog/cve-2026-119618-rce-apache-http-server-vulnerability">Wiz: Critical RCE Vulnerability in Apache HTTP Server</a> — 2026년 11월 11일 기사</li>
+  <li><a href="https://httpd.apache.org/security/vulnerabilities_24.html#CVE-2026-119618">Apache HTTP Server 공식 보안 공지</a> — 영향 범위와 수정 릴리스</li>
+  <li><a href="https://httpd.apache.org/docs/2.4/mod/mod_http2.html">Apache mod_http2 문서</a> — 모듈과 h2 / h2c 설정</li>
+  <li><a href="https://httpd.apache.org/docs/2.4/mod/core.html#protocols">Apache Protocols 지시어</a> — 프로토콜 허용 설정</li>
+</ul>
