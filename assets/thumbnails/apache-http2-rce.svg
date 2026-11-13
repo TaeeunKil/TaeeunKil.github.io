@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="400" viewBox="0 0 640 400" role="img" aria-labelledby="title desc">
+  <title id="title">Apache HTTP/2 security note</title>
+  <desc id="desc">A typographic cover for CVE-2026-119618 and the Apache HTTP Server patch.</desc>
+  <rect width="640" height="400" fill="#e5e8df"/>
+  <path d="M48 54H116" stroke="#ce5737" stroke-width="6"/>
+  <g fill="#242623" font-family="Arial, sans-serif">
+    <text x="48" y="112" font-size="18" letter-spacing="3">SECURITY NOTES / 23</text>
+    <text x="42" y="222" font-size="66" font-weight="700" letter-spacing="-3">HTTP/2 → RCE</text>
+    <text x="48" y="282" font-size="22" letter-spacing="1">APACHE / MOD_HTTP2</text>
+    <text x="48" y="340" font-size="18">CVE-2026-119618</text>
+  </g>
+</svg>

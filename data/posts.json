@@ -1,5 +1,27 @@
 [
   {
+    "id": "apache-http2-rce",
+    "number": 23,
+    "date": "2026-11-13",
+    "title": {
+      "ko": "Apache HTTP/2 RCE 취약점과 서비스 영향 확인 방법"
+    },
+    "summary": {
+      "ko": "CVE-2026-119618의 동시성 오류와 영향 버전을 정리했다. HTTP/2 요청 경로를 확인하는 방법과 원문의 mod_h2 버전 표기 오류도 짚었다."
+    },
+    "content": {
+      "ko": "posts/2026/apache-http2-rce.ko.html"
+    },
+    "tags": [
+      "Apache",
+      "HTTP/2",
+      "Security",
+      "학습 노트"
+    ],
+    "tagSeparator": " / ",
+    "thumbnail": "assets/thumbnails/apache-http2-rce.svg"
+  },
+  {
     "id": "korean-rag-embedding-comparison",
     "number": 22,
     "date": "2026-11-12",
