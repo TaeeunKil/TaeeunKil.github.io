@@ -1,0 +1,205 @@
+<link rel="stylesheet" href="assets/posts/dense-vs-moe/diagrams.css">
+<style>
+    .moe-table { overflow-x: auto; margin: 2rem 0; }
+    .moe-table table { width: 100%; min-width: 520px; border-collapse: collapse; font-size: .9rem; }
+    .moe-table caption { max-width: min(752px, calc(100vw - 40px)); margin-bottom: .8rem; color: var(--muted); text-align: left; line-height: 1.7; }
+    .moe-table th, .moe-table td { padding: .75rem; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+    .moe-table:focus-visible { outline: 2px solid currentColor; outline-offset: 4px; }
+
+</style>
+
+<h2>모델 크기만으로 비교하기 어려웠다</h2>
+
+      <p>기존에 사용하던 LLM 대신 더 큰 모델을 실행할 수 있는지 알아보다가 MoE를 공부하게 됐다. 모델 설명에는 전체 파라미터 수와 활성 파라미터 수가 따로 적혀 있었다. 모델은 큰데 실제 계산에는 일부만 참여한다는 설명이었다.</p>
+
+      <p>그러면 작은 모델처럼 실행할 수 있는 것인지, 쓰지 않는 나머지 파라미터는 왜 필요한지 궁금했다. 비교하려면 기존 Dense 모델에서 어떤 계산을 하는지부터 이해해야 했다.</p>
+
+      <p>여기서는 Transformer 기반 LLM의 Dense 구조와 일부 전문가만 선택하는 sparse MoE를 비교한다. 일반적인 MoE에는 모든 전문가의 출력을 사용하는 방식도 있지만 이후 MoE라는 이름은 sparse MoE를 가리킨다. <a href="https://developer.nvidia.com/blog/applying-mixture-of-experts-in-llm-architectures/">NVIDIA의 구조 설명</a>도 이 두 방식을 구분한다.</p>
+
+      <h2>Dense에서는 같은 층의 FFN을 모든 토큰에 적용한다</h2>
+
+      <p>LLM에 입력한 문장은 먼저 토큰으로 나뉜다. 토큰은 단어 전체일 수도 있고 단어의 일부나 기호일 수도 있다. 모델은 토큰을 숫자로 된 벡터로 바꾼 뒤 여러 층을 거치며 처리한다. 가중치는 학습으로 얻은 숫자들이고 이 벡터를 변환하는 연산에 사용된다.</p>
+
+      <p>Transformer의 한 층에서는 attention과 FFN(Feed-Forward Network)을 구분해볼 수 있다. attention은 다른 위치의 토큰 정보를 참고해 현재 표현을 만든다. FFN은 그렇게 얻은 각 위치의 벡터를 변환한다. 실제 층에는 정규화와 잔차 연결 등도 있지만 Dense와 MoE를 비교할 때 먼저 볼 부분은 FFN이다.</p>
+
+      <p>Dense 구조에서는 같은 층에 들어오는 토큰들이 같은 FFN 가중치를 사용한다. 입력 벡터가 다르므로 결과도 다르지만 토큰에 따라 FFN 블록을 골라 바꾸지는 않는다. 다음 층에는 그 층의 다른 가중치가 있고 이 흐름이 반복된다.</p>
+
+      <p><a href="https://arxiv.org/html/1706.03762v7#S3.SS3">Attention Is All You Need의 3.3절</a>은 같은 층의 FFN을 각 위치에 동일하게 적용하고 층 사이에는 다른 파라미터를 사용한다고 설명한다. 원논문은 encoder-decoder 구조지만 이 부분이 비교의 출발점이 됐다.</p>
+
+      <p>Dense를 “모든 숫자를 매번 예외 없이 전부 읽는 모델”로 외우는 것은 피하려 한다. 예를 들어 입력 임베딩은 토큰에 해당하는 벡터를 찾아오는 경로다. 여기서 말하는 차이는 주요 계산 블록을 공통으로 사용하느냐와 토큰에 따라 일부 전문가를 선택하느냐다.</p>
+
+      <h2>MoE는 FFN 자리에 여러 전문가와 router를 둔다</h2>
+
+      <p>일반적인 Transformer MoE는 Dense의 FFN을 여러 전문가(expert)와 router로 구성된 블록으로 바꾼다. expert는 입력 벡터를 받아 출력 벡터를 만드는 작은 신경망이다. 흔히 FFN으로 구성한다. attention을 포함한 모델 전체가 전문가 여러 개로 통째로 복제되는 것은 아니다.</p>
+
+      <p>router는 현재 토큰의 벡터를 보고 전문가별 점수를 계산한다. 그중 상위 몇 개를 선택해 계산을 맡기고 선택된 전문가의 출력에 가중치를 주어 합친다. router 역시 학습되는 모델의 일부다. 이 구성은 <a href="https://huggingface.co/blog/moe#what-is-a-mixture-of-experts-moe">Hugging Face의 MoE 설명</a>에서 살펴봤다.</p>
+
+<figure class="moe-visual" id="moe-structure-figure">
+ <div class="mv-pair"><div class="mv-panel">
+ <p class="mv-panel-title">Dense</p>
+ <svg viewBox="0 0 360 484" role="img" aria-labelledby="mv-dense-title mv-dense-desc">
+ <title id="mv-dense-title">Dense의 한 층 계산 경로</title>
+ <desc id="mv-dense-desc">토큰의 벡터가 attention을 지난 뒤 같은 층의 공통 FFN을 거쳐 다음 층으로 간다. 정규화와 잔차 연결은 생략했다.</desc>
+ <defs>
+ <marker id="mv-dense-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8Z" fill="#6d6b66"/></marker>
+ <marker id="mv-dense-accent" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8Z" fill="#bf3b21"/></marker>
+ <marker id="mv-dense-link" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8Z" fill="#171716"/></marker>
+ </defs>
+ <g class="mv-arrow" marker-end="url(#mv-dense-arrow)"><path d="M180 40 V72"/><path d="M180 136 V200"/><path d="M180 304 V368"/></g>
+ <rect class="mv-node" x="40" y="72" width="280" height="64" rx="4"/>
+ <rect class="mv-node" x="40" y="200" width="280" height="104" rx="4"/>
+ <rect class="mv-node" x="40" y="368" width="280" height="64" rx="4"/>
+ <text x="180" y="24" text-anchor="middle">토큰의 벡터</text>
+ <text x="180" y="112" text-anchor="middle" class="mv-strong">Attention</text>
+ <text x="180" y="244" text-anchor="middle" class="mv-strong">Dense FFN</text>
+ <text x="180" y="276" text-anchor="middle" class="mv-small">공통 FFN 가중치로 계산</text>
+ <text x="180" y="408" text-anchor="middle">다음 층</text>
+ <text x="180" y="472" text-anchor="middle" class="mv-small">토큰이 달라도 같은 FFN</text>
+ </svg></div><div class="mv-panel">
+ <p class="mv-panel-title">MoE</p>
+ <svg viewBox="0 0 360 484" role="img" aria-labelledby="mv-moe-title mv-moe-desc">
+ <title id="mv-moe-title">MoE의 한 층 계산 경로</title>
+ <desc id="mv-moe-desc">토큰의 벡터가 attention을 지난 뒤 router와 선택된 전문가로 구성된 MoE 블록을 거쳐 다음 층으로 간다. 정규화와 잔차 연결은 생략했다.</desc>
+ <defs>
+ <marker id="mv-moe-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8Z" fill="#6d6b66"/></marker>
+ <marker id="mv-moe-accent" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8Z" fill="#bf3b21"/></marker>
+ <marker id="mv-moe-link" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8Z" fill="#171716"/></marker>
+ </defs>
+ <g class="mv-arrow" marker-end="url(#mv-moe-arrow)"><path d="M180 40 V72"/><path d="M180 136 V200"/><path d="M180 304 V368"/></g>
+ <rect class="mv-node" x="40" y="72" width="280" height="64" rx="4"/>
+ <rect class="mv-focus" x="40" y="200" width="280" height="104" rx="4"/>
+ <rect class="mv-node" x="40" y="368" width="280" height="64" rx="4"/>
+ <text x="180" y="24" text-anchor="middle">토큰의 벡터</text>
+ <text x="180" y="112" text-anchor="middle" class="mv-strong">Attention</text>
+ <text x="180" y="244" text-anchor="middle" class="mv-strong">MoE 블록</text>
+ <text x="180" y="276" text-anchor="middle" class="mv-small">router + 선택한 전문가</text>
+ <text x="180" y="408" text-anchor="middle">다음 층</text>
+ <text x="180" y="472" text-anchor="middle" class="mv-small">토큰에 따라 전문가를 고른다</text>
+ </svg></div></div>
+ <figcaption>그림 1. 한 층에서 달라지는 것은 FFN 부분이다. MoE에서도 attention 등 공통 연산은 남는다. 대표적인 구조를 단순화했으며 정규화와 잔차 연결은 생략했다. <a href="https://arxiv.org/html/2401.04088v1#S2.SS1">Mixtral 구조 설명</a>을 바탕으로 직접 그렸다.</figcaption>
+ </figure>
+
+      <p>전문가라는 이름 때문에 수학 챗봇과 번역 챗봇을 따로 만들어 질문을 넘기는 모습을 떠올리기 쉽다. 실제로는 모델 내부의 계산 블록을 토큰 단위로 선택한다. 한 질문을 전문가 한 명에게 맡겨 답변 전체를 작성하게 하는 방식과 다르다.</p>
+
+      <p>학습 중 특정 패턴을 더 많이 처리하는 전문가가 생길 수는 있다. 그렇다고 사람이 정한 분야 이름이 각 전문가에 미리 붙어 있는 것은 아니다. <a href="https://huggingface.co/blog/moe-transformers#from-dense-to-sparse-what-are-moes">Hugging Face의 구현 설명</a>도 expert를 분야별로 지정한 모듈로 이해하지 않도록 구분한다.</p>
+
+      <h2>전문가 선택은 각 층에서 다시 일어난다</h2>
+
+      <p>Mixtral 8x7B를 보면 구체적인 계산을 따라가기 쉽다. 각 층에 FFN 전문가가 8개 있고 토큰마다 router가 그중 2개를 선택한다. 같은 토큰도 다음 층에서는 그 층의 다른 전문가들을 거친다. <a href="https://arxiv.org/html/2401.04088v1#S2.SS1">Mixtral 논문의 구조 설명</a>에 이 경로와 출력의 가중합이 나와 있다.</p>
+
+<figure class="moe-visual" id="moe-routing-figure" data-moe-router>
+ <div class="mv-controls" hidden role="group" aria-label="설명용 입력 벡터 바꾸기">
+ <span class="mv-controls-label">입력을 바꿔보면</span>
+ <button type="button" data-route="a" aria-pressed="true">벡터 A</button>
+ <button type="button" data-route="b" aria-pressed="false">벡터 B</button></div>
+ <div class="mv-single"><svg viewBox="0 0 360 660" role="img" aria-labelledby="mv-route-title mv-route-desc">
+ <title id="mv-route-title">토큰마다 달라지는 전문가 선택</title>
+ <desc id="mv-route-desc" data-router-description>설명용 예시. 벡터 A에서 전문가 2번과 5번을 선택한다. 나머지 여섯 전문가는 이번 계산에서 선택되지 않는다. 선택된 두 출력의 가중합을 만든다.</desc>
+ <defs>
+ <marker id="mv-route-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8Z" fill="#6d6b66"/></marker>
+ <marker id="mv-route-accent" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8Z" fill="#bf3b21"/></marker>
+ <marker id="mv-route-link" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8Z" fill="#171716"/></marker>
+ </defs>
+ <g class="mv-arrow" marker-end="url(#mv-route-arrow)"><path d="M180 48 V80"/><path d="M180 168 V232"/><path d="M180 432 V488"/><path d="M180 576 V616"/></g>
+ <rect class="mv-node" x="40" y="80" width="280" height="88" rx="4"/>
+ <rect class="mv-node" x="16" y="488" width="328" height="88" rx="4"/>
+ <text x="180" y="32" text-anchor="middle" data-route-input>토큰의 벡터 A</text>
+ <text x="180" y="116" text-anchor="middle" class="mv-strong">Router</text>
+ <text x="180" y="148" text-anchor="middle" class="mv-small">점수를 매겨 상위 2개 선택</text>
+ <text x="180" y="256" text-anchor="middle" class="mv-small">이 층의 전문가 8개</text>
+ <g class="mv-expert" data-expert="1" data-selected="false"><rect x="16" y="272" width="72" height="64" rx="4"/><text x="52" y="300" text-anchor="middle" class="mv-strong">E1</text><text x="52" y="320" text-anchor="middle" class="mv-badge" data-expert-status>선택 안 됨</text></g><g class="mv-expert" data-expert="2" data-selected="true"><rect x="100" y="272" width="72" height="64" rx="4"/><text x="136" y="300" text-anchor="middle" class="mv-strong">E2</text><text x="136" y="320" text-anchor="middle" class="mv-badge" data-expert-status>선택 0.7</text></g><g class="mv-expert" data-expert="3" data-selected="false"><rect x="184" y="272" width="72" height="64" rx="4"/><text x="220" y="300" text-anchor="middle" class="mv-strong">E3</text><text x="220" y="320" text-anchor="middle" class="mv-badge" data-expert-status>선택 안 됨</text></g><g class="mv-expert" data-expert="4" data-selected="false"><rect x="268" y="272" width="72" height="64" rx="4"/><text x="304" y="300" text-anchor="middle" class="mv-strong">E4</text><text x="304" y="320" text-anchor="middle" class="mv-badge" data-expert-status>선택 안 됨</text></g><g class="mv-expert" data-expert="5" data-selected="true"><rect x="16" y="360" width="72" height="64" rx="4"/><text x="52" y="388" text-anchor="middle" class="mv-strong">E5</text><text x="52" y="408" text-anchor="middle" class="mv-badge" data-expert-status>선택 0.3</text></g><g class="mv-expert" data-expert="6" data-selected="false"><rect x="100" y="360" width="72" height="64" rx="4"/><text x="136" y="388" text-anchor="middle" class="mv-strong">E6</text><text x="136" y="408" text-anchor="middle" class="mv-badge" data-expert-status>선택 안 됨</text></g><g class="mv-expert" data-expert="7" data-selected="false"><rect x="184" y="360" width="72" height="64" rx="4"/><text x="220" y="388" text-anchor="middle" class="mv-strong">E7</text><text x="220" y="408" text-anchor="middle" class="mv-badge" data-expert-status>선택 안 됨</text></g><g class="mv-expert" data-expert="8" data-selected="false"><rect x="268" y="360" width="72" height="64" rx="4"/><text x="304" y="388" text-anchor="middle" class="mv-strong">E8</text><text x="304" y="408" text-anchor="middle" class="mv-badge" data-expert-status>선택 안 됨</text></g>
+ <text x="180" y="528" text-anchor="middle" class="mv-strong">선택된 출력의 가중합</text>
+ <text x="180" y="556" text-anchor="middle" style="font-size:16px" data-route-formula>0.7 × E2(x) + 0.3 × E5(x)</text>
+ <text x="180" y="648" text-anchor="middle">다음 계산으로</text>
+ </svg></div>
+ <p class="mv-status" data-route-status aria-live="polite">벡터 A: 전문가 2번과 5번을 선택한다.</p>
+ <figcaption>그림 2. 한 층의 top-2 routing을 설명하기 위한 예시다. 입력과 전문가 번호, 가중치는 모두 가정했으며 실제 모델의 출력이 아니다. E2(x)는 전문가 2번이 같은 입력 벡터 x를 처리한 출력이다. 다음 층에서는 그 층의 router가 다시 선택한다.</figcaption>
+ </figure>
+
+      <p>8개 중 2개라는 숫자는 Mixtral의 선택이다. 모든 MoE가 같은 수의 전문가를 사용하지는 않는다. <a href="https://arxiv.org/html/2101.03961v3#S2.SS1">Switch Transformer</a>는 토큰당 전문가 하나만 고르는 top-1 routing을 사용한다.</p>
+
+      <h2>전체 파라미터와 활성 파라미터는 다른 숫자다</h2>
+
+      <p>전체 파라미터는 모델이 가진 가중치의 총량이다. 활성 파라미터는 한 토큰을 처리하는 경로에서 사용하는 가중치의 규모다. MoE에서는 선택되지 않은 전문가가 있어 두 숫자의 차이가 커질 수 있다.</p>
+
+      <p>한 MoE 블록에 같은 크기의 전문가 8개가 있고 각 전문가가 가중치 100개를 가진다고 가정해보자. 전문가 가중치는 총 800개다. 그중 2개만 선택하면 이번 계산에 사용하는 전문가 가중치는 200개다. 이 예시에서는 router와 공통 연산의 가중치를 제외했다.</p>
+
+<figure class="moe-visual" id="moe-weights-figure">
+ <div class="mv-single"><svg viewBox="0 0 360 364" role="img" aria-labelledby="mv-weight-title mv-weight-desc">
+ <title id="mv-weight-title">보관하는 전문가 8개와 이번 계산에 쓰는 전문가 2개</title>
+ <desc id="mv-weight-desc">같은 크기의 전문가 8개가 각각 가중치 100개를 가진 가정이다. 총 800개를 보관하지만 이번 토큰에서 선택한 2번과 5번의 200개를 계산에 쓴다. 공통 연산과 router는 제외한 설명용 숫자이며 메모리 용량이나 속도 측정이 아니다.</desc>
+ <text x="20" y="28" class="mv-strong">보관할 전문가 가중치</text>
+ <text x="20" y="64">8개 × 100 = <tspan class="mv-strong">800개</tspan></text>
+ <text x="20" y="208" class="mv-strong">이번 토큰에 사용하는 가중치</text>
+ <text x="20" y="244">2개 × 100 = <tspan class="mv-strong mv-accent-text">200개</tspan></text>
+ <rect class="mv-unit" x="20" y="88" width="32" height="52" rx="4"/><text x="36" y="120" text-anchor="middle" class="mv-small">1</text><rect class="mv-unit" x="60" y="88" width="32" height="52" rx="4"/><text x="76" y="120" text-anchor="middle" class="mv-small">2</text><rect class="mv-unit" x="100" y="88" width="32" height="52" rx="4"/><text x="116" y="120" text-anchor="middle" class="mv-small">3</text><rect class="mv-unit" x="140" y="88" width="32" height="52" rx="4"/><text x="156" y="120" text-anchor="middle" class="mv-small">4</text><rect class="mv-unit" x="180" y="88" width="32" height="52" rx="4"/><text x="196" y="120" text-anchor="middle" class="mv-small">5</text><rect class="mv-unit" x="220" y="88" width="32" height="52" rx="4"/><text x="236" y="120" text-anchor="middle" class="mv-small">6</text><rect class="mv-unit" x="260" y="88" width="32" height="52" rx="4"/><text x="276" y="120" text-anchor="middle" class="mv-small">7</text><rect class="mv-unit" x="300" y="88" width="32" height="52" rx="4"/><text x="316" y="120" text-anchor="middle" class="mv-small">8</text><rect class="mv-unit-idle" x="20" y="268" width="32" height="52" rx="4"/><text x="36" y="300" text-anchor="middle" class="mv-small">1</text><rect class="mv-unit-selected" x="60" y="268" width="32" height="52" rx="4"/><text x="76" y="300" text-anchor="middle" class="mv-small">2</text><rect class="mv-unit-idle" x="100" y="268" width="32" height="52" rx="4"/><text x="116" y="300" text-anchor="middle" class="mv-small">3</text><rect class="mv-unit-idle" x="140" y="268" width="32" height="52" rx="4"/><text x="156" y="300" text-anchor="middle" class="mv-small">4</text><rect class="mv-unit-selected" x="180" y="268" width="32" height="52" rx="4"/><text x="196" y="300" text-anchor="middle" class="mv-small">5</text><rect class="mv-unit-idle" x="220" y="268" width="32" height="52" rx="4"/><text x="236" y="300" text-anchor="middle" class="mv-small">6</text><rect class="mv-unit-idle" x="260" y="268" width="32" height="52" rx="4"/><text x="276" y="300" text-anchor="middle" class="mv-small">7</text><rect class="mv-unit-idle" x="300" y="268" width="32" height="52" rx="4"/><text x="316" y="300" text-anchor="middle" class="mv-small">8</text>
+ <text x="180" y="356" text-anchor="middle" class="mv-small">선택 안 된 6개도 다음 입력에 필요할 수 있다</text>
+ </svg></div>
+ <div class="mv-legend"><span><i class="mv-key mv-key-on" aria-hidden="true"></i>이번 계산에 선택됨</span><span><i class="mv-key" aria-hidden="true"></i>보관하지만 이번에는 선택 안 됨</span></div>
+ <figcaption>그림 3. 칸 하나는 전문가 하나이며 모두 같은 크기라고 가정했다. 본문의 설명용 숫자로 그린 전문가 가중치 비교다. router와 공통 연산, KV 캐시와 실행 버퍼는 제외했다. 실제 메모리가 4분의 1이 되거나 계산 속도가 4배라는 뜻은 아니다.</figcaption>
+ </figure>
+
+      <p>실제 모델의 활성 파라미터를 셀 때는 선택한 전문가 외에 공통으로 사용하는 부분도 포함해야 한다. 그래서 전문가 선택 비율만 전체 모델 크기에 곱하면 맞지 않을 수 있다.</p>
+
+      <p>Mixtral 논문은 전체 약 47B와 토큰당 활성 약 13B를 구분한다. B는 10억을 뜻하므로 각각 약 470억 개와 130억 개다. 8x7B라는 이름을 독립적인 7B 모델 8개가 들어 있다는 뜻으로 읽으면 안 된다. attention 등 공유되는 부분이 있기 때문이다. 또한 13B는 항상 똑같은 가중치 묶음을 고정해서 사용한다는 의미도 아니다. 토큰과 층에 따라 선택되는 전문가가 달라진다. <a href="https://arxiv.org/html/2401.04088v1">Mixtral of Experts</a>의 수치다.</p>
+
+      <p>활성 파라미터가 적으면 연산량을 줄일 여지가 생긴다. 하지만 같은 활성 파라미터 수의 Dense 모델과 품질이나 속도가 반드시 같다는 뜻은 아니다. 두 모델의 구조와 학습 조건, 실제 실행 방식까지 다르다.</p>
+
+      <h2>적게 계산해도 나머지 가중치는 보관해야 한다</h2>
+
+      <p>예시에서 이번 토큰이 전문가 2개만 사용했다고 나머지 6개를 버릴 수는 없다. 다음 토큰이나 다른 입력에서는 그 전문가가 선택될 수 있기 때문이다. 가중치를 매번 다시 학습하는 것도 아니므로 필요한 시점에 불러올 수 있는 곳에 보관해야 한다.</p>
+
+      <p>여기서 계산량과 메모리 요구량이 갈라진다. 한 토큰에서 읽어 계산하는 가중치가 적어도 모델 전체의 가중치는 여전히 존재한다. 일반적인 GPU 상주 구성에서는 전체 가중치를 담을 공간이 필요하다. <a href="https://huggingface.co/blog/moe">Hugging Face의 서빙 설명</a>도 MoE의 적은 계산량과 큰 메모리 요구를 함께 다룬다.</p>
+
+      <p>모든 가중치가 반드시 GPU 한 장에 있어야 하는 것은 아니다. 여러 GPU에 나누거나 RAM과 저장장치에 일부를 두는 구현도 가능하다. 다만 필요한 가중치가 계산할 장치에 없다면 옮기거나 다른 장치에서 계산하는 비용을 감수해야 한다. 활성 파라미터만큼의 VRAM이면 아무 조건 없이 실행된다고 볼 수는 없다.</p>
+
+      <p>실제 추론 메모리에는 가중치 외에 이전 토큰의 attention 계산에 쓰는 값을 보관하는 KV 캐시와 중간 결과, 실행 버퍼도 들어간다. 양자화는 가중치를 더 적은 비트로 저장하는 방법이고 MoE는 일부 전문가를 선택해 계산하는 구조다. 둘을 함께 사용할 수 있지만 줄이려는 비용과 작동 방식은 구분해야 한다.</p>
+
+      <h2>router가 한쪽으로 쏠리는 문제도 있다</h2>
+
+      <p>전문가를 여러 개 두었다고 학습이 자동으로 골고루 진행되지는 않는다. router가 일부 전문가에만 토큰을 계속 보내면 그 전문가에 학습과 계산이 몰리고 다른 전문가들은 충분한 학습 기회를 얻지 못할 수 있다.</p>
+
+      <p>이를 줄이기 위해 전문가 사용량이 한쪽에 치우치지 않도록 보조 학습 목적을 두는 방식이 있다. Switch Transformer는 부하 균형을 위한 보조 손실과 전문가별 처리 용량을 설명한다. 그 논문의 구성에서는 특정 전문가의 용량을 넘는 토큰이 생길 수 있고 용량을 늘리면 계산과 통신 비용도 증가한다. <a href="https://arxiv.org/html/2101.03961v3#S2.SS2">Switch Transformer의 2.2절</a>을 참고했다.</p>
+
+      <p>학습 방법도 처음부터 MoE를 학습하는 경우만 있는 것은 아니다. <a href="https://tech.kakao.com/posts/716">카카오의 Kanana-MoE 개발기</a>에서는 기존 Dense 모델을 활용하는 upcycling을 설명한다. 기존 MLP 가중치를 바탕으로 전문가를 구성한 뒤 추가 학습하는 접근이다. 단순히 복제해놓는 것만으로 완성된 모델이 되는 것은 아니다.</p>
+
+      <h2>실제 속도는 비교 기준과 실행 환경에 달려 있다</h2>
+
+      <p>“MoE가 Dense보다 빠르다”는 설명을 읽을 때는 무엇을 같게 놓고 비교하는지부터 확인해야 한다. 전체 파라미터 수가 같은 비교와 비슷한 품질을 내는 모델끼리의 비교는 다른 질문이다.</p>
+
+      <div class="moe-table" role="region" aria-label="Dense와 MoE를 비교할 때 확인할 기준" tabindex="0">
+        <table>
+          <caption>모델 크기 한 가지로 우열을 정하기 어려운 이유</caption>
+          <thead><tr><th scope="col">비교 기준</th><th scope="col">확인할 것</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">같은 전체 파라미터 수</th><td>MoE는 일부 전문가만 계산하지만 routing과 통신 비용이 추가된다.</td></tr>
+            <tr><th scope="row">같은 활성 파라미터 수</th><td>저장할 전체 가중치와 계산 경로가 다르므로 같은 속도를 보장하지 않는다.</td></tr>
+            <tr><th scope="row">비슷한 품질</th><td>같은 과제로 품질을 평가한 뒤 지연과 처리량, 메모리 요구를 비교해야 한다.</td></tr>
+            <tr><th scope="row">같은 학습 예산</th><td>학습 효율의 비교다. 그 결과를 추론 속도의 배율로 옮길 수는 없다.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>선택된 전문가가 여러 GPU에 나뉘어 있으면 토큰의 벡터와 결과를 주고받아야 한다. 전문가별로 배정되는 토큰 수가 다르면 한쪽 계산이 먼저 끝나도 다른 쪽을 기다릴 수 있다. 여러 토큰을 한 번에 처리하면 토큰마다 고른 전문가가 달라 전체적으로 많은 전문가가 사용될 수도 있다. 연산량 감소가 그대로 응답 시간 감소가 되지는 않는다. <a href="https://developer.nvidia.com/blog/applying-mixture-of-experts-in-llm-architectures/">NVIDIA의 기술 글</a>은 이 라우팅과 부하 분포를 분석한다.</p>
+
+      <p>또한 긴 입력을 처음 읽는 prefill과 답변을 이어 쓰는 decode는 처리 양상이 다르다. 모델을 고를 때는 초당 생성 토큰뿐 아니라 첫 응답까지의 시간과 전체 완료 시간도 확인해야 한다. 단일 요청이 빨리 끝나는 것과 여러 요청을 많이 처리하는 것도 따로 봐야 한다.</p>
+
+      <h2>다음 질문은 어디에 두고 계산할지였다</h2>
+
+      <p>Dense와 MoE를 비교하고 나니 큰 모델의 일부만 계산한다는 설명과 작은 GPU에서 실행할 수 있다는 설명 사이에 무엇이 빠져 있었는지 보였다. 모델이 어떤 전문가를 선택하는지는 계산 구조의 문제다. 선택된 전문가의 가중치를 어디에 두고 어느 장치에서 계산할지는 실행 방식의 문제다.</p>
+
+      <p>Strata를 이해하려면 그다음으로 GPU 캐시와 CPU 계산, RAM과 SSD의 역할을 확인해야 한다. 이 부분은 별도 글에서 실제 배치와 측정 기록을 함께 정리하려 한다.</p>
+
+      <h2>참고 자료</h2>
+
+      <p>공식 설명과 논문을 읽으며 정리한 공부글이다. 이 글에서 Dense와 MoE를 같은 조건으로 직접 학습하거나 성능을 비교한 것은 아니다. Mixtral과 Switch Transformer의 선택 방식은 각 모델의 사례이며 모든 MoE가 같은 구조를 사용하지는 않는다.</p>
+      <ul>
+        <li><a href="https://arxiv.org/html/1706.03762v7">Vaswani 외. Attention Is All You Need</a>. 2017. FFN 설명은 3.3절.</li>
+        <li><a href="https://huggingface.co/blog/moe">Hugging Face. Mixture of Experts Explained</a>.</li>
+        <li><a href="https://huggingface.co/blog/moe-transformers">Hugging Face. Mixture of Experts (MoEs) in Transformers</a>.</li>
+        <li><a href="https://arxiv.org/html/2401.04088v1">Jiang 외. Mixtral of Experts</a>. 2024.</li>
+        <li><a href="https://arxiv.org/html/2101.03961v3">Fedus 외. Switch Transformers</a>. 2021. 참고 버전은 2022년 v3.</li>
+        <li><a href="https://developer.nvidia.com/blog/applying-mixture-of-experts-in-llm-architectures/">NVIDIA. Applying Mixture of Experts in LLM Architectures</a>. 2024.</li>
+        <li><a href="https://tech.kakao.com/posts/716">카카오. Kanana-MoE 개발기</a>.</li>
+      </ul>
+<script src="assets/posts/dense-vs-moe/diagrams.js" defer></script>

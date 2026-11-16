@@ -1,5 +1,27 @@
 [
   {
+    "id": "dense-vs-moe",
+    "number": 24,
+    "date": "2026-11-16",
+    "title": {
+      "ko": "Dense LLM과 MoE는 어떻게 다를까"
+    },
+    "summary": {
+      "ko": "Dense의 공통 FFN과 MoE의 전문가 선택을 그림으로 비교했다. 전체 파라미터와 활성 파라미터, 계산량과 메모리의 차이도 정리했다."
+    },
+    "content": {
+      "ko": "posts/2026/dense-vs-moe.ko.html"
+    },
+    "tags": [
+      "LLM",
+      "Dense",
+      "MoE",
+      "공부 기록"
+    ],
+    "tagSeparator": " / ",
+    "thumbnail": "assets/thumbnails/dense-vs-moe.svg"
+  },
+  {
     "id": "apache-http2-rce",
     "number": 23,
     "date": "2026-11-13",

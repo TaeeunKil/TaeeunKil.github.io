@@ -1,0 +1,84 @@
+<!doctype html><html lang="ko"><head><base href="../../../"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>Dense와 MoE 설명 그림</title><link rel="stylesheet" href="assets/fonts/fonts.css"><link rel="stylesheet" href="assets/posts/dense-vs-moe/diagrams.css"><style>body{background:#f2f1ed;color:#171716;font:16px/1.75 Pretendard,system-ui,sans-serif;margin:0}main{max-width:752px;margin:40px auto;padding:0 20px}h1{font-size:28px}h2{font-size:22px;margin-top:64px}figure{margin-inline:0}</style><script src="assets/posts/dense-vs-moe/diagrams.js" defer></script></head><body><main><h1>Dense와 MoE 설명 그림</h1><h2>한 층에서 달라지는 부분</h2><figure class="moe-visual" id="moe-structure-figure">
+ <div class="mv-pair"><div class="mv-panel">
+ <p class="mv-panel-title">Dense</p>
+ <svg viewBox="0 0 360 484" role="img" aria-labelledby="mv-dense-title mv-dense-desc">
+ <title id="mv-dense-title">Dense의 한 층 계산 경로</title>
+ <desc id="mv-dense-desc">토큰의 벡터가 attention을 지난 뒤 같은 층의 공통 FFN을 거쳐 다음 층으로 간다. 정규화와 잔차 연결은 생략했다.</desc>
+ <defs>
+ <marker id="mv-dense-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8Z" fill="#6d6b66"/></marker>
+ <marker id="mv-dense-accent" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8Z" fill="#bf3b21"/></marker>
+ <marker id="mv-dense-link" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8Z" fill="#171716"/></marker>
+ </defs>
+ <g class="mv-arrow" marker-end="url(#mv-dense-arrow)"><path d="M180 40 V72"/><path d="M180 136 V200"/><path d="M180 304 V368"/></g>
+ <rect class="mv-node" x="40" y="72" width="280" height="64" rx="4"/>
+ <rect class="mv-node" x="40" y="200" width="280" height="104" rx="4"/>
+ <rect class="mv-node" x="40" y="368" width="280" height="64" rx="4"/>
+ <text x="180" y="24" text-anchor="middle">토큰의 벡터</text>
+ <text x="180" y="112" text-anchor="middle" class="mv-strong">Attention</text>
+ <text x="180" y="244" text-anchor="middle" class="mv-strong">Dense FFN</text>
+ <text x="180" y="276" text-anchor="middle" class="mv-small">공통 FFN 가중치로 계산</text>
+ <text x="180" y="408" text-anchor="middle">다음 층</text>
+ <text x="180" y="472" text-anchor="middle" class="mv-small">토큰이 달라도 같은 FFN</text>
+ </svg></div><div class="mv-panel">
+ <p class="mv-panel-title">MoE</p>
+ <svg viewBox="0 0 360 484" role="img" aria-labelledby="mv-moe-title mv-moe-desc">
+ <title id="mv-moe-title">MoE의 한 층 계산 경로</title>
+ <desc id="mv-moe-desc">토큰의 벡터가 attention을 지난 뒤 router와 선택된 전문가로 구성된 MoE 블록을 거쳐 다음 층으로 간다. 정규화와 잔차 연결은 생략했다.</desc>
+ <defs>
+ <marker id="mv-moe-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8Z" fill="#6d6b66"/></marker>
+ <marker id="mv-moe-accent" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8Z" fill="#bf3b21"/></marker>
+ <marker id="mv-moe-link" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8Z" fill="#171716"/></marker>
+ </defs>
+ <g class="mv-arrow" marker-end="url(#mv-moe-arrow)"><path d="M180 40 V72"/><path d="M180 136 V200"/><path d="M180 304 V368"/></g>
+ <rect class="mv-node" x="40" y="72" width="280" height="64" rx="4"/>
+ <rect class="mv-focus" x="40" y="200" width="280" height="104" rx="4"/>
+ <rect class="mv-node" x="40" y="368" width="280" height="64" rx="4"/>
+ <text x="180" y="24" text-anchor="middle">토큰의 벡터</text>
+ <text x="180" y="112" text-anchor="middle" class="mv-strong">Attention</text>
+ <text x="180" y="244" text-anchor="middle" class="mv-strong">MoE 블록</text>
+ <text x="180" y="276" text-anchor="middle" class="mv-small">router + 선택한 전문가</text>
+ <text x="180" y="408" text-anchor="middle">다음 층</text>
+ <text x="180" y="472" text-anchor="middle" class="mv-small">토큰에 따라 전문가를 고른다</text>
+ </svg></div></div>
+ <figcaption>그림 1. 한 층에서 달라지는 것은 FFN 부분이다. MoE에서도 attention 등 공통 연산은 남는다. 대표적인 구조를 단순화했으며 정규화와 잔차 연결은 생략했다. <a href="https://arxiv.org/html/2401.04088v1#S2.SS1">Mixtral 구조 설명</a>을 바탕으로 직접 그렸다.</figcaption>
+ </figure><h2>토큰마다 달라지는 선택</h2><figure class="moe-visual" id="moe-routing-figure" data-moe-router>
+ <div class="mv-controls" hidden role="group" aria-label="설명용 입력 벡터 바꾸기">
+ <span class="mv-controls-label">입력을 바꿔보면</span>
+ <button type="button" data-route="a" aria-pressed="true">벡터 A</button>
+ <button type="button" data-route="b" aria-pressed="false">벡터 B</button></div>
+ <div class="mv-single"><svg viewBox="0 0 360 660" role="img" aria-labelledby="mv-route-title mv-route-desc">
+ <title id="mv-route-title">토큰마다 달라지는 전문가 선택</title>
+ <desc id="mv-route-desc" data-router-description>설명용 예시. 벡터 A에서 전문가 2번과 5번을 선택한다. 나머지 여섯 전문가는 이번 계산에서 선택되지 않는다. 선택된 두 출력의 가중합을 만든다.</desc>
+ <defs>
+ <marker id="mv-route-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8Z" fill="#6d6b66"/></marker>
+ <marker id="mv-route-accent" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8Z" fill="#bf3b21"/></marker>
+ <marker id="mv-route-link" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8Z" fill="#171716"/></marker>
+ </defs>
+ <g class="mv-arrow" marker-end="url(#mv-route-arrow)"><path d="M180 48 V80"/><path d="M180 168 V232"/><path d="M180 432 V488"/><path d="M180 576 V616"/></g>
+ <rect class="mv-node" x="40" y="80" width="280" height="88" rx="4"/>
+ <rect class="mv-node" x="16" y="488" width="328" height="88" rx="4"/>
+ <text x="180" y="32" text-anchor="middle" data-route-input>토큰의 벡터 A</text>
+ <text x="180" y="116" text-anchor="middle" class="mv-strong">Router</text>
+ <text x="180" y="148" text-anchor="middle" class="mv-small">점수를 매겨 상위 2개 선택</text>
+ <text x="180" y="256" text-anchor="middle" class="mv-small">이 층의 전문가 8개</text>
+ <g class="mv-expert" data-expert="1" data-selected="false"><rect x="16" y="272" width="72" height="64" rx="4"/><text x="52" y="300" text-anchor="middle" class="mv-strong">E1</text><text x="52" y="320" text-anchor="middle" class="mv-badge" data-expert-status>선택 안 됨</text></g><g class="mv-expert" data-expert="2" data-selected="true"><rect x="100" y="272" width="72" height="64" rx="4"/><text x="136" y="300" text-anchor="middle" class="mv-strong">E2</text><text x="136" y="320" text-anchor="middle" class="mv-badge" data-expert-status>선택 0.7</text></g><g class="mv-expert" data-expert="3" data-selected="false"><rect x="184" y="272" width="72" height="64" rx="4"/><text x="220" y="300" text-anchor="middle" class="mv-strong">E3</text><text x="220" y="320" text-anchor="middle" class="mv-badge" data-expert-status>선택 안 됨</text></g><g class="mv-expert" data-expert="4" data-selected="false"><rect x="268" y="272" width="72" height="64" rx="4"/><text x="304" y="300" text-anchor="middle" class="mv-strong">E4</text><text x="304" y="320" text-anchor="middle" class="mv-badge" data-expert-status>선택 안 됨</text></g><g class="mv-expert" data-expert="5" data-selected="true"><rect x="16" y="360" width="72" height="64" rx="4"/><text x="52" y="388" text-anchor="middle" class="mv-strong">E5</text><text x="52" y="408" text-anchor="middle" class="mv-badge" data-expert-status>선택 0.3</text></g><g class="mv-expert" data-expert="6" data-selected="false"><rect x="100" y="360" width="72" height="64" rx="4"/><text x="136" y="388" text-anchor="middle" class="mv-strong">E6</text><text x="136" y="408" text-anchor="middle" class="mv-badge" data-expert-status>선택 안 됨</text></g><g class="mv-expert" data-expert="7" data-selected="false"><rect x="184" y="360" width="72" height="64" rx="4"/><text x="220" y="388" text-anchor="middle" class="mv-strong">E7</text><text x="220" y="408" text-anchor="middle" class="mv-badge" data-expert-status>선택 안 됨</text></g><g class="mv-expert" data-expert="8" data-selected="false"><rect x="268" y="360" width="72" height="64" rx="4"/><text x="304" y="388" text-anchor="middle" class="mv-strong">E8</text><text x="304" y="408" text-anchor="middle" class="mv-badge" data-expert-status>선택 안 됨</text></g>
+ <text x="180" y="528" text-anchor="middle" class="mv-strong">선택된 출력의 가중합</text>
+ <text x="180" y="556" text-anchor="middle" style="font-size:16px" data-route-formula>0.7 × E2(x) + 0.3 × E5(x)</text>
+ <text x="180" y="648" text-anchor="middle">다음 계산으로</text>
+ </svg></div>
+ <p class="mv-status" data-route-status aria-live="polite">벡터 A: 전문가 2번과 5번을 선택한다.</p>
+ <figcaption>그림 2. 한 층의 top-2 routing을 설명하기 위한 예시다. 입력과 전문가 번호, 가중치는 모두 가정했으며 실제 모델의 출력이 아니다. E2(x)는 전문가 2번이 같은 입력 벡터 x를 처리한 출력이다. 다음 층에서는 그 층의 router가 다시 선택한다.</figcaption>
+ </figure><h2>전체 가중치와 활성 가중치</h2><figure class="moe-visual" id="moe-weights-figure">
+ <div class="mv-single"><svg viewBox="0 0 360 364" role="img" aria-labelledby="mv-weight-title mv-weight-desc">
+ <title id="mv-weight-title">보관하는 전문가 8개와 이번 계산에 쓰는 전문가 2개</title>
+ <desc id="mv-weight-desc">같은 크기의 전문가 8개가 각각 가중치 100개를 가진 가정이다. 총 800개를 보관하지만 이번 토큰에서 선택한 2번과 5번의 200개를 계산에 쓴다. 공통 연산과 router는 제외한 설명용 숫자이며 메모리 용량이나 속도 측정이 아니다.</desc>
+ <text x="20" y="28" class="mv-strong">보관할 전문가 가중치</text>
+ <text x="20" y="64">8개 × 100 = <tspan class="mv-strong">800개</tspan></text>
+ <text x="20" y="208" class="mv-strong">이번 토큰에 사용하는 가중치</text>
+ <text x="20" y="244">2개 × 100 = <tspan class="mv-strong mv-accent-text">200개</tspan></text>
+ <rect class="mv-unit" x="20" y="88" width="32" height="52" rx="4"/><text x="36" y="120" text-anchor="middle" class="mv-small">1</text><rect class="mv-unit" x="60" y="88" width="32" height="52" rx="4"/><text x="76" y="120" text-anchor="middle" class="mv-small">2</text><rect class="mv-unit" x="100" y="88" width="32" height="52" rx="4"/><text x="116" y="120" text-anchor="middle" class="mv-small">3</text><rect class="mv-unit" x="140" y="88" width="32" height="52" rx="4"/><text x="156" y="120" text-anchor="middle" class="mv-small">4</text><rect class="mv-unit" x="180" y="88" width="32" height="52" rx="4"/><text x="196" y="120" text-anchor="middle" class="mv-small">5</text><rect class="mv-unit" x="220" y="88" width="32" height="52" rx="4"/><text x="236" y="120" text-anchor="middle" class="mv-small">6</text><rect class="mv-unit" x="260" y="88" width="32" height="52" rx="4"/><text x="276" y="120" text-anchor="middle" class="mv-small">7</text><rect class="mv-unit" x="300" y="88" width="32" height="52" rx="4"/><text x="316" y="120" text-anchor="middle" class="mv-small">8</text><rect class="mv-unit-idle" x="20" y="268" width="32" height="52" rx="4"/><text x="36" y="300" text-anchor="middle" class="mv-small">1</text><rect class="mv-unit-selected" x="60" y="268" width="32" height="52" rx="4"/><text x="76" y="300" text-anchor="middle" class="mv-small">2</text><rect class="mv-unit-idle" x="100" y="268" width="32" height="52" rx="4"/><text x="116" y="300" text-anchor="middle" class="mv-small">3</text><rect class="mv-unit-idle" x="140" y="268" width="32" height="52" rx="4"/><text x="156" y="300" text-anchor="middle" class="mv-small">4</text><rect class="mv-unit-selected" x="180" y="268" width="32" height="52" rx="4"/><text x="196" y="300" text-anchor="middle" class="mv-small">5</text><rect class="mv-unit-idle" x="220" y="268" width="32" height="52" rx="4"/><text x="236" y="300" text-anchor="middle" class="mv-small">6</text><rect class="mv-unit-idle" x="260" y="268" width="32" height="52" rx="4"/><text x="276" y="300" text-anchor="middle" class="mv-small">7</text><rect class="mv-unit-idle" x="300" y="268" width="32" height="52" rx="4"/><text x="316" y="300" text-anchor="middle" class="mv-small">8</text>
+ <text x="180" y="356" text-anchor="middle" class="mv-small">선택 안 된 6개도 다음 입력에 필요할 수 있다</text>
+ </svg></div>
+ <div class="mv-legend"><span><i class="mv-key mv-key-on" aria-hidden="true"></i>이번 계산에 선택됨</span><span><i class="mv-key" aria-hidden="true"></i>보관하지만 이번에는 선택 안 됨</span></div>
+ <figcaption>그림 3. 칸 하나는 전문가 하나이며 모두 같은 크기라고 가정했다. 본문의 설명용 숫자로 그린 전문가 가중치 비교다. router와 공통 연산, KV 캐시와 실행 버퍼는 제외했다. 실제 메모리가 4분의 1이 되거나 계산 속도가 4배라는 뜻은 아니다.</figcaption>
+ </figure></main></body></html>
