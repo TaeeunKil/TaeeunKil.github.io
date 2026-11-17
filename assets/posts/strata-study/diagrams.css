@@ -1,0 +1,27 @@
+/* Explanatory diagrams follow the project's DESIGN.md. */
+.st-visual { --st-ink:#171716;--st-paper:#f2f1ed;--st-muted:#6d6b66;--st-line:#d6d4ce;--st-accent:#bf3b21;--st-tint:#f8e5df;margin:2.5rem 0;color:var(--st-ink);font-family:Pretendard,system-ui,sans-serif; }
+.st-visual svg { display:block;width:100%;height:auto;overflow:visible;font-family:inherit; }
+.st-visual svg text { fill:var(--st-ink);font-family:inherit;font-size:20px; }
+.st-visual svg .st-small { fill:var(--st-muted);font-size:16px; }
+.st-visual svg .st-bold { font-weight:700; }
+.st-visual svg .st-node { fill:#fff;stroke:var(--st-line);stroke-width:1.4; }
+.st-visual svg .st-store { fill:#e9e8e2;stroke:var(--st-muted);stroke-width:1.2; }
+.st-visual svg .st-focus { fill:var(--st-tint);stroke:var(--st-accent);stroke-width:1.5; }
+.st-visual svg .st-arrow { fill:none;stroke:var(--st-muted);stroke-width:1.6; }
+.st-visual svg .st-inactive { fill:none;stroke:var(--st-muted);stroke-dasharray:4 4; }
+.st-visual figcaption { margin-top:1rem;font-size:.85rem;line-height:1.8;color:var(--st-muted); }
+.st-visual figcaption a { color:inherit; }
+.st-pair { display:grid;grid-template-columns:1fr 1fr;gap:1.5rem; }
+.st-panel-title { margin:0 0 .75rem !important;font-size:1.05rem !important;line-height:1.5 !important;font-weight:700; }
+.st-single { width:min(100%,420px);margin-inline:auto; }
+.st-storage { margin:1.5rem 0 0 !important;padding:1rem 0;border-block:1px solid var(--st-line);font-size:1rem !important;line-height:1.8 !important; }
+.st-controls { display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;margin-bottom:1.5rem; }
+.st-controls[hidden],.st-wait[hidden] { display:none; }
+.st-controls button { border:1px solid var(--st-muted);background:transparent;color:var(--st-ink);padding:.55rem .8rem;font:600 .9rem/1.4 Pretendard,system-ui,sans-serif;cursor:pointer; }
+.st-controls button[aria-pressed="true"] { background:var(--st-ink);color:var(--st-paper); }
+.st-controls button:focus-visible { outline:2px solid var(--st-accent);outline-offset:3px; }
+.st-status { font-size:.95rem !important;line-height:1.75 !important;margin-top:1rem !important; }
+.st-chart { display:block;width:100%;height:auto; }
+.st-wait { margin-top:1rem;padding-top:1rem;border-top:1px solid var(--st-line); }
+.st-wait p { font-size:.9rem !important;line-height:1.7 !important; }
+@media(max-width:600px) { .st-pair{grid-template-columns:1fr;gap:2rem}.st-panel{max-width:360px;width:100%;margin-inline:auto}.st-visual{margin:2rem 0} }

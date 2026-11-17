@@ -1,0 +1,50 @@
+{
+  "measured_on": "2026-11-14",
+  "aggregation": "median",
+  "n_per_case_and_deployment": 3,
+  "unit": "seconds",
+  "ttft_definition": "client first content arrival",
+  "comparison": "different models, quantization, engines and hardware; deployment comparison",
+  "deployments": {
+    "a6000": "Qwen3.8-27B AWQ / A6000 x1",
+    "strata": "Qwen3.8-Flash-Next IQ3_S / Strata / 20GB GPU x2 + CPU/RAM"
+  },
+  "measurements": [
+    {
+      "case": "english",
+      "model": "a6000",
+      "ttft_s": 0.21760720945894718,
+      "e2e_s": 5.379895691759884
+    },
+    {
+      "case": "english",
+      "model": "strata",
+      "ttft_s": 1.0446304054930806,
+      "e2e_s": 3.041332306340337
+    },
+    {
+      "case": "korean",
+      "model": "a6000",
+      "ttft_s": 0.2022870583459735,
+      "e2e_s": 4.8796276608482
+    },
+    {
+      "case": "korean",
+      "model": "strata",
+      "ttft_s": 1.0510932495817542,
+      "e2e_s": 3.747191340662539
+    },
+    {
+      "case": "records-4k",
+      "model": "a6000",
+      "ttft_s": 2.515394768677652,
+      "e2e_s": 2.6661576218903065
+    },
+    {
+      "case": "records-4k",
+      "model": "strata",
+      "ttft_s": 7.0899362824857235,
+      "e2e_s": 7.189834248274565
+    }
+  ]
+}

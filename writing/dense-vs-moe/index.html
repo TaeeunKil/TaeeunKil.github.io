@@ -7,7 +7,7 @@
   <meta name="description" content="Dense의 공통 FFN과 MoE의 전문가 선택을 그림으로 비교했다. 전체 파라미터와 활성 파라미터, 계산량과 메모리의 차이도 정리했다.">
   <meta name="theme-color" content="#f2f1ed">
   <title>Dense LLM과 MoE는 어떻게 다를까 — TaeeunKil</title>
-  <link rel="preload" href="assets/fonts/PretendardSite.woff2?v=df042e0f9b" fetchpriority="high" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="assets/fonts/PretendardSite.woff2?v=bdca7b058f" fetchpriority="high" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="assets/fonts/fonts.css?v=20261013-performance">
   <style>html.fonts-loading body { visibility: hidden; }</style>
   <script>
@@ -231,7 +231,7 @@
 
       <p>Dense와 MoE를 비교하고 나니 큰 모델의 일부만 계산한다는 설명과 작은 GPU에서 실행할 수 있다는 설명 사이에 무엇이 빠져 있었는지 보였다. 모델이 어떤 전문가를 선택하는지는 계산 구조의 문제다. 선택된 전문가의 가중치를 어디에 두고 어느 장치에서 계산할지는 실행 방식의 문제다.</p>
 
-      <p>Strata를 이해하려면 그다음으로 GPU 캐시와 CPU 계산, RAM과 SSD의 역할을 확인해야 한다. 이 부분은 별도 글에서 실제 배치와 측정 기록을 함께 정리하려 한다.</p>
+      <p>GPU 캐시와 CPU 계산, RAM과 SSD의 역할은 이어지는 글 <a href="https://taeeunkil.github.io/writing/strata-study/">Strata는 작은 VRAM으로 큰 MoE 모델을 어떻게 실행할까</a>에서 실제 배치와 측정 기록을 함께 정리했다.</p>
 
       <h2>참고 자료</h2>
 

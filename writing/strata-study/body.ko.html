@@ -1,0 +1,224 @@
+<link rel="stylesheet" href="assets/posts/strata-study/diagrams.css">
+<style>
+    .strata-table { overflow-x: auto; margin: 2rem 0; }
+    .strata-table table { width: 100%; min-width: 540px; border-collapse: collapse; font-size: .9rem; }
+    .strata-table caption { max-width: min(752px, calc(100vw - 40px)); text-align: left; margin-bottom: .8rem; color: var(--muted); line-height: 1.7; }
+    .strata-table th, .strata-table td { padding: .75rem; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+    .strata-table:focus-visible { outline: 2px solid currentColor; outline-offset: 4px; }
+    .strata-extra { margin: 2rem 0; }
+    .strata-extra summary { cursor: pointer; font-weight: 650; }
+    .strata-extra[open] summary { margin-bottom: 1.5rem; }
+
+</style>
+
+<h2>선택한 전문가를 어디서 계산할까</h2>
+
+      <p><a href="https://taeeunkil.github.io/writing/dense-vs-moe/">Dense LLM과 MoE를 비교한 글</a>에서는 일부 전문가만 계산해도 전체 가중치는 보관해야 한다는 점까지 정리했다. MoE는 토큰마다 일부 계산 블록을 선택하므로 전체 파라미터 수와 활성 파라미터 수가 다르다. 이제 남은 질문은 선택된 전문가의 가중치를 어디에 두고 어느 장치에서 계산할지였다.</p>
+
+      <p>기존에는 Qwen3.8-27B를 vLLM으로 서빙하고 있었다. 같은 GPU 두 장을 활용해 더 큰 모델을 실행할 수 있는지 알아보면서 Strata를 접했다. GPU에 다 들어가지 않는 가중치를 RAM에 두고 CPU도 계산에 참여하는 방식이었다. 느린 장치를 함께 쓰면서 어떻게 쓸 만한 속도를 낼 수 있는지 이해하고 싶었다.</p>
+
+      <h2>GPU와 CPU가 계산하고 VRAM과 RAM이 보관한다</h2>
+
+      <p>이번에 실행한 모델은 Qwen3.8-Flash-Next이고 배포 파일의 양자화 형식은 GSQ-RCO IQ3_S였다. Strata는 이 모델의 로딩과 연산, 캐시와 장치 간 분담을 관리하는 실행 엔진이다. IQ3_S를 모델 이름으로 보거나 Strata를 양자화 방식으로 이해하면 세 역할이 섞인다.</p>
+
+      <p>양자화는 가중치를 적은 비트로 근사해 저장하는 방법이다. IQ3_S라는 이름이 모든 숫자를 정확히 3비트로 저장한다는 뜻은 아니다. 모델과 파일 형식의 설명은 <a href="https://huggingface.co/Qwen/Qwen3.8-Flash-Next">Qwen 모델 카드</a>와 <a href="https://huggingface.co/ISTA-DASLab/Qwen3.8-Flash-Next-GSQ-RCO-GGUF">ISTA-DASLab 배포 문서</a>를 참고했다.</p>
+
+      <p>장치의 역할부터 나눠보면 GPU는 VRAM의 가중치를 읽어 공통 연산과 캐시된 전문가를 계산한다. CPU는 GPU에 없는 선택 전문가의 가중치를 RAM에서 읽어 직접 계산할 수 있다. RAM은 가중치를 보관하는 곳이고 연산은 CPU가 맡는다. 아래는 입력을 처리한 뒤 답변 토큰을 만드는 decode 단계의 배치를 단순화한 그림이다.</p>
+
+      <figure class="st-visual" id="strata-devices"><div class="st-pair"><div class="st-panel"><p class="st-panel-title">GPU가 계산하는 경로</p><svg viewBox="0 0 360 368" role="img" aria-labelledby="st-gpu-title st-gpu-desc"><title id="st-gpu-title">GPU와 VRAM의 역할</title><desc id="st-gpu-desc">GPU가 VRAM의 가중치를 읽어 공통 연산과 캐시에 있는 전문가를 계산한다. 저장 장치가 계산하는 것은 아니다.</desc><defs><marker id="st-gpu-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8Z" fill="#6d6b66"/></marker><marker id="st-gpu-accent" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8Z" fill="#bf3b21"/></marker><marker id="st-gpu-link" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8Z" fill="#171716"/></marker></defs>
+ <path class="st-arrow" d="M180 224 V152" marker-end="url(#st-gpu-arrow)"/>
+ <rect class="st-node" x="24" y="48" width="312" height="104" rx="4"/>
+ <rect class="st-store" x="24" y="224" width="312" height="104" rx="4"/>
+ <text x="180" y="84" text-anchor="middle" class="st-bold">GPU / 계산</text>
+ <text x="180" y="116" text-anchor="middle" class="st-small">공통 연산 + 캐시 전문가</text>
+ <rect x="196" y="168" width="120" height="32" fill="#f2f1ed"/><text x="200" y="192" class="st-small">가중치 읽기</text>
+ <text x="180" y="264" text-anchor="middle" class="st-bold">VRAM / 보관</text>
+ <text x="180" y="296" text-anchor="middle" class="st-small">전문가 캐시와 KV 일부</text>
+ <text x="180" y="360" text-anchor="middle" class="st-small">자주 쓰는 전문가를 빠른 쪽에</text>
+ </svg></div><div class="st-panel"><p class="st-panel-title">CPU가 계산하는 경로</p><svg viewBox="0 0 360 368" role="img" aria-labelledby="st-cpu-title st-cpu-desc"><title id="st-cpu-title">CPU와 RAM의 역할</title><desc id="st-cpu-desc">CPU가 RAM의 가중치를 읽어 GPU 캐시에 없는 선택 전문가를 계산한다. 저장 장치가 계산하는 것은 아니다.</desc><defs><marker id="st-cpu-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8Z" fill="#6d6b66"/></marker><marker id="st-cpu-accent" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8Z" fill="#bf3b21"/></marker><marker id="st-cpu-link" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8Z" fill="#171716"/></marker></defs>
+ <path class="st-arrow" d="M180 224 V152" marker-end="url(#st-cpu-arrow)"/>
+ <rect class="st-node" x="24" y="48" width="312" height="104" rx="4"/>
+ <rect class="st-store" x="24" y="224" width="312" height="104" rx="4"/>
+ <text x="180" y="84" text-anchor="middle" class="st-bold">CPU / 계산</text>
+ <text x="180" y="116" text-anchor="middle" class="st-small">미상주 선택 전문가</text>
+ <rect x="196" y="168" width="120" height="32" fill="#f2f1ed"/><text x="200" y="192" class="st-small">가중치 읽기</text>
+ <text x="180" y="264" text-anchor="middle" class="st-bold">RAM / 보관</text>
+ <text x="180" y="296" text-anchor="middle" class="st-small">전문가 가중치와 버퍼</text>
+ <text x="180" y="360" text-anchor="middle" class="st-small">GPU 복사본과 함께 존재할 수 있음</text>
+ </svg></div></div><p class="st-storage"><strong>SSD</strong>에는 모델 원본과 약 29GB의 n-gram 조회 테이블을 둔다. 테이블은 추론 중에도 필요한 행만 읽는다.</p><figcaption>그림 1. 이번 Qwen 계열 구성의 저장 위치와 계산 장치를 구분했다. 주로 decode의 전문가 연산을 설명한 그림이며 긴 입력의 prefill 경로는 다르다. KV와 전문가 상주량은 모드와 예산에 따라 달라진다. <a href="https://github.com/Niko1221/Strata/blob/v0.2.13/docs/HOW_IT_WORKS.md">공식 동작 설명</a>을 바탕으로 직접 그렸다.</figcaption></figure>
+
+      <p>SSD도 초기 모델 로딩에만 쓰이지 않는다. 이 Qwen 계열 구성에서는 약 29GB의 n-gram 조회 테이블을 SSD에 두고 추론 중 필요한 행을 읽는다. 매 토큰마다 테이블 전체를 읽는다는 뜻은 아니다. OS 페이지 캐시에 어떤 부분이 남아 있는지에 따라서도 실제 SSD 읽기량이 달라진다. <a href="https://github.com/Niko1221/Strata/blob/v0.2.13/docs/MODELS.md#will-it-fit">공식 메모리 설명</a>은 전문가 가중치와 조회 테이블을 따로 구분한다. RAM이 부족한 모드에서는 전문가 파일도 추가로 읽을 수 있어 디스크 대기가 늘어날 수 있다.</p>
+
+      <h2>전문가 선택은 같아도 계산 위치는 달라진다</h2>
+
+      <p>모델의 router는 어떤 전문가를 사용할지 선택한다. Strata는 그 결과를 받아 가중치의 위치와 실행 경로를 관리한다. 앞 글에서 사용한 전문가 E2와 E5를 다시 생각해보면 두 역할의 차이를 따라가기 쉽다.</p>
+
+      <p>한 층의 전문가 8개 중 E2와 E5가 선택됐다고 가정하자. 전문가 수와 선택 수는 설명용이며 이번 모델의 실제 사양을 뜻하지 않는다. E2가 GPU 캐시에 있고 E5는 RAM에만 있다면 GPU는 E2를 계산하고 CPU는 RAM의 E5를 읽어 계산한다. 둘 다 GPU 캐시에 있으면 이 예시에서는 CPU가 맡을 전문가 계산이 없다. 아래 버튼은 router의 선택을 바꾸지 않고 가중치의 배치만 바꾼다.</p>
+
+      <figure class="st-visual" id="strata-placement" data-strata-placement>
+ <div class="st-controls" hidden role="group" aria-label="선택된 전문가의 GPU 캐시 상태 바꾸기"><button type="button" data-cache-state="miss" aria-pressed="true">E5는 RAM에만</button><button type="button" data-cache-state="hit" aria-pressed="false">둘 다 GPU 캐시에</button></div>
+ <div class="st-single"><svg viewBox="0 0 360 508" role="img" aria-labelledby="st-place-title st-place-desc"><title id="st-place-title">같은 전문가 선택을 다른 장치에서 계산하기</title><desc id="st-place-desc" data-placement-desc>설명용 배치 예시. 모델이 E2와 E5를 선택한 상태다. GPU는 E2를 계산하고 CPU는 RAM의 E5를 읽어 계산한다. 필요한 결과를 합쳐 다음 계산으로 간다. 실제 모델 실행 결과가 아니다.</desc><defs><marker id="st-place-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8Z" fill="#6d6b66"/></marker><marker id="st-place-accent" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8Z" fill="#bf3b21"/></marker><marker id="st-place-link" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8Z" fill="#171716"/></marker></defs>
+ <path class="st-arrow" d="M180 40 V72" marker-end="url(#st-place-arrow)"/>
+ <path class="st-arrow" d="M164 136 V168 Q164 176 156 176 H96 Q88 176 88 184 V208" marker-end="url(#st-place-arrow)"/>
+ <path class="st-arrow" d="M196 136 V168 Q196 176 204 176 H264 Q272 176 272 184 V208" marker-end="url(#st-place-arrow)" data-cpu-path/>
+ <path class="st-arrow" d="M88 320 V368 Q88 376 96 376 H136 Q144 376 144 384 V416" marker-end="url(#st-place-arrow)"/>
+ <path class="st-arrow" d="M272 320 V368 Q272 376 264 376 H224 Q216 376 216 384 V416" marker-end="url(#st-place-arrow)" data-cpu-path/>
+ <rect class="st-node" x="40" y="72" width="280" height="64" rx="4"/>
+ <rect class="st-node" x="8" y="208" width="160" height="112" rx="4"/>
+ <rect class="st-focus" x="192" y="208" width="160" height="112" rx="4" data-cpu-box/>
+ <rect class="st-node" x="80" y="416" width="200" height="64" rx="4"/>
+ <text x="180" y="24" text-anchor="middle">모델의 선택: E2 + E5</text>
+
+ <text x="180" y="112" text-anchor="middle" class="st-bold">Strata가 캐시 위치를 확인</text>
+ <text x="88" y="244" text-anchor="middle" class="st-bold">GPU</text><text x="88" y="280" text-anchor="middle" data-gpu-experts>E2</text><text x="88" y="308" text-anchor="middle" class="st-small">VRAM을 읽음</text>
+ <text x="272" y="244" text-anchor="middle" class="st-bold">CPU</text><text x="272" y="280" text-anchor="middle" data-cpu-experts>E5</text><text x="272" y="308" text-anchor="middle" class="st-small" data-cpu-source>RAM을 읽음</text>
+ <text x="180" y="456" text-anchor="middle">필요한 결과를 합침</text>
+ </svg></div>
+ <p class="st-status" data-placement-status aria-live="polite">선택은 E2와 E5다. GPU는 E2를 계산하고 CPU는 RAM의 E5를 읽어 계산한다.</p>
+ <div class="st-wait" data-wait-example><div class="st-single"><svg viewBox="0 0 360 184" role="img" aria-labelledby="st-wait-title st-wait-desc"><title id="st-wait-title">CPU 완료를 기다리는 경우</title><desc id="st-wait-desc">GPU 계산이 먼저 끝나도 CPU 결과가 필요하면 합류까지 기다린다. 길이와 시간 비율은 설명용이며 측정값이 아니다.</desc>
+ <text x="8" y="24" class="st-small">GPU 계산이 먼저 끝난 경우의 모식도</text>
+ <rect x="88" y="44" width="80" height="28" fill="#d6d4ce"/><rect x="168" y="44" width="144" height="28" fill="none" stroke="#6d6b66" stroke-dasharray="4 4"/>
+ <rect x="88" y="96" width="224" height="28" fill="#f8e5df" stroke="#bf3b21"/>
+ <text x="8" y="64" class="st-bold">GPU</text><text x="8" y="116" class="st-bold">CPU</text><text x="240" y="64" text-anchor="middle" class="st-small">결과 대기</text>
+ <path d="M312 40 V140" stroke="#6d6b66" stroke-width="1"/><text x="312" y="168" text-anchor="end" class="st-small">필요한 결과가 모임</text>
+ </svg></div><p>GPU가 먼저 끝나도 CPU의 결과가 필요하면 기다린다. 막대의 길이는 설명용이며 실측 시간이 아니다.</p></div>
+ <figcaption>그림 2. 첫 글과 같은 전문가 E2와 E5를 고른 상태에서 배치만 바꾼 설명용 예시다. 전문가 수와 선택 수는 실제 모델 사양이 아니다. 선택 결과를 바꾸거나 실제 모델을 실행하는 버튼은 아니다. 두 가중치가 모두 GPU에 있으면 이 예시의 CPU 전문가 연산이 사라진다. 공통 연산과 다른 병목은 남으므로 특정 속도 향상을 보장하지 않는다.</figcaption></figure>
+
+      <p>GPU에 가중치 복사본이 생겼다고 RAM의 같은 가중치가 반드시 사라지는 것도 아니다. 메모리 모드와 예산에 따라 둘 다 보관할 수 있다. <a href="https://github.com/Niko1221/Strata/blob/v0.2.13/docs/HOW_IT_WORKS.md">공식 동작 설명</a>의 decode 경로는 GPU 캐시와 RAM의 CPU 연산을 함께 사용한다.</p>
+
+      <p>이 설명을 모든 단계에 그대로 적용할 수는 없다. 긴 입력을 읽는 prefill에는 전문가 가중치를 GPU로 스트리밍해 계산하는 경로도 있다. CPU가 RAM에서 직접 계산하는 경로와 GPU로 옮겨 계산하는 경로를 구분해야 했다.</p>
+
+      <h2>느린 장치의 비용을 줄이는 방법</h2>
+
+      <p>CPU로 계산을 옮기는 것 자체가 가속은 아니다. GPU가 먼저 끝나도 CPU의 결과가 필요하면 기다려야 한다. RAM 대역폭과 PCIe 전송, SSD 읽기 지연도 병목이 될 수 있다.</p>
+
+      <p>Strata는 MoE의 선택적 계산에 GPU 전문가 캐시와 CPU/GPU 연산의 겹침을 함께 사용한다. 캐시가 잘 맞으면 CPU에 맡길 전문가가 줄어든다. 전부 GPU에 넣을 수 없는 상황에서 느린 장치를 쓰는 부담을 줄이는 방식으로 이해했다.</p>
+
+      <p>다음 토큰 후보를 여러 개 만든 뒤 본 모델이 검증하는 MTP(Multi-Token Prediction)도 사용한다. 예측이 잘 맞으면 한 번의 검증으로 여러 출력 토큰을 얻을 수 있다. 채택률에 따라 이득은 달라지고 양자화로 잃은 정보를 복원하는 기능은 아니다. 구체적인 예측과 입력 처리 경로는 <a href="https://github.com/Niko1221/Strata/blob/v0.2.13/docs/DETAILS.md#how-it-works">Strata 기술 설명</a>을 참고했다.</p>
+
+      <p>따라서 같은 모델을 같은 정밀도로 충분한 VRAM에 전부 올린 구성보다 무조건 빠르다는 뜻은 아니다. 더 작은 Dense 모델과 비교할 때는 계산 구조와 양자화, 실행 엔진까지 달라진다. 속도 차이를 CPU 오프로딩 하나의 효과로 돌릴 수는 없다.</p>
+
+      <h2>GPU 두 장의 분담도 기존 구성과 달랐다</h2>
+
+      <p>기존 vLLM의 27B는 TP=2로 실행했다. 같은 층의 행렬 계산을 두 GPU가 나누고 부분 결과를 합치는 통신이 반복된다. 이번 Strata는 앞쪽 24개 층과 뒤쪽 24개 층을 각각 다른 GPU가 맡는 설정이었다. 담당 범위의 경계에서 중간 결과를 전달한다.</p>
+
+      <figure class="st-visual" id="strata-gpu-split"><div class="st-pair">
+ <div class="st-panel"><p class="st-panel-title">기존 vLLM / TP=2</p><svg viewBox="0 0 360 392" role="img" aria-labelledby="st-tp-title st-tp-desc"><title id="st-tp-title">같은 층을 두 GPU가 나누는 텐서 병렬</title><desc id="st-tp-desc">GPU A와 B가 같은 층의 일부 계산을 맡고 부분 결과를 합치는 통신을 반복한다. 실제 collective 구현이나 횟수는 생략한 개략도다.</desc><defs><marker id="st-tp-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8Z" fill="#6d6b66"/></marker><marker id="st-tp-accent" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8Z" fill="#bf3b21"/></marker><marker id="st-tp-link" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8Z" fill="#171716"/></marker></defs>
+ <g class="st-arrow" marker-end="url(#st-tp-arrow)"><path d="M152 92 H208"/><path d="M208 116 H152"/><path d="M88 136 V248"/><path d="M272 136 V248"/><path d="M152 268 H208"/><path d="M208 292 H152"/></g>
+ <rect class="st-node" x="24" y="72" width="128" height="64" rx="4"/><rect class="st-node" x="208" y="72" width="128" height="64" rx="4"/><rect class="st-node" x="24" y="248" width="128" height="64" rx="4"/><rect class="st-node" x="208" y="248" width="128" height="64" rx="4"/>
+ <text x="88" y="40" text-anchor="middle" class="st-bold">GPU A</text><text x="272" y="40" text-anchor="middle" class="st-bold">GPU B</text>
+ <text x="88" y="112" text-anchor="middle" class="st-small">층 j 일부</text><text x="272" y="112" text-anchor="middle" class="st-small">층 j 일부</text><text x="88" y="288" text-anchor="middle" class="st-small">층 j+1 일부</text><text x="272" y="288" text-anchor="middle" class="st-small">층 j+1 일부</text>
+ <text x="180" y="192" text-anchor="middle" class="st-small">부분 결과 합산</text><text x="180" y="368" text-anchor="middle" class="st-small">층을 거치며 통신 반복</text></svg></div>
+ <div class="st-panel"><p class="st-panel-title">이번 Strata / 층 분할</p><svg viewBox="0 0 360 392" role="img" aria-labelledby="st-layer-title st-layer-desc"><title id="st-layer-title">연속된 층 범위를 나누는 실행</title><desc id="st-layer-desc">GPU A가 앞쪽 24개 층을 처리하고 경계에서 중간 결과를 GPU B로 전달한다. B가 뒤쪽 24개 층을 처리한다. 주요 forward 경로만 표시했다.</desc><defs><marker id="st-layer-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8Z" fill="#6d6b66"/></marker><marker id="st-layer-accent" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8Z" fill="#bf3b21"/></marker><marker id="st-layer-link" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8Z" fill="#171716"/></marker></defs>
+ <path class="st-arrow" d="M88 184 V216 Q88 224 96 224 H264 Q272 224 272 232 V248" marker-end="url(#st-layer-arrow)"/>
+ <rect class="st-node" x="24" y="72" width="128" height="112" rx="4"/><rect class="st-focus" x="208" y="248" width="128" height="112" rx="4"/>
+ <text x="88" y="112" text-anchor="middle" class="st-bold">GPU A</text><text x="88" y="148" text-anchor="middle" class="st-small">앞 24개 층</text><text x="272" y="288" text-anchor="middle" class="st-bold">GPU B</text><text x="272" y="324" text-anchor="middle" class="st-small">뒤 24개 층</text>
+ <rect x="128" y="192" width="104" height="24" fill="#f2f1ed"/><text x="180" y="208" text-anchor="middle" class="st-small">중간 결과</text><text x="180" y="388" text-anchor="middle" class="st-small">주요 forward 경로만 표시</text></svg></div></div>
+ <figcaption>그림 3. 같은 층의 계산을 나누는 TP와 연속된 층 범위를 나누는 실행의 개략도다. 통신 메시지 수나 대역폭을 측정한 그림은 아니다. Strata의 24/24는 이번 설정이며 앞 GPU의 결과를 뒤 GPU가 기다리는 구간도 있다. <a href="https://github.com/Niko1221/Strata/blob/v0.2.13/docs/MULTI_GPU.md">층 분할 문서</a>를 참고했다.</figcaption></figure>
+
+      <p>Strata에서는 각 GPU가 담당 층의 전문가 캐시를 보유하므로 캐시 공간도 늘릴 수 있다. 다만 앞쪽 계산이 끝나야 뒤쪽 계산이 이어지는 구간이 있고 장치 사이의 전달 비용도 남는다. GPU가 두 장이라고 단일 요청이 두 배 빨라지는 것은 아니다.</p>
+
+      <p>어느 쪽도 모델 전체를 매 토큰마다 GPU 사이로 옮기는 방식은 아니다. 또한 vLLM 자체는 텐서 병렬 외에 다른 병렬화도 지원한다. 여기서 비교한 것은 당시 사용한 두 설정이며 <a href="https://docs.vllm.ai/en/stable/serving/parallelism_scaling/">vLLM의 전체 기능</a>과 Strata 전체를 대비한 것은 아니다.</p>
+
+      <h2>GPU를 늘린 뒤에는 실제 RAM 배치를 확인했다</h2>
+
+      <p>실험에는 20GB GPU 두 장을 사용했다. 모델 프로세스의 RAM과 swap 합계 상한은 64GiB로 두고 CPU 시간은 코어 4개에 해당하는 quota로 제한했다. 기존 서비스와 자원을 공유했으므로 전용 장비 벤치마크는 아니다. 상한은 예약량이 아니고 메모리 대역폭까지 격리해주는 것도 아니다.</p>
+
+      <p>두 GPU를 쓰면 전문가 캐시가 커지니 더 빨라질 것으로 예상했다. 그런데 긴 입력 처리가 나빠지는 구간이 있었다. 통신 경로만 의심하기 전에 확인한 것은 실제 전문가 RAM 상주량이었다. 요청한 예산과 달리 14GiB대로 줄어 있었다.</p>
+
+      <p>당시 엔진은 0.1.59였고 분석한 소스 commit은 <code>712fec6b4297</code>이다. 코드와 메모리 기록을 대조하니 자기 모델 파일의 OS 캐시를 현재 사용량에 포함한 상태에서 전문가 RAM 예산을 먼저 정하고 있었다. 이후 자기 파일 캐시를 반환해도 이미 줄인 예산은 다시 계산하지 않았다.</p>
+
+      <ol>
+        <li>GPU 전문가 캐시를 채우는 동안 모델 파일의 OS 캐시가 생긴다.</li>
+        <li>이 파일 캐시를 포함한 사용량으로 가용 RAM을 계산해 전문가 상주 예산을 줄인다.</li>
+        <li>나중에 파일 캐시를 반환해도 앞서 정한 작은 예산은 그대로 남는다.</li>
+      </ol>
+
+      <p>AI와 함께 원인을 분석하고 소유한 모델 파일의 캐시 반환을 예산 측정 앞으로 옮긴 뒤 실제 가용량을 다시 읽도록 수정했다. 시스템 전체의 캐시를 비우지는 않았다. 이후 직접 읽기 경로도 명시한 구성에서 전문가 RAM은 14.32GiB에서 30.09GiB로 늘었다.</p>
+
+      <div class="strata-table" role="region" aria-label="같은 Strata 구성의 수정 전후" tabindex="0">
+        <table>
+          <caption>수정 전은 예열 후 1회, 수정 후는 예열 후 3회 평균이다. RAM 행은 전문가 가중치의 관측 상주량이다.</caption>
+          <thead><tr><th scope="col">항목</th><th scope="col">수정 전</th><th scope="col">수정 후</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">실제 전문가 RAM</th><td>14.32GiB</td><td>30.09GiB</td></tr>
+            <tr><th scope="row">영어 생성</th><td>55.27tok/s</td><td>63.86tok/s</td></tr>
+            <tr><th scope="row">한국어 생성</th><td>39.03tok/s</td><td>44.60tok/s</td></tr>
+            <tr><th scope="row">4,360토큰 입력 첫 응답</th><td>9.800초</td><td>7.317초</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>빌드와 RAM 예산, 읽기 경로를 함께 바꾼 구성 비교다. 코드의 순서 변경 한 가지만의 효과를 분리해 측정한 결과는 아니다. 작은 표본이지만 GPU 캐시를 늘리는 것 외에 RAM에 어떤 가중치가 실제로 남는지도 확인해야 한다는 점을 배웠다.</p>
+
+      <p>전문가 가중치의 CUDA pin 문제는 해결하지 못했다. OS의 mlock으로 메모리에 상주시키는 것과 CUDA가 전송용으로 등록한 메모리는 별개였고 KV용 pinned 메모리도 따로 봐야 했다. RAM 예산 문제를 수정한 것과 pin 문제를 해결한 것은 다른 일이다.</p>
+
+      <h2>생성은 빨랐지만 첫 본문은 더 늦었다</h2>
+
+      <p>다음 비교에서는 기존 A6000 한 장의 Qwen3.8-27B AWQ 배포와 Strata 배포에 같은 질문을 보냈다. Strata는 20GB GPU 두 장과 CPU, RAM을 사용했다. 모델과 양자화, GPU 구성과 실행 엔진이 다른 배포 선택 비교다. GPU 두 장을 사용하던 기존 27B 운영 로그와의 직접 A/B는 아니다.</p>
+
+      <p>영어 설명과 한국어 설명, 약 4.4K토큰 기록 조회를 각 배포에서 3회씩 순차 실행했다. 입력 쌍의 해시가 일치하는지 확인했고 temperature는 0, thinking은 끄고 같은 출력 상한을 사용했다. 첫 응답은 클라이언트가 첫 본문을 받은 시점으로 정의했다.</p>
+
+      <div class="strata-table" role="region" aria-label="배포별 생성 구간 속도" tabindex="0">
+        <table>
+          <caption>생성 구간 속도. 과제와 배포별 3회 중앙값이며 단위는 tok/s다.</caption>
+          <thead><tr><th scope="col">과제</th><th scope="col">27B / A6000 한 장</th><th scope="col">Flash-Next / Strata 두 장</th></tr></thead>
+          <tbody><tr><th scope="row">영어 설명</th><td>26.73</td><td>70.19</td></tr><tr><th scope="row">한국어 설명</th><td>26.72</td><td>50.07</td></tr></tbody>
+        </table>
+      </div>
+
+      <p>생성 구간의 tok/s는 Strata가 높았다. 하지만 사용자가 처음 내용을 받기까지의 시간과 답변 전체가 끝나는 시간은 따로 봐야 했다.</p>
+
+      <figure class="st-visual" id="strata-response-chart"><div class="st-pair"><div class="st-panel"><p class="st-panel-title">첫 본문까지의 시간</p><img class="st-chart" src="assets/posts/strata-study/first-content.svg" width="360" height="460" alt="각 3회 중앙값. 첫 본문은 영어 27B 0.218초, Strata 1.045초. 한국어 0.202초와 1.051초. 약 4.4K 조회 2.515초와 7.090초." loading="lazy" decoding="async"></div><div class="st-panel"><p class="st-panel-title">전체 완료까지의 시간</p><img class="st-chart" src="assets/posts/strata-study/completion.svg" width="360" height="460" alt="각 3회 중앙값. 전체 완료는 영어 27B 5.380초, Strata 3.041초. 한국어 4.880초와 3.747초. 약 4.4K 조회 2.666초와 7.190초." loading="lazy" decoding="async"></div></div><figcaption>그림 4. 같은 질문을 두 배포에 각각 3회 보낸 실측의 중앙값이다. 단위는 초이며 짧을수록 빠르다. 두 그래프 모두 0~8초 축을 썼다. 모델과 양자화, GPU 구성과 엔진이 달라 Strata 엔진만의 성능 비교는 아니다. 각 지표의 중앙값을 따로 그렸으며 첫 본문 시간과 전체 시간을 하나의 실행처럼 합치지 않았다.</figcaption></figure>
+
+      <p>영어와 한국어 설명은 첫 본문이 더 늦게 도착했지만 전체 완료 시간은 Strata가 짧았다. 반면 긴 입력을 읽고 짧게 답하는 약 4.4K 조회는 첫 본문과 전체 완료 모두 기존 배포가 빨랐다. 생성 속도가 높아도 입력을 읽는 시간이 길면 짧은 답변에서는 이득을 얻기 어려웠다.</p>
+
+      <p>tok/s는 출력 토큰 수를 첫 본문 도착부터 스트림 종료까지의 시간으로 나눈 클라이언트 근사값이다. 같은 질문을 보냈어도 출력 내용과 길이는 같지 않았다. 영어 출력은 기존 모델이 123~138토큰, Strata가 137~141토큰이었다. 5토큰만 출력한 조회의 tok/s는 대표 생성 속도에서 제외했다.</p>
+
+      <p>앞의 RAM 예산 수정 표와 이 배포 비교는 다른 시험이다. 평균과 중앙값도 다르고 system 문구와 입력 길이, 캐시 상태도 달랐다. 63.86tok/s에서 70.19tok/s로 추가 개선됐다고 연결할 수는 없다. 기존 두 GPU의 27B 운영 로그 역시 실제 업무와 관측 시점이 섞여 있어 새 합성 시험의 수치와 나눠 개선 배율을 계산하지 않았다.</p>
+
+      <h2>캐시와 예열은 따로 구분했다</h2>
+
+      <p>prefill은 입력을 처리하는 단계이고 decode는 이후 답변 토큰을 생성하는 단계다. 긴 입력의 처리 경로와 생성 중의 전문가 분담은 다를 수 있다. 같은 단어로 부르는 캐시도 저장하는 대상이 다르다.</p>
+
+      <div class="strata-table" role="region" aria-label="서로 다른 캐시의 역할" tabindex="0">
+        <table>
+          <caption>예열 뒤 속도가 달라져도 어느 캐시의 영향인지 구분해야 한다.</caption>
+          <thead><tr><th scope="col">캐시</th><th scope="col">보관하는 것</th></tr></thead>
+          <tbody><tr><th scope="row">GPU 전문가 캐시</th><td>자주 쓰는 전문가 가중치의 VRAM 복사본</td></tr><tr><th scope="row">OS 페이지 캐시</th><td>파일에서 읽은 데이터를 RAM에 보관</td></tr><tr><th scope="row">KV 캐시</th><td>이전 토큰의 attention 계산에 쓰는 key와 value</td></tr><tr><th scope="row">Prefix 캐시</th><td>반복되는 입력의 공통 접두부에 대한 계산 결과를 재사용하는 방식. 전문가 가중치 캐시와는 별개</td></tr></tbody>
+        </table>
+      </div>
+
+      <details class="strata-extra"><summary>첫 본문이 0.5초에서 1초로 달라진 기록</summary>
+        <p>이전 수정 검증에서는 0.5초 안팎이던 첫 응답이 새 배포 비교에서는 약 1초였다. 중계 경로 때문이라고 단정하기 전에 입력을 대조하니 새 시험에는 prefix 재사용을 피하려는 무작위 문자열과 추가 system 문장이 들어 있었다.</p>
+        <p>같은 경로에서 이전 입력을 3회 다시 보냈을 때는 0.981초, 0.610초, 0.576초였다. 새 입력 3회는 1.137초, 1.014초, 1.267초였다. 이전 0.45~0.50초 기록을 이번에 다시 재현하지는 못했다. 입력과 반복, 예열의 기여는 각각 분리하지 못했으므로 가장 빠른 한 번만 대표값으로 고르지 않았다.</p>
+      </details>
+
+      <details class="strata-extra"><summary>후속 기록: 실행 한 건과 대기 세 건</summary>
+        <p>한 번에 한 요청만 추론하는 구성에서 대기 요청을 최대 3건까지 받도록 했다. 혼잡을 뜻하는 429가 게이트웨이에서 모델 전체의 일시 차단으로 확대되지 않도록 오류 처리도 나눴다.</p>
+        <p>각 96토큰을 출력하는 동시 요청 4건은 모두 성공했다. 대기를 포함한 완료 시간은 2.717초, 4.317초, 5.580초, 6.778초였다. 관측된 동시 실행은 최대 1건이고 대기는 최대 3건이었다. 초과 요청은 0.095초에 429로 응답했고 앞선 요청들이 끝난 뒤 보낸 8토큰 후속 요청은 0.380초에 정상 완료됐다.</p>
+        <p>이는 제한 대기열의 동작을 확인한 결과다. 처리량이 4배라는 뜻은 아니다. 관련 자동 테스트 36개와 짧은 실서버 호출을 확인했지만 장기 부하 시험은 하지 않았다.</p>
+      </details>
+
+      <h2>아직 확인하지 못한 것</h2>
+
+      <p>작은 합성 과제에서는 두 모델 모두 금액 계산을 틀린 사례가 있었다. JSON 형식이 맞아도 값이 틀리면 실패다. 이번 속도 시험으로 일반적인 품질 우위나 실제 도구 실행 성공률까지 확인하지는 못했다.</p>
+
+      <p>64GiB 상한은 Strata의 절대 최소 사양이 아니다. 모델과 양자화, 문맥 길이와 메모리 모드에 따라 필요한 자원이 달라진다. <a href="https://github.com/Niko1221/Strata/blob/v0.2.13/docs/MODELS.md">모델별 메모리 안내</a>에서도 OS와 다른 프로그램의 여유를 함께 보도록 설명한다.</p>
+
+      <p>문맥 길이는 256K로 설정했지만 전체 길이의 입력을 넣어 검증하지 않았다. 장기 안정성과 CPU/RAM 대역폭의 영향, 전문가 CUDA pin 실패 원인도 남아 있다. 모델과 입력을 고정하고 GPU 수만 바꾸는 비교도 별도로 필요하다.</p>
+
+      <h2>참고한 문서와 실험 범위</h2>
+
+      <p>원리 설명은 Strata v0.2.13 문서를 기준으로 2026년 11월 17일에 다시 대조했다. 이 글은 Qwen3.8-Flash-Next 계열의 실행 경로를 다루며 Strata가 지원하는 모든 모델에 같은 배치를 적용한다는 뜻은 아니다. 실측은 11월 11~16일의 작업 기록이고 RAM 예산 수정의 기준 엔진은 0.1.59였다. 이후 문서의 새 기능이나 공개 속도를 이전 실험 결과로 옮기지 않았다.</p>
+      <ul>
+        <li><a href="https://taeeunkil.github.io/writing/dense-vs-moe/">앞 글: Dense LLM과 MoE는 어떻게 다를까</a></li>
+        <li><a href="https://github.com/Niko1221/Strata/blob/v0.2.13/docs/HOW_IT_WORKS.md">Strata: How does Strata work?</a></li>
+        <li><a href="https://github.com/Niko1221/Strata/blob/v0.2.13/docs/DETAILS.md">Strata engine and server reference</a></li>
+        <li><a href="https://github.com/Niko1221/Strata/blob/v0.2.13/docs/MULTI_GPU.md">Strata on two or more GPUs</a></li>
+        <li><a href="https://github.com/Niko1221/Strata/blob/v0.2.13/docs/MODELS.md">Strata: model sizes and memory requirements</a></li>
+        <li><a href="https://huggingface.co/Qwen/Qwen3.8-Flash-Next">Qwen3.8-Flash-Next 모델 카드</a></li>
+        <li><a href="https://huggingface.co/ISTA-DASLab/Qwen3.8-Flash-Next-GSQ-RCO-GGUF">ISTA-DASLab GSQ-RCO GGUF 배포</a></li>
+        <li><a href="https://docs.vllm.ai/en/stable/serving/parallelism_scaling/">vLLM: Parallelism and scaling</a></li>
+      </ul>
+<script src="assets/posts/strata-study/diagrams.js" defer></script>
