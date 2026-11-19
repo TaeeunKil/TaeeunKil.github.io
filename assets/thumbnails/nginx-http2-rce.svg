@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="400" viewBox="0 0 640 400" role="img" aria-labelledby="title">
+  <title id="title">NGINX HTTP/2 취약점</title>
+  <rect width="640" height="400" fill="#eae6df"/>
+  <path d="M48 54h68" stroke="#bf3b21" stroke-width="6"/>
+  <g fill="#171716" font-family="Arial, sans-serif">
+    <text x="48" y="112" font-size="21" letter-spacing="3">SECURITY NOTES / 26</text>
+    <text x="45" y="224" font-size="70" font-weight="700" letter-spacing="-3">NGINX / HTTP/2</text>
+    <text x="48" y="306" font-size="31">CVE-2026-123007</text>
+    <text x="48" y="350" font-size="31">CVE-2026-123633</text>
+  </g>
+</svg>

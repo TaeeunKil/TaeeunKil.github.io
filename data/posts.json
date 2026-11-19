@@ -1,5 +1,26 @@
 [
   {
+    "id": "nginx-http2-rce",
+    "number": 26,
+    "date": "2026-11-19",
+    "title": {
+      "ko": "NGINX HTTP/2 취약점 - CVE-2026-123007, CVE-2026-123633"
+    },
+    "summary": {
+      "ko": "NGINX의 HTTP/2 취약점 두 건과 보안 업데이트, ingress-nginx 마이그레이션, HTTP/2 비활성화 방법을 정리했다."
+    },
+    "content": {
+      "ko": "posts/2026/nginx-http2-rce.ko.html"
+    },
+    "tags": [
+      "NGINX",
+      "HTTP/2",
+      "Security"
+    ],
+    "tagSeparator": " / ",
+    "thumbnail": "assets/thumbnails/nginx-http2-rce.svg"
+  },
+  {
     "id": "strata-study",
     "number": 25,
     "date": "2026-11-17",
