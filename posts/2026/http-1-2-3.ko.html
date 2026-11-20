@@ -1,0 +1,95 @@
+<style>
+.http-figure { margin: 2.5rem 0; }
+.http-figure svg { display: block; width: 100%; max-width: 33rem; height: auto; margin-inline: auto; }
+.http-figure figcaption { max-width: 33rem; margin: .875rem auto 0; color: var(--muted); font-size: .875rem; line-height: 1.65; }
+.http-image-link { display: block; max-width: 38rem; margin-inline: auto; }
+.http-image-link img { display: block; width: 100%; height: auto; }
+.http-figure .http-rule { stroke: var(--line); }
+.http-figure .http-data { fill: none; stroke: var(--text); stroke-width: 5; stroke-linecap: round; }
+.http-figure .http-wait { fill: none; stroke: var(--accent-text); stroke-width: 3; stroke-dasharray: 4 5; }
+.http-shot { position: relative; max-width: 33rem; margin-inline: auto; aspect-ratio: 724 / 596; overflow: hidden; border: 1px solid var(--line); }
+.http-shot img { position: absolute; width: 229.56%; max-width: none; height: auto; left: -13.81%; top: -24.33%; }
+.http-shot::after { content: ""; position: absolute; inset: 87.4% auto auto 23.3%; width: 21%; height: 8%; border: 2px solid var(--accent-text); pointer-events: none; }
+@media print { .http-figure { break-inside: avoid; } }
+</style>
+
+<p class="post-lead">브라우저가 같은 연결에서 큰 이미지를 먼저 요청하고 작은 CSS 파일을 이어서 요청했다고 하자. 이미지 응답이 늦어지면 CSS도 기다려야 할까? HTTP 버전에 따라 답이 달라진다.</p>
+
+<figure class="http-figure">
+  <a class="http-image-link" href="assets/posts/http-1-2-3/http-version-stacks.png">
+    <img src="assets/posts/http-1-2-3/http-version-stacks.png" width="1526" height="926" sizes="(max-width: 648px) calc(100vw - 40px), 608px" alt="HTTP/1.1, HTTP/2, HTTP/3의 프로토콜 계층 비교. 앞의 두 버전은 TCP를 사용한다. HTTP/2는 HTTP 계층에서 스트림을 다중화하고 HTTP/3은 UDP 위의 QUIC에서 스트림을 다중화한다. QUIC에는 TLS가 통합되어 있다.">
+  </a>
+  <figcaption>HTTP/1.1과 HTTP/2는 TCP를 쓴다. HTTP/3은 UDP 위에서 QUIC을 쓰고 TLS를 QUIC에 통합한다. 그림을 누르면 원본 크기로 볼 수 있다. <a href="https://github.com/rmarx/h3-protocol-stack#basic-http3-vs-http2-vs-http11-comparison">Robin Marx의 원본 다이어그램</a>.</figcaption>
+</figure>
+
+<h2>HTTP/1.1은 요청 순서대로 응답을 보낸다</h2>
+
+<p>HTTP/1.1은 TCP 연결 하나를 여러 요청에 재사용한다. 파이프라이닝을 쓰면 이미지 응답이 오기 전에 CSS도 요청할 수 있다. 서버가 두 GET 요청을 병렬로 처리하더라도 이미지 응답을 다 보낸 뒤에야 CSS 응답을 보낼 수 있다.</p>
+
+<p>준비된 CSS가 앞 응답 때문에 기다리는 현상이 HOL(Head-of-Line) 블로킹이다. 브라우저는 같은 서버에 연결을 여러 개 열어 CSS를 별도로 받을 수 있다. 대신 연결을 열고 유지하는 비용이 든다. <a href="https://www.rfc-editor.org/rfc/rfc9112.html#section-9.3">RFC 9112의 연결 재사용과 파이프라이닝</a></p>
+
+<h2>HTTP/2는 한 연결에서 여러 응답을 섞어 보낸다</h2>
+
+<p>스트림은 한 연결 안에서 요청과 응답이 오가는 통로다. HTTP/2는 이미지와 CSS를 각각 다른 스트림에 싣고 프레임이라는 작은 단위로 나눠 섞어 보낸다. 이 방식을 <strong>멀티플렉싱</strong>이라고 한다. 이미지 전송 중에도 CSS를 먼저 받을 수 있다.</p>
+
+<p>TCP는 한 연결에 들어온 바이트를 순서대로 전달한다. 앞쪽의 이미지 데이터가 유실되면 뒤쪽의 CSS 데이터가 이미 도착했어도 TCP는 빠진 구간이 복구될 때까지 기다린다. 이 경우 병목은 HTTP 응답 순서에서 TCP의 바이트 전달 순서로 옮겨간다. <a href="https://www.rfc-editor.org/rfc/rfc9113.html#section-1">RFC 9113의 멀티플렉싱과 TCP 블로킹</a></p>
+
+<h2>HTTP/3은 스트림마다 순서를 맞춘다</h2>
+
+<p>HTTP/3은 UDP 위에서 동작하는 QUIC을 쓴다. QUIC은 유실된 데이터를 다시 보내고 스트림마다 순서를 따로 맞춘다. 이미지 데이터만 담긴 패킷이 유실되면 CSS 스트림은 계속 진행할 수 있다. 두 스트림의 데이터가 같은 패킷에 들어 있었다면 둘 다 복구를 기다린다. <a href="https://www.rfc-editor.org/rfc/rfc9000.html#section-13">RFC 9000의 패킷과 스트림</a></p>
+
+<p>새 연결을 맺는 방식도 다르다. HTTPS에서 HTTP/1.1과 HTTP/2는 보통 TCP 연결을 맺은 뒤 TLS를 협상한다. QUIC은 연결을 맺는 과정에 TLS 1.3 핸드셰이크를 포함해 왕복 횟수를 줄일 수 있다. UDP가 막힌 네트워크에서는 TCP 기반 HTTP로 다시 연결할 수 있다. <a href="https://www.rfc-editor.org/rfc/rfc9114.html#section-1">RFC 9114의 HTTP/3 개요</a>, <a href="https://www.rfc-editor.org/rfc/rfc9114.html#section-3.1">연결 설정</a></p>
+
+<figure class="http-figure">
+  <svg viewBox="0 0 352 396" width="352" height="396" role="img" aria-labelledby="http-wait-title http-wait-desc" fill="currentColor" font-size="16">
+    <title id="http-wait-title">HTTP 버전에 따라 CSS가 기다리는 위치</title>
+    <desc id="http-wait-desc">HTTP/1.1은 이미지 응답 뒤에 CSS가 전달된다. HTTP/2는 이미지 쪽 TCP 데이터가 유실되면 뒤에 도착한 CSS도 기다린다. HTTP/3에서 유실 패킷에 이미지 데이터만 있었다면 CSS 스트림은 계속 진행된다.</desc>
+
+    <path class="http-rule" d="M0 30H352 M0 143H352 M0 256H352"/>
+    <path class="http-data" d="M76 80H234 M240 109H326 M76 193H146 M238 193H326 M238 222H278 M76 306H146 M238 306H326 M156 335H196"/>
+    <path class="http-wait" d="M76 109H234 M152 193H232 M156 222H232 M152 306H232"/>
+
+    <g font-weight="700">
+      <text x="8" y="20">HTTP/1.1</text>
+      <text x="8" y="133">HTTP/2</text>
+      <text x="8" y="246">HTTP/3</text>
+    </g>
+    <g fill="var(--muted)" text-anchor="end">
+      <text x="344" y="20">응답 순서</text>
+      <text x="344" y="133">TCP 전달 순서</text>
+      <text x="344" y="246">QUIC 스트림별 전달</text>
+    </g>
+    <g>
+      <text x="8" y="85">이미지</text>
+      <text x="8" y="114">CSS</text>
+      <text x="8" y="198">이미지</text>
+      <text x="8" y="227">CSS</text>
+      <text x="8" y="311">이미지</text>
+      <text x="8" y="340">CSS</text>
+    </g>
+    <g fill="var(--accent-text)" font-weight="600">
+      <text x="76" y="61">이미지 응답이 먼저</text>
+      <text x="152" y="174">유실 데이터 복구</text>
+      <text x="152" y="287">이미지 쪽 데이터 유실</text>
+    </g>
+
+    <path class="http-rule" d="M0 358H352"/>
+    <path class="http-data" d="M8 379H27"/>
+    <path class="http-wait" d="M134 379H156"/>
+    <text x="36" y="384">데이터 전달</text>
+    <text x="164" y="384">대기</text>
+    <text x="344" y="384" text-anchor="end">시간 흐름 →</text>
+  </svg>
+  <figcaption>HTTP/1.1은 이미지 요청을 먼저 보낸 파이프라이닝을 가정했다. HTTP/2와 HTTP/3는 이미지 데이터만 유실된 경우다. 선 길이는 흐름을 보여주기 위한 것이며 연결 설정과 혼잡 제어는 그림에서 생략했다. 참고 표준은 <a href="https://www.rfc-editor.org/rfc/rfc9112.html#section-9.3.2">HTTP/1.1</a>, <a href="https://www.rfc-editor.org/rfc/rfc9113.html#section-1">HTTP/2</a>, <a href="https://www.rfc-editor.org/rfc/rfc9000.html#section-13">QUIC</a>이다.</figcaption>
+</figure>
+
+<h2>브라우저에서 HTTP 버전 확인하기</h2>
+
+<p>Chrome 개발자 도구에서 <strong>Network</strong> 탭을 열고 새로고침한다. 요청 목록의 열 제목을 우클릭해 <strong>Protocol</strong>을 켜면 요청마다 <code>http/1.1</code>, <code>h2</code>, <code>h3</code> 중 어떤 버전을 썼는지 볼 수 있다. 한 페이지에서도 HTML과 이미지가 서로 다른 서버에서 오면 버전이 다를 수 있다. <a href="https://developer.chrome.com/docs/devtools/network/reference#columns">Chrome DevTools의 Network 열 설정</a></p>
+
+<figure class="http-figure">
+  <div class="http-shot">
+    <img src="assets/posts/http-1-2-3/chrome-devtools-protocol.png" width="1662" height="1944" sizes="(max-width: 568px) calc((100vw - 42px) * 2.3), 1210px" alt="Chrome DevTools의 Network 탭에서 요청 목록의 열 제목을 우클릭했을 때 열리는 메뉴. Status 아래에 Protocol 항목이 있다.">
+  </div>
+  <figcaption><a href="https://developer.chrome.com/docs/devtools/network/reference#columns">Chrome for Developers 원본 화면</a>(<a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>). 메뉴 주변을 잘라 Protocol 항목에 테두리를 표시했다.</figcaption>
+</figure>

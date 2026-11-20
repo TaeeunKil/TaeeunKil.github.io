@@ -65,12 +65,15 @@ def optimize_images(markup, thumbnail=False):
             return tag
         info=image_info(src)
         if info:
+            authored_sizes=re.search(r'\ssizes="([^"]*)"',tag) if not original else None
             if not original:
                 tag=tag[:-1]+f' data-original-src="{html.escape(src,quote=True)}">'
             tag=re.sub(r'(?<![\w-])src="[^"]+"',f'src="{info["src"]}"',tag)
             for attr in ['srcset','sizes']:
                 tag=re.sub(r'\s'+attr+r'="[^"]*"','',tag)
             sizes='64px' if src.endswith(('rental-logo.svg', 'ttomanito-logo.svg')) else ('160px' if thumbnail else '(max-width: 800px) calc(100vw - 40px), 752px')
+            if authored_sizes:
+                sizes=authored_sizes[1]
             tag=tag[:-1]+f' srcset="{info["srcset"]}" sizes="{sizes}">'
             for attr in ['width','height']:
                 if not re.search(r'\b'+attr+r'=',tag):

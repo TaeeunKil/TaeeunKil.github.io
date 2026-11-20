@@ -1,5 +1,26 @@
 [
   {
+    "id": "http-1-2-3",
+    "number": 27,
+    "date": "2026-11-20",
+    "title": {
+      "ko": "HTTP/1.1, HTTP/2, HTTP/3 비교"
+    },
+    "summary": {
+      "ko": "이미지와 CSS를 같은 연결에서 받을 때 각 HTTP 버전이 응답을 보내는 방식과 데이터가 유실됐을 때의 차이를 비교한다."
+    },
+    "content": {
+      "ko": "posts/2026/http-1-2-3.ko.html"
+    },
+    "tags": [
+      "HTTP",
+      "Network",
+      "공부 기록"
+    ],
+    "tagSeparator": " / ",
+    "thumbnail": "assets/thumbnails/http-1-2-3.svg"
+  },
+  {
     "id": "nginx-http2-rce",
     "number": 26,
     "date": "2026-11-19",

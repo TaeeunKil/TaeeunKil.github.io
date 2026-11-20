@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="400" viewBox="0 0 640 400" role="img" aria-labelledby="http-thumb-title http-thumb-desc">
+  <title id="http-thumb-title">HTTP/1.1, HTTP/2, HTTP/3</title>
+  <desc id="http-thumb-desc">TCP의 공통 대기 구간과 QUIC의 독립적인 두 스트림</desc>
+  <rect width="640" height="400" fill="#f2f1ed"/>
+  <text x="48" y="100" fill="#171716" font-family="Pretendard,system-ui,sans-serif" font-size="45" font-weight="700">HTTP/1.1 · 2 · 3</text>
+  <path d="M48 140H592M48 244H592" stroke="#d6d4ce" stroke-width="2"/>
+  <g fill="#171716" font-family="Pretendard,system-ui,sans-serif" font-size="27" font-weight="700">
+    <text x="48" y="201">TCP</text>
+    <text x="48" y="313">QUIC</text>
+  </g>
+  <path d="M200 192H320m116 0h156M200 284H320m116 0h156M200 324H592" fill="none" stroke="#171716" stroke-width="8"/>
+  <path d="M324 192H432M324 284H432" fill="none" stroke="#bf3b21" stroke-width="8" stroke-dasharray="12 10"/>
+</svg>
