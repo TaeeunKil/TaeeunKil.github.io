@@ -1,5 +1,26 @@
 [
   {
+    "id": "naver-d2-devops-agent-evaluation",
+    "number": 28,
+    "date": "2026-11-24",
+    "title": {
+      "ko": "같은 알람에 답이 달라졌다. 고친 걸까, 망가진 걸까?"
+    },
+    "summary": {
+      "ko": "네이버 DevOps Agent 발표를 보고 과거 장애 리포트와 현재 코드로 다시 돌린 결과를 어떻게 채점하는지 정리했다."
+    },
+    "content": {
+      "ko": "posts/2026/naver-d2-devops-agent-evaluation.ko.html"
+    },
+    "tags": [
+      "AI",
+      "DevOps",
+      "공부 기록"
+    ],
+    "tagSeparator": " / ",
+    "thumbnail": "assets/posts/naver-d2-devops-agent-evaluation/12m04s-status-and-replay.png"
+  },
+  {
     "id": "http-1-2-3",
     "number": 27,
     "date": "2026-11-20",

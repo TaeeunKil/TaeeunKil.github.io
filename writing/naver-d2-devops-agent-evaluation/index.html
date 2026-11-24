@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="ko" data-post-id="naver-d2-devops-agent-evaluation">
+<head>
+  <base href="../../">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="네이버 DevOps Agent 발표를 보고 과거 장애 리포트와 현재 코드로 다시 돌린 결과를 어떻게 채점하는지 정리했다.">
+  <meta name="theme-color" content="#f2f1ed">
+  <title>같은 알람에 답이 달라졌다. 고친 걸까, 망가진 걸까? — TaeeunKil</title>
+  <link rel="preload" href="assets/fonts/PretendardSite.woff2?v=e2250ed806" fetchpriority="high" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="assets/fonts/fonts.css?v=20261013-performance">
+  <style>html.fonts-loading body { visibility: hidden; }</style>
+  <script>
+    // Reveal the designed typeface only after fonts used by the page are ready.
+    document.documentElement.classList.add("fonts-loading");
+    document.addEventListener("DOMContentLoaded", () => {
+      const reveal = () => document.documentElement.classList.remove("fonts-loading");
+      Promise.resolve(window.pageReady).then(() => document.fonts.ready).then(reveal, reveal);
+    }, { once: true });
+  </script>
+  <link rel="stylesheet" href="style.css?v=20261026-hackathon-reading-layout">
+  <script src="post.js?v=20261013-performance" defer></script>
+  <link rel="canonical" href="https://taeeunkil.github.io/writing/naver-d2-devops-agent-evaluation/">
+</head>
+<body class="post-page">
+  <a class="skip-link" href="writing/naver-d2-devops-agent-evaluation/#post-content" data-post-copy="skip">본문으로 건너뛰기</a>
+
+  <main class="post-shell" id="post-content">
+    <div class="post-toolbar">
+      <a class="post-back" href="index.html#writing" data-post-copy="back">← 글 목록</a>
+      <div class="language-switch" role="group" aria-label="언어 선택" data-post-aria="languageLabel">
+        <button type="button" data-language="ko" aria-pressed="true">KR</button><span aria-hidden="true">/</span><button type="button" data-language="en" aria-pressed="false">EN</button>
+      </div>
+    </div>
+
+    <article class="post-article" aria-live="polite">
+      <header class="post-header">
+        <p class="post-kicker">Writing / <span id="post-number">028</span></p>
+        <h1 id="post-title">같은 알람에 답이 달라졌다. 고친 걸까, 망가진 걸까?</h1>
+        <div class="post-meta"><time id="post-date" datetime="2026-11-24">2026.11.24</time><span id="post-tags">AI / DevOps / 공부 기록</span></div>
+        <p class="post-summary" id="post-summary">네이버 DevOps Agent 발표를 보고 과거 장애 리포트와 현재 코드로 다시 돌린 결과를 어떻게 채점하는지 정리했다.</p>
+      </header>
+      <p id="post-load-error" role="alert" hidden>글을 불러오지 못했습니다. 잠시 후 다시 시도해 주세요. / Could not load the article. Please try again.</p>
+      <div class="post-body" id="post-body"><p class="post-lead">장애 원인을 잘못 짚은 에이전트의 프롬프트를 고쳤다고 해보자. 같은 알람은 이제 맞힌다. 예전에 잘 맞히던 알람은 어떻게 됐을까?</p>
+
+<p>네이버 DevOps Agent는 통합검색에서 알람이 울리면 약 1분 안에 장애가 발생한 구간과 원인, 진행 여부를 리포트로 남긴다. 메신저로 알리고 GitHub 이슈에도 기록한다. 한 건을 바로잡으려고 수정한 프롬프트는 다른 알람에도 적용된다. 같은 코드로 같은 알람을 다시 돌려도 원인을 다르게 짚을 때가 있다.</p>
+
+<h1>담당자의 댓글에서 정답을 모은다</h1>
+
+<p>리포트를 읽은 담당자는 빠진 내용이나 잘못된 판단을 이슈 댓글에 적는다. 예를 들어 배포 때문에 하위 시스템이 느려진 경우라면 문제 위치는 하위 시스템이고 원인은 배포다. 네이버 팀은 위치와 원인을 따로 기록했다. 댓글에서 사람이 확인한 값과 에이전트가 낸 값을 항목별로 비교하고 판단 근거도 함께 남긴다.</p>
+
+<figure class="post-figure post-figure-wide">
+  <img src="assets/optimized/12m04s-status-and-replay-1280-0d9fd7515a.webp" alt="리포트와 담당자 피드백으로 만든 정답 기록을 정확도 현황판과 알람 재실행 도구가 함께 사용하는 흐름" width="1280" height="720" loading="lazy" data-original-src="assets/posts/naver-d2-devops-agent-evaluation/12m04s-status-and-replay.png" srcset="assets/optimized/12m04s-status-and-replay-320-46b98534d3.webp 320w, assets/optimized/12m04s-status-and-replay-640-164991bca6.webp 640w, assets/optimized/12m04s-status-and-replay-960-10d94e4803.webp 960w, assets/optimized/12m04s-status-and-replay-1280-0d9fd7515a.webp 1280w" sizes="(max-width: 800px) calc(100vw - 40px), 752px" decoding="async">
+  <figcaption>NAVER Engineering Day 발표 12:04. 담당자의 피드백으로 만든 정답 기록을 status와 replay가 함께 쓴다. <a href="assets/posts/naver-d2-devops-agent-evaluation/12m04s-status-and-replay.png">평가 흐름도 원본 크기로 보기</a></figcaption>
+</figure>
+
+<p><code>status</code>는 운영 리포트에서 어떤 원인을 자주 놓쳤는지 보여준다. 앞의 사례에서 에이전트가 비정상 트래픽을 원인으로 지목했다면 사람이 확인한 <strong>배포</strong> 항목의 오답으로 센다. 에이전트 답변대로 묶으면 놓친 배포 사례가 배포 쪽 집계에서 빠진다.</p>
+
+<p><code>replay</code>는 알람이 울렸을 때의 데이터를 가져와 지금 코드로 다시 분석한다. 프롬프트를 고친 다음에도 배포를 놓치는지 확인할 수 있고 예전에 맞혔던 알람도 같이 돌려볼 수 있다. 한 번 맞힌 게 우연일 수도 있으니 같은 케이스를 여러 번 실행한다.</p>
+
+<h1>같은 알람을 두고 정답이 달라질 때</h1>
+
+<p>새 버전에서 판정 항목이 하나 생기면 어제 작성된 리포트와 오늘 다시 돌린 리포트에 기대하는 값이 달라진다. 어제 리포트는 실행 커밋을 따라가 그 버전에 있던 항목만 채점한다. 오늘 같은 알람을 다시 돌리면 새 항목도 현재 규칙에 맞게 채워져야 한다.</p>
+
+<figure class="post-figure post-figure-wide">
+  <img src="assets/optimized/36m45s-evaluation-timeline-1280-763dfc8584.webp" alt="알람 실행 커밋을 시스템 변경 이력과 대조해 당시 채점할 수 있었던 판정 항목을 찾는 타임라인" width="1280" height="720" loading="lazy" data-original-src="assets/posts/naver-d2-devops-agent-evaluation/36m45s-evaluation-timeline.png" srcset="assets/optimized/36m45s-evaluation-timeline-320-5fbd84b111.webp 320w, assets/optimized/36m45s-evaluation-timeline-640-bd946887bc.webp 640w, assets/optimized/36m45s-evaluation-timeline-960-a394e21f8e.webp 960w, assets/optimized/36m45s-evaluation-timeline-1280-763dfc8584.webp 1280w" sizes="(max-width: 800px) calc(100vw - 40px), 752px" decoding="async">
+  <figcaption>NAVER Engineering Day 발표 36:45. 위쪽에서 실행 커밋이 속한 구간을 찾고 아래쪽에서 그때 채점할 수 있었던 항목을 확인한다. <a href="assets/posts/naver-d2-devops-agent-evaluation/36m45s-evaluation-timeline.png">채점 타임라인 원본 크기로 보기</a></figcaption>
+</figure>
+
+<p>지금 코드로 다시 돌렸더니 기존 항목의 값까지 달라졌다면 PR이나 회의 기록에서 바뀐 이유를 찾는다. 분류 기준을 의도적으로 고쳤다면 테스트의 기대값도 그 결정에 맞춰 바뀔 수 있다. 지금도 같은 값이 나와야 하는 항목이 깨졌다면 회귀로 본다.</p>
+
+<p>테스트에 ‘원인은 배포’라고만 적어두면 다음에 값이 달라졌을 때 그 답이 어디서 나왔는지부터 찾아야 한다. 담당자가 확인한 근거와 당시 적용한 규칙까지 남겨두면 코드와 기대값 중 어디를 고쳐야 할지 판단할 수 있다.</p>
+
+<div class="post-end">
+  <p><strong>참고한 영상</strong><br><a href="https://d2.naver.com/helloworld/0118355">Devops Agent 리포트 오이데~ 평가 야호~ (NAVER D2 원본 영상)</a></p>
+</div>
+</div>
+    </article>
+
+    <section class="comments-shell" aria-labelledby="comments-title">
+      <div class="comments-heading">
+        <p>Discussion / 01</p>
+        <h2 id="comments-title" data-post-copy="comments">댓글</h2>
+      </div>
+      <div class="giscus" id="giscus-comments"></div>
+    </section>
+
+    <a class="post-end" href="index.html#writing" data-post-copy="back">← 글 목록</a>
+  </main>
+<script id="post-data" type="application/json">{"id": "naver-d2-devops-agent-evaluation", "number": 28, "date": "2026-11-24", "title": {"ko": "같은 알람에 답이 달라졌다. 고친 걸까, 망가진 걸까?"}, "summary": {"ko": "네이버 DevOps Agent 발표를 보고 과거 장애 리포트와 현재 코드로 다시 돌린 결과를 어떻게 채점하는지 정리했다."}, "content": {"ko": "writing/naver-d2-devops-agent-evaluation/body.ko.html"}, "tags": ["AI", "DevOps", "공부 기록"], "tagSeparator": " / ", "thumbnail": "assets/optimized/12m04s-status-and-replay-1280-0d9fd7515a.webp", "thumbnailSrcset": "assets/optimized/12m04s-status-and-replay-320-46b98534d3.webp 320w, assets/optimized/12m04s-status-and-replay-640-164991bca6.webp 640w, assets/optimized/12m04s-status-and-replay-960-10d94e4803.webp 960w, assets/optimized/12m04s-status-and-replay-1280-0d9fd7515a.webp 1280w"}</script>
+</body>
+</html>
